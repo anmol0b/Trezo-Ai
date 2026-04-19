@@ -19,6 +19,7 @@ const envSchema = z.object({
   HELIUS_WS_URL: z.string().default('wss://devnet.helius-rpc.com'),
 
   // AI (optional at start — LLM decided later)
+  GROQ_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
 
@@ -70,6 +71,7 @@ export const config = {
   },
 
   ai: {
+    groqApiKey: parsed.data.GROQ_API_KEY,
     openaiApiKey: parsed.data.OPENAI_API_KEY,
     anthropicApiKey: parsed.data.ANTHROPIC_API_KEY,
   },
