@@ -84,7 +84,7 @@ export function getProgram(): Program {
     }
     const provider = getProvider();
     const programId = new PublicKey(config.solana.programId);
-    _program = new Program(idl, programId, provider);
+    _program = new Program(idl, provider);
   }
   return _program;
 }
