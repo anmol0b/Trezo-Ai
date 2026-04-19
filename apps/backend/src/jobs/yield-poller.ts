@@ -19,7 +19,7 @@ async function pollYieldOpportunities(): Promise<void> {
 
   try {
     const program = getProgram();
-    const yieldPositions = await program.account['yieldPosition'].all();
+    const yieldPositions = await (program.account as any).yieldPosition.all();
 
     for (const { account } of yieldPositions) {
       const yieldAccount = account as any;
