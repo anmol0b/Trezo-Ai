@@ -1,0 +1,16 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+koshai_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cargo test -p koshai-core"

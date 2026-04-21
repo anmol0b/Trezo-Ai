@@ -13,9 +13,9 @@ import { config } from '../config';
 
 let idl: Idl | null = null;
 try {
-  idl = require('../idl/koshai-core.json');
+  idl = require('../idl/koshai_core.json');
 } catch {
-  console.warn('⚠️  IDL not found at src/idl/koshai-core.json');
+  console.warn('⚠️  IDL not found at src/idl/koshai_core.json');
   console.warn('   Run: anchor build && bash scripts/sync-idl.sh');
 }
 
