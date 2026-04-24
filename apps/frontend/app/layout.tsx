@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./provider";
 import NextTopLoader from 'nextjs-toploader'
 import AppWalletProvider from "../components/walletAdapter";
+import { ThemeProvider } from "./theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,12 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       {/* <Providers> */}
         {/* <AppWalletProvider> */}
           <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen transition-colors duration-300`}>
             {/* <NextTopLoader color="#333" /> */}
-            {children}
+            <ThemeProvider>{children}</ThemeProvider>
           </body>
         {/* </AppWalletProvider> */}
       {/* </Providers> */}
