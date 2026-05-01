@@ -14,7 +14,7 @@ export function HeroSection() {
 
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
           <div className="mb-6 text-4xl font-semibold tracking-tight text-neutral-900 sm:mb-8 sm:text-5xl">
-            Izuki
+            Trezo AI
           </div>
 
           <ComingSoonBadge text="Coming Soon • Waitlist Open" />
