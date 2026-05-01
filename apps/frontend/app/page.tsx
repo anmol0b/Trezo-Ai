@@ -2,6 +2,7 @@ import Image, { type ImageProps } from "next/image";
 import "./globals.css"
 import Hero from "../components/hero";
 import Landing from "../pages/landing";
+import { HeroSection } from "../components/coming-soon/hero";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -22,7 +23,8 @@ const ThemeImage = (props: Props) => {
 export default function Home() {
   return (
     <div>
-      <Landing />
+      {/* <Landing /> */}
+      <HeroSection />
     </div>
   );
 }
