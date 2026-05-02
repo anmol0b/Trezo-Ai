@@ -1,8 +1,8 @@
 import Image, { type ImageProps } from "next/image";
 import "./globals.css"
-// import Hero from "../components/hero";
-// import Landing from "../pages/landing";
-// import { HeroSection } from "../components/coming-soon/hero";
+import Hero from "../components/hero";
+import Landing from "../pages/landing";
+import { HeroSection } from "../components/coming-soon/hero";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div>
       {/* <Landing /> */}
-      {/* <HeroSection /> */}
+      <HeroSection />
     </div>
   );
 }
