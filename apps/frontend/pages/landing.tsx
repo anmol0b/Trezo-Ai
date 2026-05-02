@@ -2,7 +2,7 @@ import CollectiveBrain from "../components/collectiveBrain";
 import FinalCTA from "../components/cta";
 import Footer from "../components/footer";
 import { NavbarDemo } from "../components/navBar";
-import Pricing from "../components/price";
+// import Pricing from "../components/price";
 import ProblemSection from "../components/promblex";
 import SocialProof from "../components/social";
 import Hero from "../components/hero";
