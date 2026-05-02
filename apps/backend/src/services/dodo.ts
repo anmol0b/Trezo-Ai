@@ -105,5 +105,5 @@ export function generateIdempotencyKey(
   dateStr?: string
 ): string {
   const day = dateStr ?? new Date().toISOString().split('T')[0];
-  return `koshai-${proposalPubkey.slice(0, 16)}-${day}`;
+  return `trezo-${proposalPubkey.slice(0, 16)}-${day}`;
 }

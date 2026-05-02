@@ -11,7 +11,7 @@ const MAX_VIEWING_KEY_LEN: usize = 256;
 const STATUS_PENDING: &str = "pending";
 
 #[program]
-pub mod koshai_core {
+pub mod trezo_core {
     use super::*;
 
     pub fn initialize_treasury(
@@ -80,7 +80,7 @@ pub mod koshai_core {
         treasury.department_count = treasury
             .department_count
             .checked_add(1)
-            .ok_or(KoshaiError::MathOverflow)?;
+            .ok_or(TrezoError::MathOverflow)?;
 
         Ok(())
     }
@@ -122,10 +122,10 @@ pub mod koshai_core {
         metadata_uri: String,
         expiry_timestamp: i64,
     ) -> Result<()> {
-        require!(amount_lamports > 0, KoshaiError::InvalidAmount);
+        require!(amount_lamports > 0, trezoError::InvalidAmount);
         require!(
             expiry_timestamp > Clock::get()?.unix_timestamp,
-            KoshaiError::InvalidExpiry
+            trezoError::InvalidExpiry
         );
         assert_max_len(&metadata_uri, MAX_METADATA_URI_LEN)?;
 
@@ -151,13 +151,13 @@ pub mod koshai_core {
         treasury.proposal_count = treasury
             .proposal_count
             .checked_add(1)
-            .ok_or(KoshaiError::MathOverflow)?;
+            .ok_or(trezoError::MathOverflow)?;
 
         let agent_authority = &mut ctx.accounts.agent_authority;
         agent_authority.proposal_nonce = agent_authority
             .proposal_nonce
             .checked_add(1)
-            .ok_or(KoshaiError::MathOverflow)?;
+            .ok_or(trezoError::MathOverflow)?;
         agent_authority.last_action_at = now;
 
         msg!(
@@ -176,11 +176,11 @@ pub mod koshai_core {
         let amount = ctx.accounts.dept_account.idle_threshold;
 
         let yield_position = &mut ctx.accounts.yield_position;
-        require!(yield_position.is_active, KoshaiError::YieldInactive);
+        require!(yield_position.is_active, trezoError::YieldInactive);
         yield_position.total_deposited = yield_position
             .total_deposited
             .checked_add(amount)
-            .ok_or(KoshaiError::MathOverflow)?;
+            .ok_or(trezoError::MathOverflow)?;
         yield_position.last_deposit_at = now;
 
         ctx.accounts.agent_authority.last_action_at = now;
@@ -201,7 +201,7 @@ pub mod koshai_core {
         oracle.total_triggers = oracle
             .total_triggers
             .checked_add(1)
-            .ok_or(KoshaiError::MathOverflow)?;
+            .ok_or(trezoError::MathOverflow)?;
         oracle.last_trigger_at = now;
         oracle.last_observed_rate_micros = oracle.rate_trigger_micros;
 
@@ -247,7 +247,7 @@ pub struct InitializeTreasury<'info> {
 pub struct InitializeDepartment<'info> {
     #[account(
         mut,
-        constraint = treasury_config.admin == authority.key() @ KoshaiError::UnauthorizedAdmin
+        constraint = treasury_config.admin == authority.key() @ trezoError::UnauthorizedAdmin
     )]
     pub treasury_config: Account<'info, TreasuryConfig>,
     #[account(mut)]
@@ -274,7 +274,7 @@ pub struct InitializeDepartment<'info> {
 #[derive(Accounts)]
 pub struct InitializeOracle<'info> {
     #[account(
-        constraint = treasury_config.admin == authority.key() @ KoshaiError::UnauthorizedAdmin
+        constraint = treasury_config.admin == authority.key() @ trezoError::UnauthorizedAdmin
     )]
     pub treasury_config: Account<'info, TreasuryConfig>,
     #[account(mut)]
@@ -314,16 +314,16 @@ pub struct ProposePayout<'info> {
         mut,
         seeds = [b"department", treasury_config.key().as_ref(), dept_account.dept_id.as_bytes()],
         bump = dept_account.bump,
-        constraint = dept_account.treasury_config == treasury_config.key() @ KoshaiError::TreasuryMismatch,
-        constraint = dept_account.is_active @ KoshaiError::DepartmentInactive
+        constraint = dept_account.treasury_config == treasury_config.key() @ trezoError::TreasuryMismatch,
+        constraint = dept_account.is_active @ trezoError::DepartmentInactive
     )]
     pub dept_account: Account<'info, DepartmentAccount>,
     #[account(
         mut,
         seeds = [b"agent", treasury_config.key().as_ref()],
         bump = agent_authority.bump,
-        constraint = agent_authority.treasury_config == treasury_config.key() @ KoshaiError::TreasuryMismatch,
-        constraint = agent_authority.agent_pubkey == proposer.key() @ KoshaiError::UnauthorizedAgent
+        constraint = agent_authority.treasury_config == treasury_config.key() @ trezoError::TreasuryMismatch,
+        constraint = agent_authority.agent_pubkey == proposer.key() @ trezoError::UnauthorizedAgent
     )]
     pub agent_authority: Account<'info, AgentAuthority>,
     #[account(mut)]
@@ -351,23 +351,23 @@ pub struct DepositYield<'info> {
     #[account(
         seeds = [b"department", treasury_config.key().as_ref(), dept_account.dept_id.as_bytes()],
         bump = dept_account.bump,
-        constraint = dept_account.treasury_config == treasury_config.key() @ KoshaiError::TreasuryMismatch,
-        constraint = dept_account.is_active @ KoshaiError::DepartmentInactive
+        constraint = dept_account.treasury_config == treasury_config.key() @ trezoError::TreasuryMismatch,
+        constraint = dept_account.is_active @ trezoError::DepartmentInactive
     )]
     pub dept_account: Account<'info, DepartmentAccount>,
     #[account(
         mut,
         seeds = [b"yield", dept_account.key().as_ref()],
         bump = yield_position.bump,
-        constraint = yield_position.treasury_config == treasury_config.key() @ KoshaiError::TreasuryMismatch,
-        constraint = yield_position.dept_pda == dept_account.key() @ KoshaiError::DepartmentMismatch
+        constraint = yield_position.treasury_config == treasury_config.key() @ trezoError::TreasuryMismatch,
+        constraint = yield_position.dept_pda == dept_account.key() @ trezoError::DepartmentMismatch
     )]
     pub yield_position: Account<'info, YieldPosition>,
     #[account(
         mut,
         seeds = [b"agent", treasury_config.key().as_ref()],
         bump = agent_authority.bump,
-        constraint = agent_authority.agent_pubkey == agent.key() @ KoshaiError::UnauthorizedAgent
+        constraint = agent_authority.agent_pubkey == agent.key() @ trezoError::UnauthorizedAgent
     )]
     pub agent_authority: Account<'info, AgentAuthority>,
     pub agent: Signer<'info>,
@@ -380,14 +380,14 @@ pub struct TriggerFiatConversion<'info> {
         mut,
         seeds = [b"oracle", treasury_config.key().as_ref()],
         bump = oracle_config.bump,
-        constraint = oracle_config.treasury_config == treasury_config.key() @ KoshaiError::TreasuryMismatch
+        constraint = oracle_config.treasury_config == treasury_config.key() @ trezoError::TreasuryMismatch
     )]
     pub oracle_config: Account<'info, OracleConfig>,
     #[account(
         mut,
         seeds = [b"agent", treasury_config.key().as_ref()],
         bump = agent_authority.bump,
-        constraint = agent_authority.agent_pubkey == agent.key() @ KoshaiError::UnauthorizedAgent
+        constraint = agent_authority.agent_pubkey == agent.key() @ trezoError::UnauthorizedAgent
     )]
     pub agent_authority: Account<'info, AgentAuthority>,
     pub agent: Signer<'info>,
@@ -517,7 +517,7 @@ impl ViewingKey {
 }
 
 #[error_code]
-pub enum KoshaiError {
+pub enum trezoError {
     #[msg("The provided string is too long for the allocated account.")]
     StringTooLong,
     #[msg("Only the treasury admin can perform this action.")]
@@ -541,7 +541,7 @@ pub enum KoshaiError {
 }
 
 fn assert_max_len(value: &str, max: usize) -> Result<()> {
-    require!(value.len() <= max, KoshaiError::StringTooLong);
+    require!(value.len() <= max, trezoError::StringTooLong);
     Ok(())
 }
 

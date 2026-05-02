@@ -5,7 +5,7 @@ export const mockTreasuryData = {
   admin: new PublicKey('11111111111111111111111111111111'),
   members: [new PublicKey('11111111111111111111111111111111')],
   totalBalance: 100_000_000_000,
-  companyId: 'koshai-test',
+  companyId: 'trezo-test',
   isPaused: false,
   multisigThreshold: 2,
 };
