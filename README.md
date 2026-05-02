@@ -1,159 +1,337 @@
-# Turborepo starter
+# Trezo AI — Treasury OS
 
-This Turborepo starter is maintained by the Turborepo core team.
+> The onchain CFO for modern SaaS companies.
 
-## Using this example
+Trezo AI is an AI-powered programmable treasury platform built on Solana. It autonomously manages department budgets, routes idle funds to yield, enforces spending rules at the token transfer level, and converts stablecoins to fiat — all with a full onchain audit trail and privacy-preserving payouts.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
+## Architecture
+
+### System Layers
+
+![System Layers](/apps/frontend/public/architecture/system-layers.png)
+
+### Data Flow
+
+![Data Flow](/apps/frontend/public/architecture/data-flow.png)
+
+---
+
+## What It Does
+
+Most companies manage treasury through spreadsheets, manual approvals, and disconnected banking tools. Trezo AI replaces that entire stack with a single onchain system.
+
+**The core loop:**
+
+```
+Invoice arrives → AI parses it → Multisig approves → Transfer hook enforces rules → Funds move
+                                                                 ↓
+                                           Idle funds auto-deposit to Kamino yield
+                                                                 ↓
+                                           Pyth oracle triggers fiat conversion via Dodo
 ```
 
-## What's inside?
+**Key features:**
 
-This Turborepo includes the following packages/apps:
+- **AI Invoice Processing** — Upload a PDF invoice. Groq LLM parses vendor, amount, category, and due date in under 10 seconds. RAG checks vendor history and flags anomalies before creating an onchain proposal.
+- **Programmable Spending Rules** — Token-2022 transfer hooks enforce rules on every transfer — max payout, daily limits, recipient allowlists, time window restrictions. Cannot be bypassed.
+- **Multisig Treasury** — Every payout requires M-of-N approval. The AI agent can propose but never execute alone.
+- **Auto-Yield** — Background job polls vault balances every 15 minutes. Idle USDC above threshold auto-deposits to Kamino.
+- **Fiat Conversion** — Pyth oracle watches USDC/USD rate. On trigger, emits onchain event and calls Dodo Payments API to wire funds to a target IBAN.
+- **Privacy-Preserving Payouts** — Umbra stealth addresses hide real recipients. Auditors get encrypted viewing keys — read-only, no spending authority.
+- **Full Audit Trail** — Every action writes to an immutable onchain AuditLog.
 
-### Apps and Packages
+---
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Current Status
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+| Area | Status |
+|------|--------|
+| `apps/backend` — routes, agent, jobs, services | ✅ Complete |
+| `apps/backend` — tests (unit + integration) | ✅ Complete |
+| `programs/trezo-core` — Anchor program | 🔨 In progress |
+| `apps/frontend` — dashboard UI | ⬜ Not started |
+| End-to-end devnet testing | ⬜ Blocked until program deploys |
 
-### Utilities
+**Known gaps:**
+- Frontend is still the default Next.js scaffold — no operator workflow yet.
+- The backend route modules are fully implemented but the default dev script still starts a health-only server. The fuller API in `apps/backend/src/routes/` needs to be promoted into the main entrypoint.
+- `Anchor.toml` is currently configured for localnet. Align to devnet before running full integration tests.
+- End-to-end devnet testing requires a deployed program ID and synced IDL.
 
-This Turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## Repo Structure
 
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+trezo-ai/
+├── apps/
+│   ├── backend/           # Express API + AI agent + background jobs
+│   │   └── src/
+│   │       ├── agent/     # invoice-parser, rag, proposal-builder, solana-client
+│   │       ├── jobs/      # yield-poller, oracle-watcher
+│   │       ├── routes/    # invoices, treasury, proposals, fiat, audit
+│   │       ├── services/  # anchor, helius, pyth, dodo
+│   │       └── utils/     # amount, pubkey, date, retry helpers
+│   └── frontend/          # Next.js 14 dashboard (in progress)
+├── packages/
+│   ├── ui/                # Shared UI components
+│   ├── types/             # Shared TypeScript types
+│   ├── eslint-config/
+│   └── typescript-config/
+├── programs/
+│   ├── trezo-core/        # Main Anchor program
+│   └── trezo-hook/        # Token-2022 transfer hook
+├── tests/
+│   ├── e2e/               # End-to-end tests
+│   └── fixtures/          # Test accounts and PDAs
+└── scripts/
+    ├── sync-idl.sh        # Copies generated IDL to frontend + backend
+    └── deploy.sh          # Deploys programs to devnet
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+## Getting Started
+
+### Prerequisites
+
+```
+node >= 20
+pnpm >= 9
+rust (stable)
+solana-cli >= 1.18
+anchor-cli == 0.30.x
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Install
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+git clone https://github.com/your-org/trezo-ai
+cd trezo-ai
+pnpm install
 ```
 
-Without global `turbo`:
+### Configure backend environment
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+cp apps/backend/.env.example apps/backend/.env
 ```
 
-### Develop
+**Required:**
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+SOLANA_RPC_URL=https://devnet.helius-rpc.com/?api-key=YOUR_KEY
+HELIUS_API_KEY=YOUR_KEY        # free at helius.dev
+PROGRAM_ID=YOUR_PROGRAM_ID     # from anchor deploy
+AGENT_KEYPAIR=[1,2,3...]       # from solana-keygen new
+GROQ_API_KEY=YOUR_KEY          # free at console.groq.com
 ```
 
-Without global `turbo`, use your package manager:
+**Optional:**
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+```bash
+PINECONE_API_KEY=              # vector search for RAG
+DODO_API_KEY=                  # fiat conversion tests
+FIAT_CONVERSION_AMOUNT_USDC=
+FIAT_TARGET_IBAN=
+FIAT_TARGET_CURRENCY=
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Generate an agent keypair:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```bash
+solana-keygen new --outfile agent-keypair.json
+cat agent-keypair.json
+# Paste the JSON array into AGENT_KEYPAIR in .env
 ```
 
-Without global `turbo`:
+### Build and deploy programs
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+anchor build
+anchor deploy --provider.cluster devnet
+bash scripts/sync-idl.sh
 ```
 
-### Remote Caching
+The backend expects the IDL at `apps/backend/src/idl/trezo_core.json`. Without it, program-backed flows fail gracefully with a warning — the server still starts.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Run locally
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+```bash
+# All apps in parallel
+pnpm dev
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+# Individual apps
+pnpm dev:backend    # http://localhost:4000
+pnpm dev:frontend   # http://localhost:3000
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
+## Backend API
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/health` | Health check |
+| POST | `/api/invoices/parse` | PDF → AI parse → return summary for review |
+| POST | `/api/invoices/confirm` | Confirmed invoice → propose_payout onchain |
+| GET | `/api/treasury/:companyId` | Treasury snapshot |
+| GET | `/api/treasury/:companyId/departments` | All departments |
+| GET | `/api/proposals/:companyId` | All proposals, filterable by status |
+| GET | `/api/proposals/:companyId/:pubkey` | Single proposal |
+| POST | `/api/fiat/convert` | Trigger fiat conversion via Dodo |
+| GET | `/api/fiat/status/:id` | Conversion status |
+| GET | `/api/audit/events` | Cached stealth payment events |
+| GET | `/api/audit/events/:ephemeralPubkey` | Single stealth event |
+
+---
+
+## Onchain Program
+
+### Current instructions (`programs/trezo-core`)
+
+```
+initialize_treasury       initialize_department     initialize_oracle
+register_viewing_key      propose_payout            deposit_yield
+trigger_fiat_conversion
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Full instruction set (in progress)
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
+```
+initialize_treasury       create_department         fund_department
+propose_payout            approve_payout            execute_payout
+batch_execute             create_spending_rule      configure_yield
+deposit_yield             withdraw_yield            configure_oracle
+trigger_fiat_conversion   register_viewing_key      set_agent_authority
+pause_treasury            unpause_treasury
 ```
 
-Without global `turbo`:
+### PDAs
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
+| Account | Seeds | Purpose |
+|---------|-------|---------|
+| `TreasuryConfig` | `[treasury, company_id]` | Global treasury state |
+| `DepartmentAccount` | `[department, treasury_pda, dept_id]` | Per-department budget |
+| `DeptVaultAuthority` | `[vault_auth, dept_pda]` | Vault token authority |
+| `SpendingRule` | `[rule, dept_pda, rule_index]` | Transfer hook rules |
+| `PayoutProposal` | `[proposal, treasury_pda, nonce]` | Payout proposal state |
+| `YieldPosition` | `[yield, dept_pda]` | Kamino yield position |
+| `OracleConfig` | `[oracle, treasury_pda]` | Pyth feed + rate trigger |
+| `AgentAuthority` | `[agent, treasury_pda]` | AI agent permissions |
+| `ViewingKeyRegistry` | `[viewing_key, treasury_pda, viewer]` | Auditor viewing keys |
+| `AuditLog` | `[audit, treasury_pda, index]` | Immutable action log |
+
+---
+
+## Running Tests
+
+```bash
+cd apps/backend
+pnpm test              # run all tests
+pnpm test:watch        # watch mode
+pnpm test:coverage     # with coverage report
 ```
 
-## Useful Links
+Test structure:
 
-Learn more about the power of Turborepo:
+```
+apps/backend/tests/
+├── setup.ts                       # Global env + mock setup
+├── mocks/
+│   ├── agent.mock.ts              # LLM-agnostic invoice parser mock
+│   ├── anchor.mock.ts             # Program + PDA stubs
+│   └── helius.mock.ts             # WebSocket + balance stubs
+├── unit/
+│   ├── utils.test.ts
+│   ├── invoice-parser.test.ts
+│   └── proposal-builder.test.ts
+└── integration/
+    ├── routes.invoices.test.ts
+    ├── routes.treasury.test.ts
+    ├── routes.proposals.test.ts
+    ├── routes.fiat.test.ts
+    └── routes.audit.test.ts
+```
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Anchor program tests:
+
+```bash
+anchor test                # runs on localnet
+cargo test -p trezo-core   # unit tests
+```
+
+---
+
+## Authentication
+
+No login, no signup, no JWT. Wallet connection is authentication.
+
+```
+connect wallet     → identifies user (pubkey)
+sign transaction   → proves authorization
+disconnect         → logs out
+```
+
+Role checks in the frontend are for UI gating only. Real enforcement is always onchain via Anchor program constraints.
+
+---
+
+## Contributing
+
+```bash
+# Always branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b feat/your-feature
+
+# Commit format
+feat:      new feature
+fix:       bug fix
+chore:     deps, config, scripts
+test:      adding or fixing tests
+docs:      README, comments
+
+# PR into develop, not main
+# develop → main at end of each weekly milestone
+```
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Onchain program | Anchor v0.30, Rust |
+| Transfer hook | Token-2022, Anchor v0.30 |
+| Privacy | Umbra stealth addresses |
+| Yield | Kamino CPI |
+| Oracle | Pyth Network |
+| Fiat | Dodo Payments API |
+| AI / LLM | Groq (llama-3.1-8b-instant) |
+| Vector DB | Pinecone (optional, pseudo-embed fallback) |
+| Backend | Node.js 20, TypeScript, Express |
+| Frontend | Next.js 14, Tailwind CSS, shadcn/ui |
+| Wallet | Solana Wallet Adapter (Phantom, Backpack) |
+| RPC | Helius devnet |
+| Monorepo | Turborepo + pnpm workspaces |
+
+---
+
+## Roadmap
+
+- [ ] Complete Anchor program — approve_payout, execute_payout, spending rules
+- [ ] Frontend operator workflow — invoice to proposal to payout
+- [ ] Full devnet integration test loop
+- [ ] Transfer hook enforcement on devnet USDC-2022 mint
+- [ ] Mainnet deployment (post-audit)
+- [ ] MagicBlock Private Ephemeral Rollups
+- [ ] Multi-LLM support (Anthropic, OpenAI alongside Groq)
+- [ ] Multi-company isolation
+- [ ] ZK proof amount hiding
+
+---
+
+*Trezo AI · Treasury OS · Anchor v0.30 · Token-2022 · Groq · Kamino · Pyth · Dodo Payments*

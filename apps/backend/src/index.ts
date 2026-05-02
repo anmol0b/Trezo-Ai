@@ -35,7 +35,7 @@ if (config.isDev){
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
-    service: 'koshai-backend',
+    service: 'trezo-backend',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     env: config.nodeEnv,
