@@ -9,7 +9,7 @@ export function HeroSection() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-6 sm:px-8 sm:py-8">
         <header className="flex justify-end">
-          <FollowOnXButton href="https://x.com" />
+          <FollowOnXButton href="https://x.com/trezo_ai" />
         </header>
 
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
