@@ -25,7 +25,7 @@ const envSchema = z.object({
 
   // Vector DB
   PINECONE_API_KEY: z.string().optional(),
-  PINECONE_INDEX: z.string().default('koshai-invoices'),
+  PINECONE_INDEX: z.string().default('trezo-invoices'),
 
   // Pyth
   PYTH_PROGRAM_ID: z

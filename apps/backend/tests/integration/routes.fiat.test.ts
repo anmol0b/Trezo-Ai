@@ -20,7 +20,7 @@ vi.mock('../../src/services/dodo', () => ({
     id: 'dodo-test-123',
     status: 'completed',
   }),
-  generateIdempotencyKey: vi.fn().mockReturnValue('koshai-test-key-2024-01-01'),
+  generateIdempotencyKey: vi.fn().mockReturnValue('trezo-test-key-2024-01-01'),
 }));
 
 let app: express.Express;

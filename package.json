@@ -1,5 +1,5 @@
 {
-  "name": "kosh-ai",
+  "name": "trezo-ai",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",

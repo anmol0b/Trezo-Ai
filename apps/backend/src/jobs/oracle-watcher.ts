@@ -35,7 +35,7 @@ async function handleRateUpdate(price: PriceData): Promise<void> {
 
   try {
     // Step 1 — emit onchain event for audit trail
-    const companyId = process.env.COMPANY_ID ?? 'koshai-demo';
+    const companyId = process.env.COMPANY_ID ?? 'trezo-demo';
     const onchainResult = await submitTriggerFiatConversion(companyId);
 
     if (!onchainResult.success) {

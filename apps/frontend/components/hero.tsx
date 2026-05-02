@@ -118,7 +118,7 @@ export default function Hero() {
               <span className="w-3 h-3 rounded-full bg-[#F59E0B]/70" />
               <span className="w-3 h-3 rounded-full bg-[#22C55E]/70" />
               <span className="flex-1 mx-4 text-center text-xs text-[#94A3B8] font-mono">
-                app.koshai.xyz/dashboard
+                app.trezoai.com/dashboard
               </span>
             </div> */}
             {/* Mock dashboard */}

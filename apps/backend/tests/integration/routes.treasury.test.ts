@@ -15,7 +15,7 @@ beforeAll(async () => {
 describe('GET /api/treasury/:companyId', () => {
   it('returns treasury data for valid companyId', async () => {
     const res = await request(app)
-      .get('/api/treasury/koshai-test');
+      .get('/api/treasury/trezo-test');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -27,7 +27,7 @@ describe('GET /api/treasury/:companyId', () => {
 describe('GET /api/treasury/:companyId/departments', () => {
   it('returns departments list', async () => {
     const res = await request(app)
-      .get('/api/treasury/koshai-test/departments');
+      .get('/api/treasury/trezo-test/departments');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

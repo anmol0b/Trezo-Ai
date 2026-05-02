@@ -1,12 +1,12 @@
 [package]
-name = "koshai-core"
+name = "trezo-core"
 version = "0.1.0"
-description = "Kosh AI core treasury automation program"
+description = "trezo AI core treasury automation program"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "koshai_core"
+name = "treo_core"
 
 [features]
 no-entrypoint = []

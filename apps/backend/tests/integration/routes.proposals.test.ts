@@ -15,7 +15,7 @@ beforeAll(async () => {
 describe('GET /api/proposals/:companyId', () => {
   it('returns proposals list', async () => {
     const res = await request(app)
-      .get('/api/proposals/koshai-test');
+      .get('/api/proposals/trezo-test');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -25,7 +25,7 @@ describe('GET /api/proposals/:companyId', () => {
 
   it('accepts status filter query param', async () => {
     const res = await request(app)
-      .get('/api/proposals/koshai-test?status=pending');
+      .get('/api/proposals/trezo-test?status=pending');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -35,7 +35,7 @@ describe('GET /api/proposals/:companyId', () => {
 describe('GET /api/proposals/:companyId/:proposalPubkey', () => {
   it('returns single proposal', async () => {
     const res = await request(app)
-      .get('/api/proposals/koshai-test/11111111111111111111111111111111');
+      .get('/api/proposals/trezo-test/11111111111111111111111111111111');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
