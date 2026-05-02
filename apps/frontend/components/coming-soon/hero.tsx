@@ -20,12 +20,12 @@ export function HeroSection() {
           <ComingSoonBadge text="Coming Soon • Waitlist Open" />
 
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight text-neutral-900 sm:mt-8 sm:text-6xl md:text-7xl">
-            Discover. Allocate. Compound.
+            Your Treasury. Automated.
           </h1>
 
           <p className="mt-5 max-w-2xl text-balance text-sm leading-7 text-neutral-600 sm:mt-6 sm:text-lg">
-            Access the best onchain yields across vaults, stables, LSTs, and
-            curated strategies, all in one place.
+            AI parses invoices. Your team approves.
+            Solana executes. Full audit trail.
           </p>
 
           <div className="mt-8 w-full max-w-xl sm:mt-10">
