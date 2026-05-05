@@ -1,0 +1,1101 @@
+{
+  "address": "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G",
+  "metadata": {
+    "name": "trezo_core",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "trezo AI core treasury automation program"
+  },
+  "instructions": [
+    {
+      "name": "deposit_yield",
+      "discriminator": [
+        204,
+        126,
+        164,
+        36,
+        57,
+        174,
+        68,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "dept_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "account",
+                "path": "dept_account.dept_id",
+                "account": "DepartmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "yield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  105,
+                  101,
+                  108,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "dept_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_department",
+      "discriminator": [
+        165,
+        149,
+        201,
+        175,
+        160,
+        43,
+        109,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "dept_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "arg",
+                "path": "dept_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "yield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  105,
+                  101,
+                  108,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "dept_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "dept_id",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "dept_vault_ata",
+          "type": "pubkey"
+        },
+        {
+          "name": "idle_threshold",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_oracle",
+      "discriminator": [
+        144,
+        223,
+        131,
+        120,
+        196,
+        253,
+        181,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "rate_trigger_micros",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_treasury",
+      "discriminator": [
+        124,
+        186,
+        211,
+        195,
+        85,
+        165,
+        129,
+        166
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "company_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "company_id",
+          "type": "string"
+        },
+        {
+          "name": "agent_pubkey",
+          "type": "pubkey"
+        },
+        {
+          "name": "base_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "propose_payout",
+      "discriminator": [
+        200,
+        59,
+        138,
+        55,
+        239,
+        125,
+        31,
+        165
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config",
+          "writable": true
+        },
+        {
+          "name": "dept_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "account",
+                "path": "dept_account.dept_id",
+                "account": "DepartmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "account",
+                "path": "agent_authority.proposal_nonce",
+                "account": "AgentAuthority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "category",
+          "type": "u8"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        },
+        {
+          "name": "expiry_timestamp",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "register_viewing_key",
+      "discriminator": [
+        11,
+        78,
+        27,
+        120,
+        131,
+        83,
+        119,
+        62
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "viewer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "viewing_key",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  105,
+                  101,
+                  119,
+                  105,
+                  110,
+                  103,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "account",
+                "path": "viewer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "encrypted_key",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "trigger_fiat_conversion",
+      "discriminator": [
+        241,
+        253,
+        19,
+        210,
+        31,
+        185,
+        50,
+        163
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "signer": true
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AgentAuthority",
+      "discriminator": [
+        161,
+        225,
+        83,
+        39,
+        179,
+        98,
+        31,
+        118
+      ]
+    },
+    {
+      "name": "DepartmentAccount",
+      "discriminator": [
+        41,
+        117,
+        153,
+        195,
+        164,
+        226,
+        198,
+        53
+      ]
+    },
+    {
+      "name": "OracleConfig",
+      "discriminator": [
+        133,
+        196,
+        152,
+        50,
+        27,
+        21,
+        145,
+        254
+      ]
+    },
+    {
+      "name": "PayoutProposal",
+      "discriminator": [
+        56,
+        243,
+        51,
+        181,
+        13,
+        175,
+        31,
+        185
+      ]
+    },
+    {
+      "name": "TreasuryConfig",
+      "discriminator": [
+        124,
+        54,
+        212,
+        227,
+        213,
+        189,
+        168,
+        41
+      ]
+    },
+    {
+      "name": "ViewingKey",
+      "discriminator": [
+        143,
+        64,
+        81,
+        211,
+        34,
+        230,
+        17,
+        127
+      ]
+    },
+    {
+      "name": "YieldPosition",
+      "discriminator": [
+        77,
+        217,
+        160,
+        86,
+        158,
+        186,
+        248,
+        193
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "StringTooLong",
+      "msg": "The provided string is too long for the allocated account."
+    },
+    {
+      "code": 6001,
+      "name": "UnauthorizedAdmin",
+      "msg": "Only the treasury admin can perform this action."
+    },
+    {
+      "code": 6002,
+      "name": "UnauthorizedAgent",
+      "msg": "Only the configured agent can perform this action."
+    },
+    {
+      "code": 6003,
+      "name": "TreasuryMismatch",
+      "msg": "The provided account does not belong to this treasury."
+    },
+    {
+      "code": 6004,
+      "name": "DepartmentMismatch",
+      "msg": "The provided department does not match the yield position."
+    },
+    {
+      "code": 6005,
+      "name": "DepartmentInactive",
+      "msg": "This department is inactive."
+    },
+    {
+      "code": 6006,
+      "name": "YieldInactive",
+      "msg": "This yield position is inactive."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Amount must be greater than zero."
+    },
+    {
+      "code": 6008,
+      "name": "InvalidExpiry",
+      "msg": "Proposal expiry must be in the future."
+    },
+    {
+      "code": 6009,
+      "name": "MathOverflow",
+      "msg": "Math overflow."
+    },
+    {
+      "code": 6010,
+      "name": "TreasuryPaused",
+      "msg": "Treasury is currently paused."
+    },
+    {
+      "code": 6011,
+      "name": "ProposalExpired",
+      "msg": "Proposal has expired."
+    },
+    {
+      "code": 6012,
+      "name": "ProposalNotPending",
+      "msg": "Proposal is not in pending status."
+    },
+    {
+      "code": 6013,
+      "name": "InsufficientApprovals",
+      "msg": "Insufficient approvals to execute payout."
+    },
+    {
+      "code": 6014,
+      "name": "AlreadyApproved",
+      "msg": "This signer has already approved this proposal."
+    },
+    {
+      "code": 6015,
+      "name": "NotAMember",
+      "msg": "Signer is not a multisig member."
+    },
+    {
+      "code": 6016,
+      "name": "AllowlistFull",
+      "msg": "Allowlist is full — max 32 entries."
+    },
+    {
+      "code": 6017,
+      "name": "MemberLimitReached",
+      "msg": "Member limit reached — max 8 members."
+    },
+    {
+      "code": 6018,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds in department vault."
+    }
+  ],
+  "types": [
+    {
+      "name": "AgentAuthority",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal_nonce",
+            "type": "u64"
+          },
+          {
+            "name": "last_action_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepartmentAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "dept_id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "dept_vault_ata",
+            "type": "pubkey"
+          },
+          {
+            "name": "idle_threshold",
+            "type": "u64"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "rate_trigger_micros",
+            "type": "u64"
+          },
+          {
+            "name": "last_observed_rate_micros",
+            "type": "u64"
+          },
+          {
+            "name": "last_trigger_at",
+            "type": "i64"
+          },
+          {
+            "name": "total_triggers",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PayoutProposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "dept_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "amount_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "category",
+            "type": "u8"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "string"
+          },
+          {
+            "name": "expiry_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          },
+          {
+            "name": "approval_bitmap",
+            "type": "u64"
+          },
+          {
+            "name": "approvals_count",
+            "type": "u8"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "company_id",
+            "type": "string"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "department_count",
+            "type": "u16"
+          },
+          {
+            "name": "proposal_count",
+            "type": "u64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "is_paused",
+            "type": "bool"
+          },
+          {
+            "name": "multisig_threshold",
+            "type": "u8"
+          },
+          {
+            "name": "members",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ViewingKey",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "viewer",
+            "type": "pubkey"
+          },
+          {
+            "name": "encrypted_key",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "dept_pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "company_id",
+            "type": "string"
+          },
+          {
+            "name": "dept_vault_ata",
+            "type": "pubkey"
+          },
+          {
+            "name": "idle_threshold",
+            "type": "u64"
+          },
+          {
+            "name": "total_deposited",
+            "type": "u64"
+          },
+          {
+            "name": "last_deposit_at",
+            "type": "i64"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
