@@ -38,3 +38,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# agentic grant files
+superteam-agentic-engineering-grant-draft.md
+codex-session.jsonl
