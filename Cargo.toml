@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "programs/trezo-core",
+  "programs/trezo-hook",
 ]
 resolver = "2"
 
