@@ -9,7 +9,7 @@ trezo_hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
 trezo_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
 
 [programs.localnet]
-trezo-hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
+trezo_hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
 trezo_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
 
 [registry]
