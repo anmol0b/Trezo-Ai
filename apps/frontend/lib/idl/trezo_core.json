@@ -8,6 +8,213 @@
   },
   "instructions": [
     {
+      "name": "add_multisig_member",
+      "discriminator": [
+        110,
+        222,
+        159,
+        186,
+        6,
+        20,
+        0,
+        211
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "new_member",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "add_to_allowlist",
+      "discriminator": [
+        149,
+        143,
+        78,
+        134,
+        241,
+        244,
+        7,
+        56
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "spending_rule",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "spending_rule.dept_pda",
+                "account": "SpendingRule"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "approve_payout",
+      "discriminator": [
+        188,
+        233,
+        111,
+        145,
+        229,
+        102,
+        28,
+        145
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "approver",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_proposal",
+      "discriminator": [
+        106,
+        74,
+        128,
+        146,
+        19,
+        65,
+        39,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_spending_rule",
+      "discriminator": [
+        1,
+        150,
+        102,
+        203,
+        122,
+        160,
+        61,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "dept_account"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "spending_rule",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "dept_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "max_single_payout",
+          "type": "u64"
+        },
+        {
+          "name": "daily_limit",
+          "type": "u64"
+        },
+        {
+          "name": "window_start",
+          "type": "u8"
+        },
+        {
+          "name": "window_end",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "deposit_yield",
       "discriminator": [
         204,
@@ -100,6 +307,33 @@
         },
         {
           "name": "agent",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "execute_payout",
+      "discriminator": [
+        12,
+        35,
+        52,
+        7,
+        95,
+        19,
+        169,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "executor",
           "signer": true
         }
       ],
@@ -346,6 +580,30 @@
       ]
     },
     {
+      "name": "pause_treasury",
+      "discriminator": [
+        51,
+        151,
+        231,
+        204,
+        3,
+        101,
+        24,
+        107
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "propose_payout",
       "discriminator": [
         200,
@@ -544,6 +802,89 @@
       ]
     },
     {
+      "name": "remove_from_allowlist",
+      "discriminator": [
+        45,
+        46,
+        214,
+        56,
+        189,
+        77,
+        242,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "spending_rule",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "spending_rule.dept_pda",
+                "account": "SpendingRule"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "revoke_viewing_key",
+      "discriminator": [
+        211,
+        181,
+        33,
+        3,
+        161,
+        82,
+        62,
+        12
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "viewing_key",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "trigger_fiat_conversion",
       "discriminator": [
         241,
@@ -610,6 +951,195 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "unpause_treasury",
+      "discriminator": [
+        184,
+        101,
+        205,
+        231,
+        236,
+        105,
+        181,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_spending_rule",
+      "discriminator": [
+        27,
+        153,
+        218,
+        90,
+        58,
+        133,
+        211,
+        164
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "spending_rule",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "spending_rule.dept_pda",
+                "account": "SpendingRule"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "max_single_payout",
+          "type": "u64"
+        },
+        {
+          "name": "daily_limit",
+          "type": "u64"
+        },
+        {
+          "name": "window_start",
+          "type": "u8"
+        },
+        {
+          "name": "window_end",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_yield",
+      "discriminator": [
+        62,
+        9,
+        132,
+        32,
+        96,
+        57,
+        101,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "treasury_config"
+        },
+        {
+          "name": "dept_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              },
+              {
+                "kind": "account",
+                "path": "dept_account.dept_id",
+                "account": "DepartmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "yield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  105,
+                  101,
+                  108,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "dept_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "treasury_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -663,6 +1193,19 @@
         175,
         31,
         185
+      ]
+    },
+    {
+      "name": "SpendingRule",
+      "discriminator": [
+        237,
+        58,
+        119,
+        245,
+        234,
+        221,
+        15,
+        232
       ]
     },
     {
@@ -963,6 +1506,57 @@
           {
             "name": "updated_at",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpendingRule",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "dept_pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "max_single_payout",
+            "type": "u64"
+          },
+          {
+            "name": "daily_limit",
+            "type": "u64"
+          },
+          {
+            "name": "allowlist_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "allowlist",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "window_start",
+            "type": "u8"
+          },
+          {
+            "name": "window_end",
+            "type": "u8"
           },
           {
             "name": "bump",

@@ -9,7 +9,7 @@ trezo_hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
 trezo_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
 
 [programs.localnet]
-trezo-hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
+trezo_hook = "8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
 trezo_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
 
 [registry]
@@ -20,4 +20,4 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "cargo test -p trezo-core"
+test = "pnpm exec ts-mocha -p ./tsconfig.json -t 1000000 'tests/**/*.ts'"
