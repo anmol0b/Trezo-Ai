@@ -59,7 +59,7 @@ pub fn handle_execute_hook(ctx: Context<ExecuteHook>, amount: u64) -> Result<()>
     let spending_rule_info = &ctx.accounts.spending_rule;
     require_keys_eq!(
         *spending_rule_info.owner,
-        treo_core::ID,
+        trezo_core::ID,
         HookError::InvalidSpendingRule
     );
 
@@ -152,7 +152,7 @@ pub struct ExecuteHook<'info> {
     #[account(
         seeds = [b"rule", authority.key().as_ref()],
         bump,
-        seeds::program = treo_core::ID,
+        seeds::program = trezo_core::ID,
     )]
     pub spending_rule: AccountInfo<'info>,
 }
