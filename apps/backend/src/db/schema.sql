@@ -1,6 +1,30 @@
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
+-- ─── Companies ────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS companies (
+  id            TEXT PRIMARY KEY,                    -- e.g. 'acme-corp', 'trezo-demo'
+  name          TEXT NOT NULL,
+  logo_uri      TEXT,
+  plan          TEXT NOT NULL DEFAULT 'free',        -- free | pro | enterprise
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ─── Users (wallet-based auth) ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  wallet_address  TEXT NOT NULL UNIQUE,              -- Solana pubkey (base58)
+  company_id      TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  role            TEXT NOT NULL DEFAULT 'member',
+  display_name    TEXT,
+  avatar_uri      TEXT,
+  last_seen_at    TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT users_role_check
+    CHECK (role IN ('owner', 'admin', 'member', 'accountant'))
+);
+
+
 -- ─── Invoices table ──────────────────────────────────────────────────────────
 -- Stores every parsed invoice with its embedding for RAG similarity search
 CREATE TABLE IF NOT EXISTS invoices (
@@ -66,6 +90,12 @@ CREATE TABLE IF NOT EXISTS fiat_conversions (
 );
 
 -- ─── Indexes ──────────────────────────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_users_company
+  ON users(company_id);
+
+CREATE INDEX IF NOT EXISTS idx_users_wallet
+  ON users(wallet_address);
+
 CREATE INDEX IF NOT EXISTS idx_invoices_vendor
   ON invoices(vendor, company_id);
 
@@ -82,6 +112,10 @@ CREATE INDEX IF NOT EXISTS idx_audit_events_company
 CREATE INDEX IF NOT EXISTS idx_vendor_history_company
   ON vendor_history(company_id, vendor);
 
+-- ─── RLS ──────────────────────────────────────────────────────────────────────
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
 -- ─── Auto-update updated_at ───────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
@@ -91,6 +125,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS invoices_updated_at ON invoices;
 CREATE TRIGGER invoices_updated_at
   BEFORE UPDATE ON invoices
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
