@@ -14,34 +14,15 @@ async function migrate(): Promise<void> {
   const schemaPath = join(__dirname, 'schema.sql');
   const schema = readFileSync(schemaPath, 'utf-8');
 
-  // Split by statement and run each one
-  const statements = schema
-    .split(/;(?=(?:[^$]*\$\$[^$]*\$\$)*[^$]*$)/ms)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  console.log(`📋 Running ${statements.length} SQL statements...\n`);
-
-  for (const statement of statements) {
-    try {
-      await db.query(statement);
-      // Print first line of each statement as progress
-      const firstLine = statement.split('\n').find((l) => l.trim() && !l.startsWith('--'));
-      if (firstLine) console.log(`  ✅ ${firstLine.trim().slice(0, 60)}`);
-    } catch (err: any) {
-      // Skip "already exists" errors — idempotent migrations
-      if (err.message?.includes('already exists')) {
-        console.log(`  ⏭️  Already exists — skipping`);
-        continue;
-      }
-      console.error(`  ❌ Failed: ${err.message}`);
-      console.error(`     Statement: ${statement.slice(0, 100)}`);
-      throw err;
-    }
+  try {
+    await db.query(schema);
+    console.log('✅ Migration complete\n');
+  } catch (err: any) {
+    console.error('❌ Migration failed:', err.message);
+    throw err;
+  } finally {
+    await closeDb();
   }
-
-  console.log('\n✅ Migration complete\n');
-  await closeDb();
 }
 
 migrate().catch((err) => {
