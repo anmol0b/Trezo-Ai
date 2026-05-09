@@ -38,6 +38,49 @@ function pseudoEmbed(text: string): number[] {
   return vec.map((v: number) => v / norm);
 }
 
+// ─── Seed companies & users ───────────────────────────────────────────────────
+
+const COMPANIES = [
+  { id: 'trezo-demo',  name: 'Trezo Demo Corp' },
+  { id: 'acme-corp',   name: 'Acme Inc.' },
+  { id: 'solana-labs', name: 'Solana Labs' },
+];
+
+const USERS = [
+  // trezo-demo
+  { wallet: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', company_id: 'trezo-demo',  role: 'owner',       display_name: 'Alice' },
+  { wallet: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM', company_id: 'trezo-demo',  role: 'admin',       display_name: 'Bob' },
+  { wallet: 'DRpbCBMxVnDK7maPGv3YRELD8tnfvbCbKvgHGnGxKnNt', company_id: 'trezo-demo',  role: 'accountant',  display_name: 'Carol' },
+  { wallet: 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH', company_id: 'trezo-demo',  role: 'member',      display_name: 'Dave' },
+  // acme-corp
+  { wallet: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe8bXo', company_id: 'acme-corp',   role: 'owner',       display_name: 'Eve' },
+  { wallet: 'So11111111111111111111111111111111111111112',   company_id: 'acme-corp',   role: 'member',      display_name: 'Frank' },
+  // solana-labs
+  { wallet: 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr', company_id: 'solana-labs', role: 'owner',       display_name: 'Grace' },
+];
+
+async function seedCompaniesAndUsers(): Promise<void> {
+  console.log('🏢 Seeding companies and users...');
+
+  for (const company of COMPANIES) {
+    await db.query(
+      `INSERT INTO companies (id, name) VALUES ($1, $2) ON CONFLICT (id) DO NOTHING`,
+      [company.id, company.name]
+    );
+    console.log(`  ✅ Company: ${company.name}`);
+  }
+
+  for (const user of USERS) {
+    await db.query(
+      `INSERT INTO users (wallet_address, company_id, role, display_name)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (wallet_address) DO NOTHING`,
+      [user.wallet, user.company_id, user.role, user.display_name]
+    );
+    console.log(`  ✅ User: ${user.display_name} (${user.role}) @ ${user.company_id}`);
+  }
+}
+
 // ─── Seed invoices ────────────────────────────────────────────────────────────
 
 async function seedInvoices(): Promise<void> {
