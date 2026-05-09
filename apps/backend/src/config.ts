@@ -27,6 +27,8 @@ const envSchema = z.object({
   PINECONE_API_KEY: z.string().optional(),
   PINECONE_INDEX: z.string().default('trezo-invoices'),
 
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+
   // Pyth
   PYTH_PROGRAM_ID: z
     .string()
@@ -79,6 +81,10 @@ export const config = {
   pinecone: {
     apiKey: parsed.data.PINECONE_API_KEY,
     index: parsed.data.PINECONE_INDEX,
+  },
+  // Add to config object:
+  database: {
+    url: parsed.data.DATABASE_URL,
   },
 
   pyth: {
