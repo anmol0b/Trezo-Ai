@@ -13,6 +13,7 @@ const envSchema = z.object({
   SOLANA_RPC_URL: z.string().min(1, 'SOLANA_RPC_URL is required'),
   AGENT_KEYPAIR: z.string().min(1, 'AGENT_KEYPAIR is required'),
   PROGRAM_ID: z.string().min(1, 'PROGRAM_ID is required'),
+  HOOK_PROGRAM_ID: z.string().min(1, 'HOOK_PROGRAM_ID is required'),
 
   // Helius
   HELIUS_API_KEY: z.string().min(1, 'HELIUS_API_KEY is required'),
@@ -23,10 +24,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
 
-  // Vector DB
-  PINECONE_API_KEY: z.string().optional(),
-  PINECONE_INDEX: z.string().default('trezo-invoices'),
-
+  // DB 
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   // Pyth
@@ -65,6 +63,7 @@ export const config = {
     rpcUrl: parsed.data.SOLANA_RPC_URL,
     agentKeypair: parsed.data.AGENT_KEYPAIR,
     programId: parsed.data.PROGRAM_ID,
+    hookProgramId: parsed.data.HOOK_PROGRAM_ID,
   },
 
   helius: {
@@ -78,11 +77,6 @@ export const config = {
     anthropicApiKey: parsed.data.ANTHROPIC_API_KEY,
   },
 
-  pinecone: {
-    apiKey: parsed.data.PINECONE_API_KEY,
-    index: parsed.data.PINECONE_INDEX,
-  },
-  // Add to config object:
   database: {
     url: parsed.data.DATABASE_URL,
   },

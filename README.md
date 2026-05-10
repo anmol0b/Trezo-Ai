@@ -132,7 +132,6 @@ GROQ_API_KEY=YOUR_KEY          # free at console.groq.com
 **Optional:**
 
 ```bash
-PINECONE_API_KEY=              # vector search for RAG
 DODO_API_KEY=                  # fiat conversion tests
 FIAT_CONVERSION_AMOUNT_USDC=
 FIAT_TARGET_IBAN=
