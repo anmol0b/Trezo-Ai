@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
-    "@pinecone-database/pinecone": "^7.2.0",
     "@pythnetwork/client": "^2.22.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",

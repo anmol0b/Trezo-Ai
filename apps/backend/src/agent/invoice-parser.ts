@@ -2,6 +2,7 @@ import Groq from 'groq-sdk';
 import { z } from 'zod';
 import { config } from '../config';
 import { INVOICE_CATEGORIES, isValidCategory, InvoiceCategory } from '../utils';
+export function _resetGroqClient(): void { _groq = null; }
 
 // Output schema
 

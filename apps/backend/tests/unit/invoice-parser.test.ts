@@ -1,6 +1,37 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import '../mocks/agent.mock';
-import { parseInvoice } from '../../src/agent/invoice-parser';
+
+vi.mock('groq-sdk', () => {
+  const mockCreate = vi.fn().mockResolvedValue({
+    choices: [{
+      message: {
+        content: JSON.stringify({
+          vendor: 'Vercel Inc.',
+          amount: 25,
+          currency: 'USD',
+          amountUsdc: 25,
+          dueDate: '2024-03-30',
+          category: 'infrastructure',
+          description: 'Pro Plan Hosting for March 2024',
+          invoiceNumber: 'INV-2024-0392',
+          confidence: 0.95,
+          flags: [],
+        }),
+      },
+    }],
+  });
+
+  const MockGroq = vi.fn().mockImplementation(function() {
+    return { chat: { completions: { create: mockCreate } } };
+  });
+
+  return { default: MockGroq };
+});  // ← this was missing
+
+import { parseInvoice, _resetGroqClient } from '../../src/agent/invoice-parser';
+
+beforeEach(() => {
+  _resetGroqClient();
+});
 
 describe('parseInvoice', () => {
   const validInvoiceText = `
@@ -14,7 +45,6 @@ describe('parseInvoice', () => {
 
   it('parses a valid invoice and returns structured data', async () => {
     const result = await parseInvoice(validInvoiceText);
-
     expect(result.vendor).toBe('Vercel Inc.');
     expect(result.amount).toBe(25);
     expect(result.currency).toBe('USD');
@@ -47,21 +77,21 @@ describe('parseInvoice', () => {
 
   it('handles model returning markdown fences gracefully', async () => {
     const { default: Groq } = await import('groq-sdk');
-    const mockGroq = vi.mocked(Groq);
-    mockGroq.mockImplementationOnce(() => ({
-      chat: {
-        completions: {
-          create: vi.fn().mockResolvedValue({
-            choices: [{
-              message: {
-                content: '```json\n{"vendor":"Test","amount":100,"currency":"USD","amountUsdc":100,"dueDate":"2024-03-30","category":"software","description":"Test","confidence":0.9,"flags":[]}\n```',
-              },
-            }],
-          }),
+    vi.mocked(Groq).mockImplementationOnce(function() {
+      return {
+        chat: {
+          completions: {
+            create: vi.fn().mockResolvedValue({
+              choices: [{
+                message: {
+                  content: '```json\n{"vendor":"Test","amount":100,"currency":"USD","amountUsdc":100,"dueDate":"2024-03-30","category":"software","description":"Test","confidence":0.9,"flags":[]}\n```',
+                },
+              }],
+            }),
+          },
         },
-      },
-    }) as any);
-
+      } as any;
+    });
     const result = await parseInvoice(validInvoiceText);
     expect(result.vendor).toBeDefined();
   });
