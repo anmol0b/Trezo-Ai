@@ -11,7 +11,7 @@ import {
 } from "../../components/ui/resizable-navbar";
 import { useState } from "react";
 import ThemeToggle from "../themeToggle";
-import WalletAuthButton from "../walletAuthButton";
+// import WalletAuthButton from "../walletAuthButton";
 
 export function NavbarDemo() {
   const navItems = [
@@ -40,7 +40,7 @@ export function NavbarDemo() {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             <ThemeToggle className="theme-border theme-text rounded-xl border px-4 py-2" />
-            <WalletAuthButton />
+            {/* <WalletAuthButton /> */}
           </div>
         </NavBody>
 
@@ -70,7 +70,7 @@ export function NavbarDemo() {
             <div className="flex w-full flex-col gap-4">
               <ThemeToggle className="theme-border theme-text w-full rounded-xl border px-4 py-2" />
               <div onClick={() => setIsMobileMenuOpen(false)}>
-                <WalletAuthButton className="w-full" />
+                {/* <WalletAuthButton className="w-full" /> */}
               </div>
             </div>
           </MobileNavMenu>
