@@ -7,7 +7,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G");
+declare_id!("47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn");
 
 #[program]
 pub mod trezo_core {
