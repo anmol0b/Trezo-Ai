@@ -2,20 +2,9 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { SlideUpText } from "./ui/split";
-import LogosCarousel from "./ui/logoCou";
+import { SlideUpText } from "../ui/split";
+import LogosCarousel from "../ui/logoCou";
 import Image from "next/image";
-
-const integrations = [
-  { name: "Phantom", icon: "👻" },
-  { name: "Backpack", icon: "🎒" },
-  { name: "Solana", icon: "◎" },
-  { name: "Kamino", icon: "🌿" },
-  { name: "Umbra", icon: "🕶" },
-  { name: "Pyth", icon: "🐍" },
-  { name: "Helius", icon: "☀️" },
-  { name: "Anchor", icon: "⚓" },
-];
 
 const logos = [
   { src: "/logos/vercel.svg", alt: "Vercel logo" },
@@ -34,13 +23,6 @@ const logos = [
   { src: "/logos/tesla.svg", alt: "Tesla logo" },
   { src: "/logos/opensea.svg", alt: "OpenSea logo" },
   { src: "/logos/cursor.svg", alt: "Cursor logo" },
-];
-
-const stats = [
-  { value: "$24M+", label: "Treasury volume managed" },
-  { value: "3.2s", label: "Avg. invoice parse time" },
-  { value: "99.9%", label: "Uptime SLA" },
-  { value: "140+", label: "Teams onboarded" },
 ];
 
 export default function SocialProof() {

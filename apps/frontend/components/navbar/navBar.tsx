@@ -5,13 +5,13 @@ import {
   NavItems,
   MobileNav,
   NavbarLogo,
-  NavbarButton,
   MobileNavHeader,
   MobileNavToggle,
   MobileNavMenu,
-} from "../components/ui/resizable-navbar";
+} from "../../components/ui/resizable-navbar";
 import { useState } from "react";
-import ThemeToggle from "./themeToggle";
+import ThemeToggle from "../themeToggle";
+// import WalletAuthButton from "../walletAuthButton";
 
 export function NavbarDemo() {
   const navItems = [
@@ -40,12 +40,7 @@ export function NavbarDemo() {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             <ThemeToggle className="theme-border theme-text rounded-xl border px-4 py-2" />
-            <NavbarButton
-              variant="secondary"
-              className="theme-border theme-text rounded-xl border px-4 py-2"
-            >
-              Wallet Connect
-            </NavbarButton>
+            {/* <WalletAuthButton /> */}
           </div>
         </NavBody>
 
@@ -74,13 +69,9 @@ export function NavbarDemo() {
             ))}
             <div className="flex w-full flex-col gap-4">
               <ThemeToggle className="theme-border theme-text w-full rounded-xl border px-4 py-2" />
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="secondary"
-                className="theme-border theme-text w-full rounded-xl border px-4 py-2"
-              >
-                Wallet Connect
-              </NavbarButton>
+              <div onClick={() => setIsMobileMenuOpen(false)}>
+                {/* <WalletAuthButton className="w-full" /> */}
+              </div>
             </div>
           </MobileNavMenu>
         </MobileNav>

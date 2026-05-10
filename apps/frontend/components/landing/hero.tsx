@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { SpecialText } from "./ui/test";
-import { SlideUpText } from "./ui/split";
-import { LandingButton } from "./ui/landingButton";
+import { SpecialText } from "../ui/test";
+import { SlideUpText } from "../ui/split";
+import { LandingButton } from "../ui/landingButton";
+// import WalletAuthButton from "../walletAuthButton";
 
 
 
@@ -62,7 +63,7 @@ export default function Hero() {
           split="words"
           className="theme-text text-4xl md:text-6xl font-black tracking-tight leading-[1.05]"
         >
-          Your Treasury's Autonomous Brain
+          Your Treasury&apos;s Autonomous Brain
         </SlideUpText>
 
         <motion.p
@@ -72,7 +73,7 @@ export default function Hero() {
           animate="visible"
           className="theme-muted mt-5 max-w-[24ch] text-pretty text-base leading-relaxed sm:mt-6 sm:max-w-3xl sm:text-xl"
         >
-          Kosh AI connects your invoices, budgets, and on-chain actions so every
+          Treszo AI connects your invoices, budgets, and on-chain actions so every
           payout is parsed, verified, and executed — without manual overhead.
         </motion.p>
 
@@ -83,12 +84,7 @@ export default function Hero() {
           animate="visible"
           className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
         >
-          <LandingButton asChild variant="primary">
-            <Link href="/dashboard">
-              Launch App
-              <span>→</span>
-            </Link>
-          </LandingButton>
+          {/* <WalletAuthButton /> */}
           {/* <Link
             href="https://github.com"
             target="_blank"

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "../lib/utils";
+import { IconSun, IconMoon } from "@tabler/icons-react";
 
 const THEME_TRANSITION_CLASS = "theme-transition";
 
@@ -36,7 +37,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
       )}
       aria-label="Toggle theme"
     >
-      {mounted ? (resolvedTheme === "dark" ? "Light" : "Dark") : "Theme"}
+      {mounted ? (resolvedTheme === "dark" ? <IconSun /> : <IconMoon />) : "Theme"}
     </button>
   );
 }

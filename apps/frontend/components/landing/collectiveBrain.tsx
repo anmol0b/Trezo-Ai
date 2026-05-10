@@ -1,5 +1,4 @@
 "use client";
-import { SpecialText } from "./ui/test";
  
 // ------ fix component --------
 
@@ -12,7 +11,8 @@ export default function CollectiveBrain() {
             KNOWLEDGE LAYER
           </SpecialText> */}
           <h2 className="theme-text text-4xl font-black leading-tight sm:text-5xl md:text-6xl">
-            Your Treasury's <span className="text-[lab(84.429%_-36.4165_58.8105)]">Collective Brain</span>
+            Your Treasury&apos;s{" "}
+            <span className="text-[lab(84.429%_-36.4165_58.8105)]">Collective Brain</span>
           </h2>
           <p className="theme-muted mx-auto mt-4 max-w-3xl text-base sm:mt-5 sm:text-lg">
             One unified context across invoices, budgets, approvals, and execution history.

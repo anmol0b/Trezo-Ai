@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import MorphSVGPlugin from "gsap/MorphSVGPlugin";
@@ -29,8 +29,6 @@ const MorphButton = React.forwardRef<HTMLButtonElement, MorphButtonProps>(
   (
     {
       className,
-      variant = "outline",
-      size = "default",
       disabled = false,
       children,
       ...props
@@ -38,6 +36,15 @@ const MorphButton = React.forwardRef<HTMLButtonElement, MorphButtonProps>(
     ref
   ) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const setButtonRefs = useCallback(
+      (node: HTMLButtonElement | null) => {
+        buttonRef.current = node;
+        if (!ref) return;
+        if (typeof ref === "function") ref(node);
+        else (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+      },
+      [ref],
+    );
     useGSAP(
       () => {
         const start = "M 0 100 V 50 Q 50 0 100 50 V 100 z";
@@ -75,7 +82,7 @@ const MorphButton = React.forwardRef<HTMLButtonElement, MorphButtonProps>(
     );
     return (
       <button
-        ref={buttonRef}
+        ref={setButtonRefs}
         disabled={disabled}
         className={cn(
           "relative button cursor-pointer overflow-hidden bg-white text-black hover:bg-white px-3 py-1.5 rounded-md text-sm font-medium border",

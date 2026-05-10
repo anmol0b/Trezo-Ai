@@ -72,7 +72,7 @@ export function LogosCarousel({
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         @keyframes logos-enter {
           0% {
             transform: translateY(40px);

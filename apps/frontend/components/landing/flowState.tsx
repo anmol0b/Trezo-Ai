@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
-import { SpecialText } from "./ui/test";
+import { SpecialText } from "../ui/test";
 
 // --- fix code -------
 
@@ -10,7 +10,7 @@ const steps = [
     step: "01",
     title: "Upload Invoice",
     description:
-      "Drag-drop any PDF invoice. Kosh AI reads vendor, amount, line items, and flags anomalies via RAG — in under 3 seconds.",
+      "Drag-drop any PDF invoice. Treszo AI reads vendor, amount, line items, and flags anomalies via RAG — in under 3 seconds.",
   },
   {
     step: "02",

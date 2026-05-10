@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { useRef } from "react";
-import { LandingButton } from "./ui/landingButton";
+import { LandingButton } from "../ui/landingButton";
 
 export default function FinalCTA() {
   const ref = useRef(null);
@@ -21,7 +21,7 @@ export default function FinalCTA() {
 
         <div className="relative z-10">
           <h2 className="theme-text text-4xl font-black leading-tight md:text-5xl">
-            Your team's knowledge
+            Your team&apos;s knowledge
             <br />
             is your moat.{" "}
             <span className="text-[#A3E635]">Protect it.</span>

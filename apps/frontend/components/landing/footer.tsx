@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 // -- fix code, add components and remove dead code -------
 
 // const links = {
@@ -20,7 +18,7 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-lg bg-[#22C55E] flex items-center justify-center text-black font-black text-sm">
                 K
               </div>
-              <span className="font-bold text-[#F1F5F9] text-lg">Kosh AI</span>
+              <span className="font-bold text-[#F1F5F9] text-lg">Treszo AI</span>
             </Link>
             <p className="text-sm text-[#94A3B8] leading-relaxed">
               Autonomous treasury intelligence for Solana teams.
@@ -51,7 +49,7 @@ export default function Footer() {
 
         <div className="theme-border flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
           <p className="theme-muted text-xs">
-            © 2026 Kosh AI. Built on Solana.
+            © 2026 Treszo AI. Built on Solana.
           </p>
           <div className="flex items-center gap-6">
             <span className="theme-muted text-xs">Twitter</span>
