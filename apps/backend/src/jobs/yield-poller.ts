@@ -36,11 +36,13 @@ async function pollYieldOpportunities(): Promise<void> {
       try {
         idleBalance = await getAccountBalance(deptVaultAta);
       } catch {
-        console.warn(
-          `⚠️  Could not fetch balance for vault ${deptVaultAta.toBase58().slice(0, 8)}...`
-        );
-        continue;
-      }
+        // Devnet vault ATAs don't exist until real USDC-2022 transfers happen
+        // This is expected on devnet — not an error
+        if (config.isDev) {
+        console.log(`  ℹ️  Vault ${deptVaultAta.toBase58().slice(0, 8)}... not funded yet — skipping`);
+          }
+          continue;
+        }
 
       console.log(
         `  Dept ${deptPda.toBase58().slice(0, 8)}...: ` +
