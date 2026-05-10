@@ -44,5 +44,5 @@ fi
 
 echo ""
 echo "📦 Programs synced:"
-echo "   trezo-core: Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
-echo "   trezo-hook: 8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH"
+echo "   trezo-core: 47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn"
+echo "   trezo-hook: AkVudTF3DrGYYHeEC3ACL8LRB77GQF7G8N63ZMTX6kYe"
