@@ -41,4 +41,7 @@ yarn-error.log*
 
 # agentic grant files
 superteam-agentic-engineering-grant-draft.md
-codex-session.jsonl
+codex-session.jsonlagent-keypair.json
+
+
+agent-keypair.json
