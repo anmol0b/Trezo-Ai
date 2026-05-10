@@ -239,7 +239,7 @@ export const NavbarLogo = () => {
         width={30}
         height={30}
       />
-      <span className="theme-text font-medium">Kosh AI</span>
+      <span className="theme-text font-medium">Treszo AI</span>
     </a>
   );
 };

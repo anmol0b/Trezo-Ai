@@ -109,7 +109,7 @@ function AiInsightCardSkeleton() {
 
 export default function AiCardList({
   data,
-  heading = "Kosh AI Insight",
+  heading = "Treszo AI Insight",
   className = "",
   isLoading = false,
   skeletonCount = 2,
