@@ -1,13 +1,13 @@
-import type { AiCardItem } from "../app/dashboard/ui/aiCard";
-import type { DashboardCardData } from "../app/dashboard/ui/cardComponent";
-import type { DepartmentCardItem } from "../app/dashboard/ui/departmentCard";
-import type { LiveActivityItem } from "../app/dashboard/ui/liveCard";
-import type { GovernanceRule } from "../app/department/ui/cashCard";
-import type { SpendingCardData } from "../app/department/ui/spendingCard";
-import type { SpendingVelocityPoint } from "../app/department/ui/spendingGraph";
-import type { SettingsApiPayload } from "../app/settings/ui/types";
-import type { YieldApiPayload } from "../app/yield/ui/types";
-import type { AuditApiPayload } from "../app/audit/ui/types";
+import type { AiCardItem } from "../app/(dashboard)/dashboard/ui/aiCard";
+import type { DashboardCardData } from "../app/(dashboard)/dashboard/ui/cardComponent";
+import type { DepartmentCardItem } from "../app/(dashboard)/dashboard/ui/departmentCard";
+import type { LiveActivityItem } from "../app/(dashboard)/dashboard/ui/liveCard";
+import type { GovernanceRule } from "../app/(dashboard)/department/ui/cashCard";
+import type { SpendingCardData } from "../app/(dashboard)/department/ui/spendingCard";
+import type { SpendingVelocityPoint } from "../app/(dashboard)/department/ui/spendingGraph";
+import type { SettingsApiPayload } from "../app/(dashboard)/settings/ui/types";
+import type { YieldApiPayload } from "../app/(dashboard)/yield/ui/types";
+import type { AuditApiPayload } from "../app/(dashboard)/audit/ui/types";
 
 export type DashboardApiPayload = {
   summaryCards: DashboardCardData[];

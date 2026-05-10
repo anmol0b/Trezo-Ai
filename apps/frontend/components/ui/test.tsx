@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "motion/react";
 
 interface SpecialTextProps {
@@ -37,28 +37,31 @@ export function SpecialText({
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeoutRef = useRef<number | null>(null);
 
-    function getRandomChar(prevChar?: string): string {
-    let char: string = "";
-    do {
-        char = randomChar[Math.floor(Math.random() * randomChar.length)]!;
-    } while (char === prevChar);
-    return char;
-}
+    const getRandomChar = useCallback(
+        (prevChar?: string): string => {
+            let char: string = "";
+            do {
+                char = randomChar[Math.floor(Math.random() * randomChar.length)]!;
+            } while (char === prevChar);
+            return char;
+        },
+        [randomChar],
+    );
 
-    function clearStartTimeout() {
+    const clearStartTimeout = useCallback(() => {
         if (startTimeoutRef.current === null) return;
         window.clearTimeout(startTimeoutRef.current);
         startTimeoutRef.current = null;
-    }
+    }, []);
 
-    function startAnimation() {
+    const startAnimation = useCallback(() => {
         setHasStarted(true);
         setDisplayText(" ".repeat(text.length));
         setCurrentPhase("phase1");
         setAnimationStep(0);
-    }
+    }, [text.length]);
 
-    const runPhase1 = () => {
+    const runPhase1 = useCallback(() => {
         const maxSteps = text.length * 2;
         const currentLength = Math.min(animationStep + 1, text.length);
 
@@ -80,9 +83,9 @@ export function SpecialText({
             setCurrentPhase("phase2");
             setAnimationStep(0);
         }
-    };
+    }, [animationStep, getRandomChar, text]);
 
-    const runPhase2 = () => {
+    const runPhase2 = useCallback(() => {
         const revealedCount = Math.floor(animationStep / 2);
         const chars: string[] = [];
 
@@ -113,7 +116,7 @@ export function SpecialText({
                 intervalRef.current = null;
             }
         }
-    };
+    }, [animationStep, getRandomChar, text]);
 
     useEffect(() => {
         if (shouldAnimate && !hasStarted) {
@@ -128,7 +131,7 @@ export function SpecialText({
             }, delay * 1000);
         }
         return () => clearStartTimeout();
-    }, [shouldAnimate, hasStarted, delay, text.length]);
+    }, [shouldAnimate, hasStarted, delay, text.length, clearStartTimeout, startAnimation]);
 
     useEffect(() => {
         if (!hasStarted) {
@@ -152,7 +155,7 @@ export function SpecialText({
                 clearInterval(intervalRef.current);
             }
         };
-    }, [currentPhase, animationStep, text, speed, hasStarted]);
+    }, [currentPhase, speed, hasStarted, runPhase1, runPhase2]);
 
     useEffect(() => {
         if (hasStarted) {
@@ -167,7 +170,7 @@ export function SpecialText({
                 clearInterval(intervalRef.current);
             }
         };
-    }, [text, hasStarted]);
+    }, [text, hasStarted, clearStartTimeout]);
 
     return (
         <span
