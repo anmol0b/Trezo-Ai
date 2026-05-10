@@ -9,6 +9,8 @@ import { treasuryRouter } from './routes/treasury';
 import { proposalsRouter } from './routes/proposals';
 import { fiatRouter } from './routes/fiat';
 import { auditRouter } from './routes/audit';
+import { settingsRouter } from './routes/settings';
+import { yieldRouter } from './routes/yield';
 import { startYieldPoller, stopYieldPoller } from './jobs/yield-poller';
 import { startOracleWatcher, stopOracleWatcher } from './jobs/oracle-watcher';
 import { startStealthEventIndexer, stopStealthEventIndexer } from './services/sol_rpc';
@@ -32,6 +34,9 @@ if (config.isDev) {
     next();
   });
 }
+
+app.use('/api/settings', settingsRouter);
+app.use('/api/yield', yieldRouter);
 
 // Health check
 app.get('/health', (_req, res) => {
