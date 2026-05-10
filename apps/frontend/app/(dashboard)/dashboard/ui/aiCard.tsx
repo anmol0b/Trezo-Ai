@@ -109,7 +109,7 @@ function AiInsightCardSkeleton() {
 
 export default function AiCardList({
   data,
-  heading = "Treszo AI Insight",
+  heading = "Trezo AI Insight",
   className = "",
   isLoading = false,
   skeletonCount = 2,

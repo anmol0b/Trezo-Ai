@@ -73,7 +73,7 @@ export default function Hero() {
           animate="visible"
           className="theme-muted mt-5 max-w-[24ch] text-pretty text-base leading-relaxed sm:mt-6 sm:max-w-3xl sm:text-xl"
         >
-          Treszo AI connects your invoices, budgets, and on-chain actions so every
+          Trezo AI connects your invoices, budgets, and on-chain actions so every
           payout is parsed, verified, and executed — without manual overhead.
         </motion.p>
 
@@ -93,7 +93,7 @@ export default function Hero() {
             View on GitHub
           </Link> */}
           <LandingButton asChild variant="secondary">
-            <Link href="https://github.com" target="_blank">
+            <Link href="https://github.com/anmol0b/Trezo-Ai" target="_blank">
               View on GitHub
             </Link>
           </LandingButton>
