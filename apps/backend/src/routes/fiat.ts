@@ -15,7 +15,7 @@ fiatRouter.post('/convert', async (req: Request, res: Response) => {
       reference: string;
     };
 
-    if (!amountUsdc || !targetCurrency || !targetIban || !reference) {
+    if (amountUsdc == null || !targetCurrency || !targetIban || !reference) {
       res.status(400).json({
         error: 'Missing required fields: amountUsdc, targetCurrency, targetIban, reference',
       });
