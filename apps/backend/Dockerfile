@@ -19,6 +19,8 @@ COPY apps/backend/ ./apps/backend/
 WORKDIR /app/apps/backend
 RUN pnpm build
 
+RUN cp -r src/idl dist/idl
+
 EXPOSE 4000
 
 CMD ["node", "dist/index.js"]
