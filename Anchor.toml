@@ -1,16 +1,23 @@
+[toolchain]
+
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
+[programs.devnet]
+trezo_hook = "AkVudTF3DrGYYHeEC3ACL8LRB77GQF7G8N63ZMTX6kYe"
+trezo_core = "47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn"
+
 [programs.localnet]
-trezo_core = "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G"
+trezo_hook = "AkVudTF3DrGYYHeEC3ACL8LRB77GQF7G8N63ZMTX6kYe"
+trezo_core = "47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "cargo test -p trezo-core"
+test = "pnpm exec ts-mocha -p ./tsconfig.json -t 1000000 'tests/**/*.ts'"

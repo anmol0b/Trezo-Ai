@@ -4,7 +4,7 @@ import {
   buildProposalData,
   buildProposalSummary,
 } from '../../src/agent/proposal-builder';
-import { mockParsedInvoice } from '../mocks/groq.mock';
+import { mockParsedInvoice } from '../mocks/agent.mock';
 
 const VALID_PUBKEY = '11111111111111111111111111111111';
 

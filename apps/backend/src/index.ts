@@ -63,7 +63,7 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 // etc.
 
 const server = app.listen(config.port, () =>{
-    console.log(`\n 🚀  Kosh AI Backend running on http://localhost:${config.port}`);
+    console.log(`\n 🚀  Trezo AI Backend running on http://localhost:${config.port}`);
     console.log(`Environment: ${config.nodeEnv}`);
     console.log(`Frontend: ${config.frontendUrl}\n`);
 

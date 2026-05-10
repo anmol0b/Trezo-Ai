@@ -1,12 +1,12 @@
-import CollectiveBrain from "../components/collectiveBrain";
-import FinalCTA from "../components/cta";
-import Footer from "../components/footer";
-import { NavbarDemo } from "../components/navBar";
+import CollectiveBrain from "../components/landing/collectiveBrain";
+import FinalCTA from "../components/landing/cta";
+import Footer from "../components/landing/footer";
+import { NavbarDemo } from "../components/navbar/navBar";
 // import Pricing from "../components/price";
-import ProblemSection from "../components/promblex";
-import SocialProof from "../components/social";
-import Hero from "../components/hero";
-import { StickyScrollRevealDemo } from "../components/flowState";
+import ProblemSection from "../components/landing/promblex";
+import SocialProof from "../components/landing/social";
+import Hero from "../components/landing/hero";
+import { StickyScrollRevealDemo } from "../components/landing/flowState";
 
 // const Landing = () => {
 //   return (
