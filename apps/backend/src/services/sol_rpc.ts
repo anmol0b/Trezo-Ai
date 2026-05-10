@@ -96,7 +96,7 @@ function parseStealthPaymentFromLog(
 export function startStealthEventIndexer(programId: PublicKey): void {
   if (wsConnection?.readyState === WebSocket.OPEN) return;
 
-  const wsUrl = `${config.helius.wsUrl}/?api-key=${config.helius.apiKey}`;
+  const wsUrl = config.helius.wsUrl;
 
   const connect = () => {
     console.log('🔌 Connecting to Helius WebSocket...');
