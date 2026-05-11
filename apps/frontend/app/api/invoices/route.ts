@@ -258,7 +258,7 @@ export async function POST(req: Request) {
 
       const confirmResponse = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/confirm`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: backendHeaders(),
         body: JSON.stringify({
           invoice: parsed.invoice,
           ragResult: parsed.ragResult,

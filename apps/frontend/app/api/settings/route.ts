@@ -216,7 +216,7 @@ export async function PATCH(req: Request) {
     if (parsedBody.data.type === "threshold") {
       const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/settings/${COMPANY_ID}/threshold`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: backendHeaders(),
         body: JSON.stringify({
           deptId: parsedBody.data.deptId,
           idleThresholdUsdc: parsedBody.data.idleThresholdUsdc,
@@ -233,7 +233,7 @@ export async function PATCH(req: Request) {
 
     const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/settings/${COMPANY_ID}/oracle`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: backendHeaders(),
       body: JSON.stringify({
         rateTrigger: parsedBody.data.rateTrigger,
       }),

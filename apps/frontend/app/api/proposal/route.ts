@@ -58,7 +58,7 @@ async function fetchBackend<T>(path: string, schema: z.ZodSchema<T>): Promise<{ 
     const res = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}${path}`, {
       method: "GET",
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+      headers: backendHeaders(),
     });
     if (!res.ok) return { payload: null, invalid: false };
     const raw = await res.json();

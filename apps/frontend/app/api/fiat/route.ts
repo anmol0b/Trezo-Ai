@@ -36,7 +36,7 @@ export async function GET(req: Request) {
     const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/fiat/status/${conversionId}`, {
       method: "GET",
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+      headers: backendHeaders(),
     });
 
     if (!response.ok) {
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
     const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/fiat/convert`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: backendHeaders(),
       body: JSON.stringify(parsedBody.data),
     });
 
