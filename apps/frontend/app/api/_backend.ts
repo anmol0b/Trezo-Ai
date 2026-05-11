@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 
-const DEFAULT_TIMEOUT_MS = 8000;
-const DEFAULT_RETRIES = 1;
+const DEFAULT_TIMEOUT_MS = 20000;
+const DEFAULT_RETRIES = 2;
 
 export const BACKEND_BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:4000";
 export const COMPANY_ID = process.env.COMPANY_ID ?? "trezo-demo";
