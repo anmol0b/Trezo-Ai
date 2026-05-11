@@ -18,7 +18,7 @@ const BackendDepartmentsResponseSchema = z.object({
         name: z.string(),
         idleThreshold: z.coerce.number(),
         isActive: z.boolean(),
-        createdAt: z.coerce.number().optional(),
+        createdAt: z.string().optional(),
       }),
     )
     .optional(),
@@ -31,7 +31,10 @@ const BackendAuditEventsResponseSchema = z.object({
     .array(
       z.object({
         signature: z.string(),
-        timestamp: z.coerce.number(),
+        timestamp: z.union([
+          z.coerce.number(),
+          z.string(),
+        ]),
         amount: z.coerce.number(),
       }),
     )
