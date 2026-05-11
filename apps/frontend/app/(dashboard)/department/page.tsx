@@ -112,7 +112,7 @@ function mapDashboardToDepartment(payload: Partial<DashboardApiPayload>, deptId?
 
 export default function DepartmentPage() {
   const searchParams = useSearchParams();
-  const deptId = searchParams.get("deptId");
+  const deptId = searchParams?.get("deptId");
   const [departmentData, setDepartmentData] = useState<DepartmentApiPayload>(departmentPageMockData.department);
   const [auditData, setAuditData] = useState<AuditApiPayload>(departmentPageMockData.audit);
   const [isLoading, setIsLoading] = useState(true);
