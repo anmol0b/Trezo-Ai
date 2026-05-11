@@ -390,7 +390,7 @@ export const dashboardMockData: DashboardApiPayload = {
       currency: "USDC",
       spendingRule: "Spending rule: max $5,000 per payout · Daily cap: $20,000",
       progressPercent: 76,
-      detailsHref: "#",
+      detailsHref: "/department",
     },
     {
       id: "marketing",
@@ -402,7 +402,7 @@ export const dashboardMockData: DashboardApiPayload = {
       currency: "USDC",
       spendingRule: "Spending rule: max $2,000 per payout · Daily cap: $5,000",
       progressPercent: 42,
-      detailsHref: "#",
+      detailsHref: "/department",
     },
     {
       id: "operations",
@@ -414,7 +414,7 @@ export const dashboardMockData: DashboardApiPayload = {
       currency: "USDC",
       spendingRule: "Spending rule: multisig only for >$10k · Daily cap: $50,000",
       progressPercent: 18,
-      detailsHref: "#",
+      detailsHref: "/department",
     },
   ],
   insights: [
@@ -426,8 +426,9 @@ export const dashboardMockData: DashboardApiPayload = {
       icon: "📈",
       dismissLabel: "Dismiss",
       actionLabel: "Take Action",
-      dismissHref: "#",
-      actionHref: "#",
+      // Wire the CTA to an actual page; yield page is the closest "do something" surface today.
+      dismissHref: "",
+      actionHref: "/yield",
     },
     {
       id: "insight-2",
@@ -437,8 +438,9 @@ export const dashboardMockData: DashboardApiPayload = {
       icon: "🛡️",
       dismissLabel: "Dismiss",
       actionLabel: "Take Action",
-      dismissHref: "#",
-      actionHref: "#",
+      // Wire the CTA to settings for now (limits/quorum live there in this UI).
+      dismissHref: "",
+      actionHref: "/settings",
     },
   ],
   liveActivities: [

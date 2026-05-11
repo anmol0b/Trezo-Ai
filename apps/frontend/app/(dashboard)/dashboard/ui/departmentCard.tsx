@@ -41,8 +41,14 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 };
 
+const buildDepartmentDetailsHref = (item: DepartmentCardItem) => {
+  if (item.detailsHref && item.detailsHref !== "#") return item.detailsHref;
+  return `/department?deptId=${encodeURIComponent(item.id)}`;
+};
+
 function DepartmentCard({ item }: { item: DepartmentCardItem }) {
   const progress = getProgress(item);
+  const detailsHref = buildDepartmentDetailsHref(item);
 
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950">
@@ -79,9 +85,9 @@ function DepartmentCard({ item }: { item: DepartmentCardItem }) {
         {item.spendingRule}
       </div>
 
-      {item.detailsHref ? (
+      {detailsHref ? (
         <a
-          href={item.detailsHref}
+          href={detailsHref}
           className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200"
         >
           View Details <span aria-hidden>→</span>
