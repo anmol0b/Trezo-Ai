@@ -1,10 +1,45 @@
-# Trezo AI — Autonomous Treasury OS
+# Trezo AI
 
-> The AI-native treasury platform for modern internet companies.
+**Autonomous treasury infrastructure for internet-native companies.**
 
-Trezo AI automates how companies manage money — from invoice approvals to budget enforcement, yield optimization, and fiat settlements — powered by programmable finance infrastructure on Solana.
+[![Live](https://img.shields.io/badge/live-trezoai.xyz-brightgreen)](https://trezoai.xyz)
+[![Solana](https://img.shields.io/badge/solana-devnet-purple)](https://explorer.solana.com/address/47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn?cluster=devnet)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
-Instead of relying on spreadsheets, fragmented banking tools, and manual treasury workflows, companies use Trezo as a unified treasury operating system.
+
+## The Problem
+
+Crypto-native companies manage treasury the same way everyone else does — spreadsheets, email approvals, and disconnected banking tools. Stablecoins sit idle. Invoices get paid manually. There's no onchain audit trail. Finance teams spend hours on work that should be automated.
+
+## What We Built
+
+Trezo is a programmable treasury operating system built on Solana. It automates the entire treasury workflow — from invoice intake to budget enforcement, yield optimization, and fiat settlement — with every action recorded onchain.
+
+<!-- ```
+Invoice arrives → AI parses it → Multisig approves → Transfer hook enforces rules → Funds move
+                                                               ↓
+                                         Idle USDC auto-routes into Kamino yield (~3.15% APY)
+                                                               ↓
+                                         Pyth oracle triggers fiat settlement when rate hits target
+``` -->
+
+---
+
+## Core Capabilities
+
+**AI Invoice Processing** — Upload a PDF. Groq LLM extracts vendor, amount, category, and due date in under 10 seconds. RAG checks vendor history and flags anomalies before an onchain proposal is created.
+
+**Programmable Spending Rules** — Token-2022 transfer hooks enforce policy at the protocol level. Spending limits, daily caps, recipient allowlists, time restrictions. Enforced on every transfer, bypassed by no one.
+
+**Multisig Treasury** — Every payout requires M-of-N approval. The AI agent proposes, humans authorize, the chain executes.
+
+**Auto-Yield** — Idle USDC above a configurable threshold automatically routes into Kamino Finance. Background jobs monitor balances every 15 minutes. Live APY sourced directly from Kamino's mainnet market.
+
+**Fiat Conversion** — Pyth oracle monitors USDC/USD rate. On trigger, an onchain event fires and fiat settlement initiates via SEPA/ACH bank rails through Coinflow.
+
+**Privacy-Preserving Payouts** — Stealth addresses hide recipient identities onchain. Auditors get encrypted viewing keys — read-only, no spending authority. Everything is verifiable without being public.
+
+**Immutable Audit Trail** — Every action writes to an onchain AuditLog. Proposals, approvals, transfers, yield events, fiat triggers. Nothing is deletable.
 
 ---
 
@@ -33,218 +68,52 @@ Each layer is designed to operate independently while remaining fully connected 
 
 The treasury workflow inside Trezo follows a continuous automation loop:
 
-```text
-Invoice arrives
-        ↓
-AI parses and validates invoice
-        ↓
-Proposal generated for treasury approval
-        ↓
-Multisig approval flow
-        ↓
-Transfer rules enforced onchain
-        ↓
-Funds distributed
-        ↓
-Idle treasury balances routed into yield vaults
-        ↓
-Oracle monitoring triggers fiat settlement when required
-```
+## Live Product
 
-This creates a treasury system that operates with minimal manual intervention while maintaining full transparency and control.
+| | |
+|---|---|
+| Dashboard | [trezoai.xyz](https://trezoai.xyz) |
+| Program (devnet) | `47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn` |
+| Transfer Hook | `AkVudTF3DrGYYHeEC3ACL8LRB77GQF7G8N63ZMTX6kYe` |
 
 ---
 
-# What We Built
+## Stack
 
-Trezo combines AI agents, programmable payments, treasury automation, and stablecoin infrastructure into one unified platform.
-
----
-
-## AI Invoice Processing
-
-Trezo can process invoices automatically using LLM-powered parsing workflows.
-
-The system extracts:
-
-- vendor information
-- payment amounts
-- categories
-- due dates
-- treasury metadata
-
-Invoices are validated against historical vendor activity and treasury policies before proposals are created.
-
-This removes repetitive finance operations and reduces manual review overhead.
+Solana · Anchor v0.30 · Token-2022 · Groq · pgvector · Kamino · Pyth · Coinflow · Node.js · Next.js 14
 
 ---
 
-## Programmable Treasury Controls
+## Status
 
-Treasury policies are enforced directly at the transfer layer.
-
-Companies can define:
-
-- spending limits
-- payout thresholds
-- treasury permissions
-- department-level budgets
-- recipient allowlists
-- approval requirements
-- treasury time restrictions
-
-These rules are enforced onchain and cannot be bypassed externally.
-
----
-
-## Autonomous Yield Management
-
-Idle treasury capital is continuously monitored and optimized.
-
-Trezo automatically routes unused stablecoin balances into yield-generating strategies while preserving treasury liquidity requirements.
-
-The result is a treasury system that keeps operational capital productive instead of idle.
+| | |
+|---|---|
+| AI invoice parsing + RAG | ✅ |
+| Onchain program (devnet) | ✅ |
+| Treasury + departments + oracle | ✅ |
+| Yield poller + live Kamino APY | ✅ |
+| Pyth oracle watcher | ✅ |
+| Helius WebSocket indexer | ✅ |
+| Viewing keys (privacy) | ✅ |
+| Fiat conversion (Coinflow) | ✅ |
+| Subscription billing (Dodo) | ✅ |
+| Frontend dashboard | ✅ |
+| Full Kamino CPI execution | 🔨 Mainnet |
+| Umbra stealth key derivation | 🔨 Roadmap |
+| Security audit | 🔨 Pre-mainnet |
 
 ---
 
-## Fiat Conversion Infrastructure
+## Roadmap
 
-Trezo bridges stablecoin treasury systems with traditional financial rails.
-
-The platform supports:
-
-- stablecoin treasury balances
-- automated conversion triggers
-- fiat settlement workflows
-- bank payout infrastructure
-
-This enables internet-native companies to operate globally while maintaining compatibility with real-world financial systems.
+Full payout execution loop → Real USDC vault ATAs → Kamino CPI → Transfer hook enforcement on USDC-2022 → Security audit → Mainnet
 
 ---
 
-## Privacy-Preserving Payouts
+## Contributing
 
-Trezo integrates stealth payment infrastructure for sensitive treasury operations.
-
-Recipient identities can remain hidden publicly while still allowing authorized auditors to verify treasury activity through encrypted viewing permissions.
-
-This enables private financial operations without sacrificing auditability.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture deep-dive, and how to run the full stack locally.
 
 ---
 
-## Immutable Audit Layer
-
-Every treasury action is permanently recorded onchain.
-
-This includes:
-
-- treasury proposals
-- approvals
-- transfers
-- yield operations
-- fiat conversion events
-- policy enforcement events
-
-The result is a transparent and verifiable treasury history across the entire organization.
-
----
-
-# Core System Capabilities
-
-## Treasury Infrastructure
-
-- department treasury accounts
-- programmable budgets
-- multisig treasury approvals
-- treasury state management
-- transfer-level enforcement
-
----
-
-## AI Operations Layer
-
-- invoice parsing
-- anomaly detection
-- proposal generation
-- vendor intelligence
-- treasury automation agents
-
----
-
-## Financial Automation
-
-- autonomous yield routing
-- oracle-triggered execution
-- automated treasury monitoring
-- background treasury jobs
-- payout orchestration
-
----
-
-## Payment Infrastructure
-
-- stablecoin treasury flows
-- fiat settlement support
-- stealth payouts
-- programmable transfers
-- treasury routing systems
-
----
-
-# Technology Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Blockchain Infrastructure | Solana |
-| Smart Contract Framework | Anchor |
-| Transfer Enforcement | Token-2022 |
-| AI Infrastructure | Groq |
-| Yield Layer | Kamino |
-| Oracle Infrastructure | Pyth Network |
-| Fiat Infrastructure | Dodo Payments |
-| Privacy Layer | Umbra |
-| Backend Infrastructure | Node.js + TypeScript |
-| Frontend Stack | Next.js 14 |
-| UI System | Tailwind + shadcn/ui |
-
----
-
-# Current Development Progress
-
-## Completed Systems
-
-- treasury backend infrastructure
-- AI invoice workflows
-- treasury routing services
-- background automation systems
-- treasury monitoring jobs
-- integration testing infrastructure
-
----
-
-## Systems In Progress
-
-- onchain treasury execution program
-- transfer hook enforcement
-- treasury operator dashboard
-- full devnet integration loop
-
----
-
-# Vision
-
-Trezo is building the financial operating layer for internet-native organizations.
-
-The long-term goal is to make treasury management:
-
-- autonomous
-- programmable
-- transparent
-- AI-native
-- globally accessible
-
-Instead of companies operating treasury manually, Trezo enables treasury systems that can reason, automate, enforce policy, and execute financial operations autonomously.
-
----
-
-*Trezo AI · Autonomous Treasury OS*
+*Trezo AI · Built on Solana*
