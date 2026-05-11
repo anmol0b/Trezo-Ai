@@ -117,8 +117,21 @@ export async function GET(req: Request) {
     const auditEvents = auditEventsRes.payload.success ? auditEventsRes.payload.data ?? [] : [];
     const auditCount = auditEventsRes.payload.count ?? auditEvents.length;
     const totalAuditVolume = auditEvents.reduce((sum, event) => sum + event.amount, 0);
-    const latestTimestamp = auditEvents.length ? Math.max(...auditEvents.map((event) => event.timestamp)) : null;
-    const earliestTimestamp = auditEvents.length ? Math.min(...auditEvents.map((event) => event.timestamp)) : null;
+    const normalizedTimestamps = auditEvents
+    .map((event) =>
+      typeof event.timestamp === "string"
+        ? Math.floor(new Date(event.timestamp).getTime() / 1000)
+        : event.timestamp
+      )
+      .filter((timestamp) => !Number.isNaN(timestamp));
+
+    const latestTimestamp = normalizedTimestamps.length
+      ? Math.max(...normalizedTimestamps)
+      : null;
+
+    const earliestTimestamp = normalizedTimestamps.length
+      ? Math.min(...normalizedTimestamps)
+      : null;
 
     const payload = {
       ...departmentPageMockData,
