@@ -88,6 +88,16 @@ function toUsdcFromLamports(value: number): number {
   return value / 1_000_000;
 }
 
+function shortId(value: string, left = 6, right = 6) {
+  if (!value) return "—";
+  if (value.length <= left + right + 3) return value;
+  return `${value.slice(0, left)}...${value.slice(-right)}`;
+}
+
+function relativeMinutes(unixSeconds: number) {
+  return `${Math.max(1, Math.floor((Date.now() / 1000 - unixSeconds) / 60))}m ago`;
+}
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -111,71 +121,120 @@ export async function GET() {
     }
 
     const treasuryData = treasuryRes.payload.success ? treasuryRes.payload.data : undefined;
-    const departmentsData = departmentsRes.payload.success ? departmentsRes.payload.data : undefined;
-    const proposalsData = proposalsRes.payload.success ? proposalsRes.payload.data : undefined;
-    const auditData = auditEventsRes.payload.success ? auditEventsRes.payload.data : undefined;
-
-    const treasuryBalanceUsdc =
-      proposalsData?.reduce((sum, item) => sum + toUsdcFromLamports(item.amountLamports), 0) ?? null;
+    const departmentsData = departmentsRes.payload.success ? departmentsRes.payload.data ?? [] : [];
+    const proposalsData = proposalsRes.payload.success ? proposalsRes.payload.data ?? [] : [];
+    const auditData = auditEventsRes.payload.success ? auditEventsRes.payload.data ?? [] : [];
+    const proposalVolumeUsdc = proposalsData.reduce((sum, item) => sum + toUsdcFromLamports(item.amountLamports), 0);
+    const pendingProposals = proposalsData.filter((p) => p.status.toLowerCase() === "pending");
+    const activeDepartments = departmentsData.filter((department) => department.isActive);
+    const inactiveDepartments = departmentsData.filter((department) => !department.isActive);
 
     const summaryCards = [
       {
-        title: "Treasury Balance",
-        value: treasuryBalanceUsdc ?? 0,
+        title: "Proposal Volume",
+        value: proposalVolumeUsdc,
         currency: "USDC",
-        description: treasuryData ? `Company: ${treasuryData.companyId}` : "",
+        description: "Derived from proposal amounts returned by the backend",
       },
       {
         title: "Active Departments",
-        value: departmentsData?.filter((d) => d.isActive).length ?? 0,
-        description: departmentsData?.length
-          ? departmentsData.map((d) => d.name).join(" · ")
-          : "",
+        value: activeDepartments.length,
+        description: departmentsData.length ? departmentsData.map((d) => d.name).join(" · ") : "No departments returned yet",
       },
       {
         title: "Pending Proposals",
-        value:
-          proposalsData?.filter((p) => p.status.toLowerCase() === "pending").length ??
-          treasuryData?.proposalCount ??
-          0,
-        description: treasuryData ? `Multisig threshold: ${treasuryData.multisigThreshold}` : "",
+        value: pendingProposals.length,
+        description: treasuryData ? `Multisig threshold: ${treasuryData.multisigThreshold}` : "Treasury config unavailable",
       },
       {
-        title: "Yield Earned Today",
-        value: 0,
-        currency: "USDC",
-        description: "Yield endpoint wiring next",
+        title: "Indexed Audit Events",
+        value: auditData.length,
+        description: auditData[0] ? `Latest ${relativeMinutes(auditData[0].timestamp)}` : "No audit events indexed yet",
       },
     ];
 
-    const mappedDepartments =
-      departmentsData?.map((item) => ({
-        id: item.deptId,
-        name: item.name,
-        walletAddress: item.pubkey,
-        status: item.isActive ? "Active" : "Inactive",
-        budgetSpent: 0,
-        budgetTotal: Math.max(toUsdcFromLamports(item.idleThreshold), 1),
-        currency: "USDC",
-        spendingRule: `Idle threshold: ${toUsdcFromLamports(item.idleThreshold).toLocaleString("en-US")} USDC`,
-        detailsHref: "/department",
-      })) ?? [];
+    const mappedDepartments = departmentsData.map((item) => ({
+      id: item.deptId,
+      name: item.name,
+      walletAddress: item.pubkey,
+      status: item.isActive ? "Active" : "Inactive",
+      budgetSpent: 0,
+      budgetTotal: Math.max(toUsdcFromLamports(item.idleThreshold), 1),
+      currency: "USDC",
+      spendingRule: `Idle threshold: ${toUsdcFromLamports(item.idleThreshold).toLocaleString("en-US")} USDC`,
+      detailsHref: `/department?deptId=${encodeURIComponent(item.deptId)}`,
+    }));
 
-    const mappedLiveActivities =
-      auditData?.slice(0, 6).map((item, index) => ({
-        id: `audit-${index}`,
-        title: "Audit event",
-        subtitle: item.signature,
-        amount: item.amount,
-        currency: "USDC",
-        timeAgo: `${Math.max(1, Math.floor((Date.now() / 1000 - item.timestamp) / 60))}m ago`,
-        tone: "info" as const,
-      })) ?? [];
+    const mappedLiveActivities = auditData.slice(0, 6).map((item, index) => ({
+      id: `audit-${index}`,
+      title: `Audit event ${shortId(item.signature)}`,
+      subtitle: "Onchain activity observed",
+      amount: item.amount,
+      currency: "USDC",
+      timeAgo: relativeMinutes(item.timestamp),
+      tone: "info" as const,
+    }));
+
+    const mappedInsights = [
+      pendingProposals.length > 0
+        ? {
+            id: "insight-pending-proposals",
+            title: "Approval queue",
+            message: `${pendingProposals.length} proposal${pendingProposals.length === 1 ? "" : "s"} are waiting for signer action.`,
+            recommendation: "Review pending proposals and clear the approval backlog.",
+            tone: "warning" as const,
+            icon: "⏳",
+            dismissLabel: "Dismiss",
+            actionLabel: "Open Queue",
+            actionHref: "/proposal?status=pending",
+          }
+        : null,
+      inactiveDepartments.length > 0
+        ? {
+            id: "insight-inactive-departments",
+            title: "Department coverage",
+            message: `${inactiveDepartments.length} department${inactiveDepartments.length === 1 ? "" : "s"} are marked inactive in treasury config.`,
+            recommendation: "Review department activation and idle thresholds in settings.",
+            tone: "critical" as const,
+            icon: "⚠",
+            dismissLabel: "Dismiss",
+            actionLabel: "Open Settings",
+            actionHref: "/settings",
+          }
+        : null,
+      activeDepartments.length > 0
+        ? {
+            id: "insight-yield-readiness",
+            title: "Automation readiness",
+            message: `${activeDepartments.length} active department${activeDepartments.length === 1 ? "" : "s"} have treasury thresholds configured.`,
+            recommendation: "Review yield readiness and treasury automation coverage.",
+            tone: "positive" as const,
+            icon: "↗",
+            dismissLabel: "Dismiss",
+            actionLabel: "Open Yield",
+            actionHref: "/yield",
+          }
+        : null,
+      auditData.length === 0
+        ? {
+            id: "insight-empty-audit-feed",
+            title: "Audit coverage",
+            message: "No audit events have been indexed yet, so live activity is limited.",
+            recommendation: "Open the audit feed to confirm the backend indexer is healthy.",
+            tone: "warning" as const,
+            icon: "🔎",
+            dismissLabel: "Dismiss",
+            actionLabel: "Open Audit",
+            actionHref: "/audit",
+          }
+        : null,
+    ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
     const payload = {
       ...dashboardMockData,
       summaryCards,
       departments: mappedDepartments,
+      insights: mappedInsights,
       liveActivities: mappedLiveActivities,
     };
 

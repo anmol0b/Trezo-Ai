@@ -24,6 +24,7 @@ export type MultisigConfig = {
   quorum: MultisigQuorum;
   removeLabel: string;
   addLabel: string;
+  readOnlyNotice?: string;
 };
 
 export type OracleConfig = {
@@ -40,6 +41,7 @@ export type OracleConfig = {
   cooldownLabel: string;
   cooldownSeconds: number;
   commitLabel: string;
+  canEdit?: boolean;
 };
 
 export type AgentInstruction = {
@@ -59,21 +61,7 @@ export type AgentAuthorityConfig = {
   dailyBurnLabel: string;
   dailyBurnValue: string;
   actionLabel: string;
-};
-
-export type AuditEntry = {
-  id: string;
-  auditor: string;
-  access: string;
-  actionLabel: string;
-};
-
-export type AuditPrivacyConfig = {
-  title: string;
-  grantLabel: string;
-  columns: [string, string, string];
-  entries: AuditEntry[];
-  helperText: string;
+  actionDisabled?: boolean;
 };
 
 export type CriticalOpsConfig = {
@@ -81,15 +69,44 @@ export type CriticalOpsConfig = {
   body: string;
   note: string;
   actionLabel: string;
+  actionDisabled?: boolean;
+};
+
+export type SettingsDepartmentThreshold = {
+  id: string;
+  deptId: string;
+  name: string;
+  pubkey: string;
+  idleThresholdUsdc: number;
+  isActive: boolean;
+  summary: string;
+};
+
+export type DepartmentThresholdsConfig = {
+  title: string;
+  description: string;
+  updateLabel: string;
+  canEdit?: boolean;
+  items: SettingsDepartmentThreshold[];
+};
+
+export type SettingsBackendState = {
+  status: string;
+  service: string;
+  version: string;
+  env: string;
+  settingsEndpointAvailable: boolean;
+  spendingRulesEndpointAvailable: boolean;
 };
 
 export type SettingsApiPayload = {
   title: string;
   subtitleBadge: string;
+  companyId: string;
+  backend: SettingsBackendState;
   multisig: MultisigConfig;
   oracle: OracleConfig;
+  departments: DepartmentThresholdsConfig;
   agentAuthority: AgentAuthorityConfig;
-  auditPrivacy: AuditPrivacyConfig;
   criticalOps: CriticalOpsConfig;
 };
-

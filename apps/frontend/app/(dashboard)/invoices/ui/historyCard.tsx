@@ -10,7 +10,7 @@ type HistoryCardProps = {
 function formatMoney(amount: number, currency: string) {
   return amount.toLocaleString("en-US", {
     style: "currency",
-    currency,
+    currency: currency === "USDC" ? "USD" : currency,
     maximumFractionDigits: 2,
   });
 }
@@ -54,12 +54,9 @@ export default function HistoryCard({ title, items, className = "", isLoading = 
     >
       <header className="mb-4 flex items-center justify-between gap-3">
         <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{title}</h3>
-        <button
-          type="button"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-        >
-          View all
-        </button>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+          {items.length} item{items.length === 1 ? "" : "s"}
+        </span>
       </header>
 
       <div className="divide-y divide-slate-200/70 overflow-hidden rounded-xl border border-slate-200/70 bg-slate-50/70 dark:divide-slate-800/80 dark:border-slate-800/80 dark:bg-slate-900/50">
@@ -98,4 +95,3 @@ export default function HistoryCard({ title, items, className = "", isLoading = 
     </article>
   );
 }
-

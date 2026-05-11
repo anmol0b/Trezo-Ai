@@ -104,12 +104,12 @@ export async function GET() {
           return {
             id: p.pubkey,
             index: String(idx + 1).padStart(3, "0"),
-            vendor: "Vendor (from metadataUri)",
+            vendor: "Metadata unavailable",
             hash: shortHash,
             department: p.deptAccount,
             amount: toUsdcFromLamports(p.amountLamports),
             currency: "USDC",
-            category: "Uncategorized",
+            category: "Unknown",
             aiScore: 0,
             approvals: {
               signed,

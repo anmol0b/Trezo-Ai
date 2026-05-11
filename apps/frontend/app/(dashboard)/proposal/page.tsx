@@ -6,7 +6,13 @@ import GovernanceMetrics from "./ui/governanceMetrics";
 import LiveAuditFeed from "./ui/liveAuditFeed";
 import ProposalFilters from "./ui/proposalFilters";
 import ProposalTable from "./ui/proposalTable";
-import { proposalMockData, type ProposalApiPayload } from "../../../lib/mockData";
+import {
+  invoicesMockData,
+  proposalMockData,
+  type InvoicesApiPayload,
+  type InvoiceRequestContext,
+  type ProposalApiPayload,
+} from "../../../lib/mockData";
 
 const PROPOSAL_API_URL = process.env.NEXT_PUBLIC_PROPOSAL_API_URL ?? "/api/proposal";
 const INVOICES_API_URL = process.env.NEXT_PUBLIC_INVOICES_API_URL ?? "/api/invoices";
@@ -39,6 +45,17 @@ type ConfirmInvoiceResponse = {
   error?: string;
 };
 
+type InvoiceContextResponse = Pick<InvoicesApiPayload, "context" | "meta">;
+
+function buildCreateDefaults(context: InvoiceRequestContext) {
+  return {
+    companyId: context.companyId,
+    treasuryPda: context.treasuryPda,
+    deptPda: context.defaultDeptPda || context.departments[0]?.pubkey || "",
+    recipientWallet: context.recipientWallet,
+  };
+}
+
 async function fetchProposalData(): Promise<ProposalApiPayload> {
   const response = await fetch(PROPOSAL_API_URL, {
     method: "GET",
@@ -57,20 +74,46 @@ async function fetchProposalData(): Promise<ProposalApiPayload> {
   return response.json();
 }
 
+async function fetchInvoiceContext(): Promise<InvoiceContextResponse> {
+  const response = await fetch(INVOICES_API_URL, {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const err = new Error(`Invoice context fetch failed: ${response.status}`);
+    (err as Error & { status?: number }).status = response.status;
+    throw err;
+  }
+
+  const payload = (await response.json()) as InvoicesApiPayload;
+  return {
+    context: payload.context,
+    meta: payload.meta,
+  };
+}
+
 export default function ProposalPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [proposalData, setProposalData] = useState<ProposalApiPayload>(proposalMockData);
+  const [invoiceContext, setInvoiceContext] = useState<InvoiceContextResponse>({
+    context: invoicesMockData.context,
+    meta: invoicesMockData.meta,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
   const [backendMessage, setBackendMessage] = useState<string>("");
   const [activeFilterId, setActiveFilterId] = useState<string>(() => {
-    const status = searchParams.get("status");
+    const status = searchParams?.get("status");
     return status ?? proposalMockData.filters.find((f) => f.active)?.id ?? proposalMockData.filters[0]?.id ?? "all";
   });
-  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [query, setQuery] = useState(() => searchParams?.get("q") ?? "");
   const [page, setPage] = useState(() => {
-    const raw = searchParams.get("page");
+    const raw = searchParams?.get("page");
     const n = raw ? Number(raw) : 1;
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
   });
@@ -84,12 +127,7 @@ export default function ProposalPage() {
   const [parseResult, setParseResult] = useState<ParseInvoiceResponse | null>(null);
   const [confirmResult, setConfirmResult] = useState<ConfirmInvoiceResponse | null>(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [overrideFields, setOverrideFields] = useState({
-    companyId: "",
-    treasuryPda: "",
-    deptPda: "",
-    recipientWallet: "",
-  });
+  const [overrideFields, setOverrideFields] = useState(() => buildCreateDefaults(invoicesMockData.context));
 
   useEffect(() => {
     let mounted = true;
@@ -129,8 +167,39 @@ export default function ProposalPage() {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
+    const loadInvoiceContext = async () => {
+      try {
+        const payload = await fetchInvoiceContext();
+        if (!mounted) return;
+        setInvoiceContext(payload);
+        setOverrideFields(buildCreateDefaults(payload.context));
+      } catch {
+        if (!mounted) return;
+        setInvoiceContext({
+          context: invoicesMockData.context,
+          meta: {
+            ...invoicesMockData.meta,
+            backendHealthy: false,
+            message:
+              "Invoice context could not be loaded from the API. Demo defaults are shown, but parsing still needs a live backend.",
+          },
+        });
+        setOverrideFields(buildCreateDefaults(invoicesMockData.context));
+      }
+    };
+
+    void loadInvoiceContext();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     // Keep URL in sync for shareable, refresh-safe state.
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
     if (activeFilterId && activeFilterId !== "all") params.set("status", activeFilterId);
     else params.delete("status");
     if (query.trim()) params.set("q", query.trim());
@@ -139,7 +208,7 @@ export default function ProposalPage() {
     else params.delete("page");
 
     const next = params.toString();
-    const current = searchParams.toString();
+    const current = searchParams?.toString() ?? "";
     if (next !== current) {
       router.replace(`/proposal${next ? `?${next}` : ""}`);
     }
@@ -176,6 +245,9 @@ export default function ProposalPage() {
 
   const showBanner = backendStatus !== "connected";
   const openProposal = openProposalId ? proposalData.proposals.find((p) => p.id === openProposalId) : null;
+  const createContextReady = Boolean(
+    overrideFields.companyId && overrideFields.treasuryPda && overrideFields.deptPda && overrideFields.recipientWallet,
+  );
 
   const resetCreate = () => {
     setCreateStep("upload");
@@ -185,12 +257,24 @@ export default function ProposalPage() {
     setParseResult(null);
     setConfirmResult(null);
     setAdvancedOpen(false);
-    setOverrideFields({ companyId: "", treasuryPda: "", deptPda: "", recipientWallet: "" });
+    setOverrideFields(buildCreateDefaults(invoiceContext.context));
   };
 
   const doParse = async () => {
     if (!createFile) {
       setCreateError("Please choose a PDF invoice first.");
+      return;
+    }
+    if (!overrideFields.companyId || !overrideFields.treasuryPda) {
+      setCreateError("Company and treasury context are required before parsing.");
+      return;
+    }
+    if (!overrideFields.deptPda) {
+      setCreateError("Choose a department before parsing, or enter a manual department PDA in advanced mode.");
+      return;
+    }
+    if (!overrideFields.recipientWallet) {
+      setCreateError("Recipient wallet is required before parsing.");
       return;
     }
     setCreateBusy(true);
@@ -199,15 +283,24 @@ export default function ProposalPage() {
       const formData = new FormData();
       formData.set("action", "parse");
       formData.set("invoice", createFile);
-      if (overrideFields.companyId) formData.set("companyId", overrideFields.companyId);
-      if (overrideFields.treasuryPda) formData.set("treasuryPda", overrideFields.treasuryPda);
-      if (overrideFields.deptPda) formData.set("deptPda", overrideFields.deptPda);
-      if (overrideFields.recipientWallet) formData.set("recipientWallet", overrideFields.recipientWallet);
+      formData.set("companyId", overrideFields.companyId);
+      formData.set("treasuryPda", overrideFields.treasuryPda);
+      formData.set("deptPda", overrideFields.deptPda);
+      formData.set("recipientWallet", overrideFields.recipientWallet);
 
       const res = await fetch(INVOICES_API_URL, { method: "POST", body: formData });
-      if (!res.ok) throw new Error(`Parse failed (${res.status})`);
-      const payload = (await res.json()) as ParseInvoiceResponse;
+      const payload = (await res.json()) as ParseInvoiceResponse & { error?: string };
+      if (!res.ok) throw new Error(payload.error ?? `Parse failed (${res.status})`);
       if (!payload.success || !payload.summary) throw new Error("Invalid parse response");
+      const matchedDepartment = invoiceContext.context.departments.find(
+        (department) => department.deptId === payload.summary?.suggestedDepartment,
+      );
+      if (matchedDepartment) {
+        setOverrideFields((current) => ({
+          ...current,
+          deptPda: matchedDepartment.pubkey,
+        }));
+      }
       setParseResult(payload);
       setCreateStep("review");
     } catch (e) {
@@ -219,6 +312,10 @@ export default function ProposalPage() {
 
   const doConfirm = async () => {
     if (!parseResult?.summary) return;
+    if (!overrideFields.companyId || !overrideFields.treasuryPda || !overrideFields.deptPda || !overrideFields.recipientWallet) {
+      setCreateError("Complete the company, treasury, department, and recipient fields before submitting.");
+      return;
+    }
     setCreateBusy(true);
     setCreateError(null);
     try {
@@ -232,14 +329,14 @@ export default function ProposalPage() {
           metadataUri: parseResult.summary.metadataUri ?? "ipfs://pending",
         }),
       );
-      if (overrideFields.companyId) formData.set("companyId", overrideFields.companyId);
-      if (overrideFields.treasuryPda) formData.set("treasuryPda", overrideFields.treasuryPda);
-      if (overrideFields.deptPda) formData.set("deptPda", overrideFields.deptPda);
-      if (overrideFields.recipientWallet) formData.set("recipientWallet", overrideFields.recipientWallet);
+      formData.set("companyId", overrideFields.companyId);
+      formData.set("treasuryPda", overrideFields.treasuryPda);
+      formData.set("deptPda", overrideFields.deptPda);
+      formData.set("recipientWallet", overrideFields.recipientWallet);
 
       const res = await fetch(INVOICES_API_URL, { method: "POST", body: formData });
-      if (!res.ok) throw new Error(`Confirm failed (${res.status})`);
       const payload = (await res.json()) as ConfirmInvoiceResponse;
+      if (!res.ok) throw new Error(payload.error || `Confirm failed (${res.status})`);
       if (!payload.success) throw new Error(payload.error || "Confirm failed");
       setConfirmResult(payload);
       setCreateStep("success");
@@ -425,7 +522,7 @@ export default function ProposalPage() {
                   Copy id
                 </button>
                 <a
-                  href={`https://solscan.io/tx/${encodeURIComponent(openProposal.id)}`}
+                  href={`https://solscan.io/account/${encodeURIComponent(openProposal.id)}?cluster=devnet`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -483,14 +580,65 @@ export default function ProposalPage() {
                 </button>
               </div>
 
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+                    Company ID
+                  </p>
+                  <p className="mt-1 break-all text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {overrideFields.companyId || "Unavailable"}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+                    Treasury PDA
+                  </p>
+                  <p className="mt-1 break-all text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {overrideFields.treasuryPda || "Unavailable"}
+                  </p>
+                </div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                  Department
+                  <select
+                    value={overrideFields.deptPda}
+                    onChange={(e) => setOverrideFields((prev) => ({ ...prev, deptPda: e.target.value }))}
+                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  >
+                    <option value="">Select department</option>
+                    {invoiceContext.context.departments.map((department) => (
+                      <option key={department.pubkey} value={department.pubkey}>
+                        {department.name} ({department.deptId})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                  Recipient wallet
+                  <input
+                    value={overrideFields.recipientWallet}
+                    onChange={(e) => setOverrideFields((prev) => ({ ...prev, recipientWallet: e.target.value }))}
+                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  />
+                </label>
+              </div>
+
+              {invoiceContext.context.departments.length === 0 ? (
+                <p className="mt-3 text-xs text-amber-700 dark:text-amber-300">
+                  No departments were returned by the invoice context API. Open advanced mode to paste a manual department PDA.
+                </p>
+              ) : null}
+
+              {invoiceContext.meta?.message ? (
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{invoiceContext.meta.message}</p>
+              ) : null}
+
               {advancedOpen ? (
                 <div className="mt-3 grid grid-cols-1 gap-2">
                   {(
                     [
                       { key: "companyId", label: "Company ID" },
                       { key: "treasuryPda", label: "Treasury PDA" },
-                      { key: "deptPda", label: "Department PDA" },
-                      { key: "recipientWallet", label: "Recipient wallet" },
+                      { key: "deptPda", label: "Manual department PDA" },
                     ] as const
                   ).map((field) => (
                     <label key={field.key} className="text-xs font-semibold text-slate-600 dark:text-slate-300">
@@ -519,12 +667,17 @@ export default function ProposalPage() {
                   </label>
                   <button
                     type="button"
-                    disabled={!createFile || createBusy}
+                    disabled={!createFile || createBusy || !createContextReady}
                     onClick={() => void doParse()}
                     className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
                   >
                     {createBusy ? "Parsing…" : "Parse invoice"}
                   </button>
+                  {!createContextReady ? (
+                    <p className="text-xs text-amber-700 dark:text-amber-300">
+                      Company, treasury, department, and recipient context are required before parsing.
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
 
@@ -557,7 +710,7 @@ export default function ProposalPage() {
                     </button>
                     <button
                       type="button"
-                      disabled={createBusy}
+                      disabled={createBusy || !createContextReady}
                       onClick={() => void doConfirm()}
                       className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 disabled:opacity-60 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
                     >

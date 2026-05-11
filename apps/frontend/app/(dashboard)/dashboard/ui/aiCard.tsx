@@ -158,11 +158,15 @@ export default function AiCardList({
       </h2>
 
       <div className="space-y-4">
-        {isLoading
-          ? skeletonItems.map((_, index) => <AiInsightCardSkeleton key={`ai-skeleton-${index}`} />)
-          : data.map((card) => (
-              <AiInsightCard key={card.id} card={card} onDismiss={onDismiss} onAction={onAction} />
-            ))}
+        {isLoading ? (
+          skeletonItems.map((_, index) => <AiInsightCardSkeleton key={`ai-skeleton-${index}`} />)
+        ) : data.length > 0 ? (
+          data.map((card) => <AiInsightCard key={card.id} card={card} onDismiss={onDismiss} onAction={onAction} />)
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-10 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
+            No AI insights are available from the current backend data.
+          </div>
+        )}
       </div>
     </section>
   );

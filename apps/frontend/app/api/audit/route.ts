@@ -1,50 +1,19 @@
 import { NextResponse } from "next/server";
-import { auditMockData } from "../../../lib/mockData";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
-import { z } from "zod";
-import { createErrorId, errorResponse, fetchWithTimeoutAndRetry, logApiError, parseWithSchema } from "../_backend";
+import {
+  createErrorId,
+  errorResponse,
+  fetchBackendAndParse,
+  formatRelativeFromUnix,
+  formatUnixDate,
+  logApiError,
+  shortId,
+} from "../_backend";
+import { AuditEventsResponseSchema, HealthResponseSchema } from "../_schemas";
 
-const BACKEND_BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:4000";
-
-const BackendAuditEventsResponseSchema = z.object({
-  success: z.boolean(),
-  count: z.coerce.number().optional(),
-  data: z
-    .array(
-      z.object({
-        signature: z.string(),
-        timestamp: z.coerce.number(),
-        ephemeralPubkey: z.string().optional(),
-        encryptedNote: z.string().optional(),
-        amount: z.coerce.number(),
-        slot: z.coerce.number().optional(),
-      }),
-    )
-    .optional(),
-});
-
-async function fetchBackend<T>(path: string, schema: z.ZodSchema<T>): Promise<{ payload: T | null; invalid: boolean }> {
-  try {
-    const res = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}${path}`, {
-      method: "GET",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!res.ok) return { payload: null, invalid: false };
-    const raw = await res.json();
-    const parsed = parseWithSchema(schema, raw);
-    if (!parsed.data) return { payload: null, invalid: true };
-    return { payload: parsed.data, invalid: false };
-  } catch {
-    return { payload: null, invalid: false };
-  }
-}
-
-function short(value: string, left = 4, right = 4) {
-  if (!value) return "—";
-  if (value.length <= left + right + 3) return value;
-  return `${value.slice(0, left)}...${value.slice(-right)}`;
+function toSolscanTx(signature: string) {
+  return `https://solscan.io/tx/${signature}?cluster=devnet`;
 }
 
 export async function GET() {
@@ -54,72 +23,115 @@ export async function GET() {
       return errorResponse(401, "Unauthorized");
     }
 
-    const eventsRes = await fetchBackend("/api/audit/events", BackendAuditEventsResponseSchema);
-    if (eventsRes.invalid) {
+    const [eventsResponse, healthResponse] = await Promise.all([
+      fetchBackendAndParse("/api/audit/events", AuditEventsResponseSchema),
+      fetchBackendAndParse("/health", HealthResponseSchema),
+    ]);
+
+    if (eventsResponse.invalid || healthResponse.invalid) {
       return errorResponse(502, "Invalid backend response shape");
     }
 
-    if (!eventsRes.payload) {
-      return errorResponse(502, "Backend unavailable");
-    }
-
-    const events = eventsRes.payload.success ? eventsRes.payload.data ?? [] : [];
-    if (!events.length) {
-      return errorResponse(404, "No audit events found");
-    }
-
-    const totalVolume = events.reduce((sum, e) => sum + (typeof e.amount === "number" ? e.amount : 0), 0);
-    const latestTs = Math.max(...events.map((e) => e.timestamp ?? 0));
-    const earliestTs = Math.min(...events.map((e) => e.timestamp ?? 0));
+    const events = eventsResponse.data?.success ? eventsResponse.data.data : [];
+    const count = eventsResponse.data?.count ?? events.length;
+    const totalVolume = events.reduce((sum, event) => sum + event.amount, 0);
+    const latestTimestamp = events.length ? Math.max(...events.map((event) => event.timestamp)) : null;
+    const earliestTimestamp = events.length ? Math.min(...events.map((event) => event.timestamp)) : null;
+    const encryptedNotes = events.filter((event) => event.encryptedNote).length;
+    const slotCoverage = events.filter((event) => typeof event.slot === "number").length;
+    const nodeLabel = healthResponse.data
+      ? `${healthResponse.data.service}@${healthResponse.data.version}`
+      : "backend unavailable";
 
     const payload = {
-      ...auditMockData,
-      subtitle: `Audit events (backend): ${eventsRes.payload.count ?? events.length}`,
+      title: "Audit Event Stream",
+      subtitle: eventsResponse.ok
+        ? `Live backend feed · ${count} indexed event${count === 1 ? "" : "s"}`
+        : "Backend unavailable · showing empty state",
+      exportLabel: "Export CSV",
       summary: [
         {
-          id: "payouts",
-          label: "Total Events",
-          value: String(eventsRes.payload.count ?? events.length),
-          trend: { direction: "up" as const, label: "live" },
+          id: "events",
+          label: "Indexed Events",
+          value: String(count),
+          trend: eventsResponse.ok ? { direction: "up" as const, label: "live" } : undefined,
         },
         {
           id: "volume",
-          label: "Total Volume",
+          label: "Transferred Volume",
           value: totalVolume.toLocaleString("en-US", { maximumFractionDigits: 2 }),
           unit: "USDC",
         },
         {
           id: "range",
-          label: "Date Range",
-          value: `${new Date(earliestTs * 1000).toLocaleDateString("en-US")} - ${new Date(latestTs * 1000).toLocaleDateString("en-US")}`,
-          caption: "From backend audit feed",
+          label: "Observed Range",
+          value:
+            earliestTimestamp && latestTimestamp
+              ? `${formatUnixDate(earliestTimestamp)} - ${formatUnixDate(latestTimestamp)}`
+              : "No events yet",
+          caption: latestTimestamp ? `Latest ${formatRelativeFromUnix(latestTimestamp)}` : "Waiting for first event",
         },
       ],
-      transactions: events.slice(0, 50).map((e, idx) => ({
-        id: `evt-${idx}`,
-        date: new Date(e.timestamp * 1000).toLocaleDateString("en-US"),
-        vendor: "—",
-        department: "—",
-        amount: e.amount,
+      tableColumns: [
+        { key: "date", label: "Date" },
+        { key: "vendor", label: "Signature" },
+        { key: "department", label: "Note" },
+        { key: "amount", label: "Amount" },
+        { key: "address", label: "One-Time Address" },
+        { key: "signature", label: "Slot" },
+        { key: "explorer", label: "Explorer" },
+      ],
+      transactions: events.map((event) => ({
+        id: event.signature,
+        date: formatUnixDate(event.timestamp),
+        vendor: shortId(event.signature, 6, 6),
+        department: event.encryptedNote ? "Encrypted note" : "No note",
+        amount: event.amount,
         currency: "USDC",
-        addressDisplay: short(e.ephemeralPubkey ?? "—"),
-        signatureDisplay: short(e.signature),
-        explorerUrl: "https://solscan.io",
+        addressDisplay: shortId(event.ephemeralPubkey ?? "—", 6, 6),
+        signatureDisplay: typeof event.slot === "number" ? String(event.slot) : "—",
+        explorerUrl: toSolscanTx(event.signature),
       })),
-      metadata: {
-        ...auditMockData.metadata,
-        rows: [
-          { id: "source", label: "Source", value: "Backend: /api/audit/events" },
-          { id: "latest", label: "Latest slot", value: String(events.find((e) => e.slot != null)?.slot ?? "—") },
-          ...auditMockData.metadata.rows.slice(0, 1),
+      compliance: {
+        title: "Feed Coverage",
+        items: [
+          {
+            id: "notes",
+            label: "Events With Notes",
+            valueLabel: count ? `${Math.round((encryptedNotes / count) * 100)}%` : "0%",
+            fillPercent: count ? Math.round((encryptedNotes / count) * 100) : 0,
+            tone: "emerald" as const,
+          },
+          {
+            id: "slots",
+            label: "Events With Slot Data",
+            valueLabel: count ? `${Math.round((slotCoverage / count) * 100)}%` : "0%",
+            fillPercent: count ? Math.round((slotCoverage / count) * 100) : 0,
+            tone: "violet" as const,
+          },
         ],
+      },
+      metadata: {
+        title: "Backend Metadata",
+        rows: [
+          { id: "service", label: "Service", value: healthResponse.data?.service ?? "Unavailable" },
+          { id: "version", label: "Version", value: healthResponse.data?.version ?? "Unavailable" },
+          { id: "env", label: "Environment", value: healthResponse.data?.env ?? "Unavailable" },
+        ],
+      },
+      footer: {
+        message: eventsResponse.ok
+          ? "Audit feed is backed by the live backend event indexer. Exported data is read-only."
+          : "The audit backend is unavailable. No placeholder events are being injected.",
+        nodeLabel: `Node: ${nodeLabel}`,
+        latencyLabel: healthResponse.data ? `As of ${new Date(healthResponse.data.timestamp).toLocaleTimeString("en-US")}` : "As of unavailable",
       },
     };
 
     return NextResponse.json(payload, { status: 200 });
-  } catch {
+  } catch (error) {
     const errorId = createErrorId("audit-api");
-    logApiError(errorId, "Audit API failed");
+    logApiError(errorId, "Audit API failed", error);
     return errorResponse(500, "Audit API failed", errorId);
   }
 }

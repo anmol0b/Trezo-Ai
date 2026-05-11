@@ -40,6 +40,8 @@ function MultisigSkeleton() {
 export default function MultisigCard({ data, className = "", isLoading = false }: MultisigCardProps) {
   if (isLoading) return <MultisigSkeleton />;
 
+  const isReadOnly = Boolean(data.readOnlyNotice);
+
   return (
     <article className={`${cardShell} ${className}`}>
       <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{data.title}</h2>
@@ -59,43 +61,55 @@ export default function MultisigCard({ data, className = "", isLoading = false }
                 <RolePill role={member.role} />
               </div>
               <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-                >
-                  {data.removeLabel}
-                </button>
+                {isReadOnly ? (
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
+                    Read only
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                  >
+                    {data.removeLabel}
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="mt-5 rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-slate-800/70 dark:bg-slate-900/50">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500">{data.addMemberLabel}</p>
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
-          <input
-            placeholder={data.addressPlaceholder}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 placeholder:text-slate-400 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600"
-          />
-          <div className="relative">
-            <select className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-              {data.roleOptions.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">▾</span>
-          </div>
-          <button
-            type="button"
-            className="h-11 rounded-xl bg-violet-500 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-sm transition hover:bg-violet-400"
-          >
-            {data.addLabel}
-          </button>
+      {isReadOnly ? (
+        <div className="mt-5 rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/50 dark:text-slate-300">
+          {data.readOnlyNotice}
         </div>
-      </div>
+      ) : (
+        <div className="mt-5 rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 dark:border-slate-800/70 dark:bg-slate-900/50">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500">{data.addMemberLabel}</p>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+            <input
+              placeholder={data.addressPlaceholder}
+              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 placeholder:text-slate-400 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600"
+            />
+            <div className="relative">
+              <select className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
+                {data.roleOptions.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">▾</span>
+            </div>
+            <button
+              type="button"
+              className="h-11 rounded-xl bg-violet-500 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-sm transition hover:bg-violet-400"
+            >
+              {data.addLabel}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
         <div>
@@ -113,7 +127,8 @@ export default function MultisigCard({ data, className = "", isLoading = false }
           </div>
           <button
             type="button"
-            className="h-11 rounded-xl border border-slate-200 bg-slate-100 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            disabled={isReadOnly}
+            className="h-11 rounded-xl border border-slate-200 bg-slate-100 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-70 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             {data.quorum.updateLabel}
           </button>
@@ -122,4 +137,3 @@ export default function MultisigCard({ data, className = "", isLoading = false }
     </article>
   );
 }
-

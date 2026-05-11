@@ -44,6 +44,16 @@ export default function AuditTrailTable({ columns, rows, isLoading = false, clas
     return <TableSkeleton />;
   }
 
+  if (rows.length === 0) {
+    return (
+      <AuditCardShell className={cn("p-6", className)}>
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-sm text-slate-600 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300">
+          No audit events have been indexed yet.
+        </div>
+      </AuditCardShell>
+    );
+  }
+
   return (
     <AuditCardShell className={cn("overflow-hidden p-0", className)}>
       <div className="overflow-x-auto">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CashCard, { type GovernanceRule } from "./ui/cashCard";
 import SpendingCard, { type SpendingCardData } from "./ui/spendingCard";
 import SpendingGraph, { type SpendingVelocityPoint } from "./ui/spendingGraph";
@@ -18,11 +18,14 @@ import type { AuditApiPayload } from "../audit/ui/types";
 import DepartmentAuditSnapshot from "./ui/departmentAuditSnapshot";
 
 const DEPARTMENT_PAGE_API_URL = process.env.NEXT_PUBLIC_DEPARTMENT_API_URL ?? "/api/department";
-const DASHBOARD_API_URL = process.env.NEXT_PUBLIC_DASHBOARD_API_URL ?? "/api/dashboard";
 type BackendStatus = "loading" | "connected" | "unauthorized" | "unavailable";
 
-async function fetchDepartmentPageData(): Promise<DepartmentPageApiPayload> {
-  const response = await fetch(DEPARTMENT_PAGE_API_URL, {
+async function fetchDepartmentPageData(deptId?: string | null): Promise<DepartmentPageApiPayload> {
+  const params = new URLSearchParams();
+  if (deptId) {
+    params.set("deptId", deptId);
+  }
+  const response = await fetch(`${DEPARTMENT_PAGE_API_URL}${params.toString() ? `?${params}` : ""}`, {
     method: "GET",
     cache: "no-store",
     headers: {
@@ -32,22 +35,6 @@ async function fetchDepartmentPageData(): Promise<DepartmentPageApiPayload> {
 
   if (!response.ok) {
     throw new Error(`Department fetch failed: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-async function fetchDashboardData(): Promise<DashboardApiPayload> {
-  const response = await fetch(DASHBOARD_API_URL, {
-    method: "GET",
-    cache: "no-store",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const err = new Error(`Dashboard fetch failed: ${response.status}`);
-    (err as Error & { status?: number }).status = response.status;
-    throw err;
   }
 
   return response.json();
@@ -111,6 +98,7 @@ function mapDashboardToDepartment(payload: Partial<DashboardApiPayload>, deptId?
 }
 
 export default function DepartmentPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const deptId = searchParams?.get("deptId");
   const [departmentData, setDepartmentData] = useState<DepartmentApiPayload>(departmentPageMockData.department);
@@ -124,22 +112,12 @@ export default function DepartmentPage() {
 
     const loadData = async () => {
       try {
-        // If a deptId is provided, prefer dashboard payload so we can choose the right department client-side
-        // without requiring any backend changes.
-        const payload = deptId ? null : await fetchDepartmentPageData();
+        const payload = await fetchDepartmentPageData(deptId);
         if (mounted) {
-          if (payload) {
-            setDepartmentData(payload.department);
-            setAuditData(payload.audit);
-            setBackendStatus("connected");
-            setBackendMessage("");
-          } else {
-            const dashboardPayload = await fetchDashboardData();
-            setDepartmentData(mapDashboardToDepartment(dashboardPayload, deptId));
-            setAuditData(normalizeAuditFromDashboard(dashboardPayload));
-            setBackendStatus("connected");
-            setBackendMessage("");
-          }
+          setDepartmentData(payload.department);
+          setAuditData(payload.audit);
+          setBackendStatus("connected");
+          setBackendMessage("");
         }
       } catch (e) {
         const status = (e as Error & { status?: number }).status;
@@ -202,14 +180,35 @@ export default function DepartmentPage() {
 
         <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(320px,420px)_1fr]">
           <SpendingCard data={departmentData.spendingCard} isLoading={isLoading} />
-          <CashCard rules={departmentData.governanceRules} isLoading={isLoading} />
+          <CashCard
+            rules={departmentData.governanceRules}
+            isLoading={isLoading}
+            onEditRules={() => {
+              const params = new URLSearchParams();
+              if (deptId) {
+                params.set("deptId", deptId);
+              }
+              const query = params.toString();
+              router.push(`/settings${query ? `?${query}` : ""}#department-thresholds`);
+            }}
+          />
         </section>
 
         <section>
+          {backendStatus === "connected" ? (
+            <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
+              Department configuration is live. The spending velocity chart still uses frontend sample data because the backend does not expose department-scoped spend history yet.
+            </div>
+          ) : null}
           <SpendingGraph data={departmentData.spendingVelocity} isLoading={isLoading} />
         </section>
 
         <section>
+          {backendStatus === "connected" ? (
+            <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
+              The audit snapshot below is derived from the live treasury audit feed. Department-scoped audit breakdowns are not exposed by the current backend.
+            </div>
+          ) : null}
           <DepartmentAuditSnapshot summary={auditData.summary} isLoading={isLoading} />
         </section>
       </div>

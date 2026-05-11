@@ -36,8 +36,17 @@ export type YieldAuditItem = {
 };
 
 export type YieldApiPayload = {
+  title?: string;
+  subtitle?: string;
   summaryCards: YieldSummaryCard[];
   positions: YieldPosition[];
   marketRates: YieldMarketRate[];
   auditLog: YieldAuditItem[];
+  meta?: {
+    companyId: string;
+    treasuryPaused: boolean;
+    yieldEndpointAvailable: boolean;
+    kaminoStatsAvailable: boolean;
+    message: string;
+  };
 };

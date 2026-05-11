@@ -203,6 +203,22 @@ export type InvoiceInsight = {
   message: string;
 };
 
+export type InvoiceVendorHistory = {
+  vendor: string;
+  invoiceCount: number;
+  averageAmount: number;
+  lastSeenDate: string;
+  categories: string[];
+};
+
+export type InvoiceSimilarInvoice = {
+  vendor: string;
+  amount: number;
+  date: string;
+  category: string;
+  similarity: number;
+};
+
 export type InvoiceAnalysis = {
   engineStatusLabel: string;
   steps: InvoiceProcessingStep[];
@@ -215,6 +231,29 @@ export type InvoiceAnalysis = {
   taxId?: string;
   paymentTerms?: string;
   riskScoreLabel: string;
+  invoiceNumber?: string;
+  confidence?: number;
+  description?: string;
+  dueDate?: string;
+  vendorHistory?: InvoiceVendorHistory;
+  similarInvoices?: InvoiceSimilarInvoice[];
+};
+
+export type InvoiceContextDepartment = {
+  deptId: string;
+  name: string;
+  pubkey: string;
+  idleThresholdUsdc: number;
+  isActive: boolean;
+};
+
+export type InvoiceRequestContext = {
+  companyId: string;
+  treasuryPda: string;
+  recipientWallet: string;
+  defaultDeptId: string;
+  defaultDeptPda: string;
+  departments: InvoiceContextDepartment[];
 };
 
 export type InvoicesApiPayload = {
@@ -228,6 +267,11 @@ export type InvoicesApiPayload = {
   historyTitle: string;
   history: InvoiceHistoryItem[];
   analysis: InvoiceAnalysis;
+  context: InvoiceRequestContext;
+  meta?: {
+    backendHealthy: boolean;
+    message: string;
+  };
 };
 
 export const auditMockData: AuditApiPayload = {
@@ -595,78 +639,104 @@ export const dashboardMockData: DashboardApiPayload = {
   },
   audit: auditMockData,
   settings: {
-    title: "System Configuration",
-    subtitleBadge: "Synced to mainnet-beta",
+    title: "Treasury Settings",
+    subtitleBadge: "trezo-demo",
+    companyId: "trezo-demo",
+    backend: {
+      status: "healthy",
+      service: "trezo-backend",
+      version: "1.0.0",
+      env: "development",
+      settingsEndpointAvailable: false,
+      spendingRulesEndpointAvailable: false,
+    },
     multisig: {
-      title: "Multisig Configuration",
+      title: "Treasury Multisig",
       members: [
         { id: "member-1", address: "0x71C...8E2F", role: "Administrator" },
         { id: "member-2", address: "0x4A1...99BC", role: "Signer" },
       ],
-      addMemberLabel: "Add new member",
-      addressPlaceholder: "Enter wallet address (0x...)",
+      addMemberLabel: "Signer management",
+      addressPlaceholder: "Signer address",
       defaultRole: "Signer",
       roleOptions: ["Signer", "Administrator"],
       quorum: {
-        label: "Quorum Threshold",
-        helperText: "Minimum number of signatures required to execute transactions.",
+        label: "Approval Threshold",
+        helperText: "Read from the treasury config on the backend.",
         value: 3,
         totalSigners: 5,
-        updateLabel: "Update",
+        updateLabel: "Read only",
       },
-      removeLabel: "Remove",
-      addLabel: "Add",
+      removeLabel: "Unsupported",
+      addLabel: "Unsupported",
+      readOnlyNotice: "Member management is not exposed by the current backend API.",
     },
     oracle: {
-      title: "Oracle Configuration",
-      feedLabel: "PYTH Feed Status",
+      title: "Oracle Trigger",
+      feedLabel: "USDC / USD trigger",
       statusLabel: "Active",
-      price: 2481.92,
-      pairLabel: "BTC / USD",
-      changeLabel: "+0.42% (24h)",
-      triggerLabel: "Rate Trigger Threshold (%)",
-      triggerMin: 1.0,
-      triggerMax: 10.0,
-      triggerValue: 2.5,
-      cooldownLabel: "Update Cooldown (sec)",
-      cooldownSeconds: 300,
-      commitLabel: "Commit Parameters",
+      price: 1,
+      pairLabel: "USDC / USD",
+      changeLabel: "Using frontend fallback",
+      triggerLabel: "Rate Trigger Threshold",
+      triggerMin: 0.95,
+      triggerMax: 1.1,
+      triggerValue: 1.002,
+      cooldownLabel: "Watcher",
+      cooldownSeconds: 10,
+      commitLabel: "Backend route unavailable",
+      canEdit: false,
+    },
+    departments: {
+      title: "Department Idle Thresholds",
+      description: "Update the idle USDC threshold for automated yield deployment.",
+      updateLabel: "Save threshold",
+      canEdit: false,
+      items: [
+        {
+          id: "dept-engineering",
+          deptId: "engineering",
+          name: "Engineering",
+          pubkey: "0x71C...8E2F",
+          idleThresholdUsdc: 5000,
+          isActive: true,
+          summary: "Active for automation",
+        },
+        {
+          id: "dept-marketing",
+          deptId: "marketing",
+          name: "Marketing",
+          pubkey: "0x4A1...99BC",
+          idleThresholdUsdc: 2500,
+          isActive: true,
+          summary: "Active for automation",
+        },
+      ],
     },
     agentAuthority: {
-      title: "AI Agent Authority",
+      title: "Automation Runtime",
       pubkeyLabel: "Agent Pubkey",
       pubkey: "8qLwz4Jp7uN...vRm3t9sY",
-      allowedLabel: "Allowed Instructions",
+      allowedLabel: "Available Context",
       allowed: [
-        { id: "swap", label: "SWAP_ASSET", enabled: true },
-        { id: "rebalance", label: "REBALANCE_LP", enabled: true },
-        { id: "withdraw", label: "WITHDRAW_BASE", enabled: false },
-        { id: "harvest", label: "HARVEST_YIELD", enabled: true },
+        { id: "backend-service", label: "SERVICE TREZO-BACKEND", enabled: true },
+        { id: "settings-route", label: "SETTINGS ROUTE", enabled: false },
+        { id: "spending-rules-route", label: "SPENDING RULES ROUTE", enabled: false },
+        { id: "treasury-read", label: "TREASURY READ", enabled: true },
       ],
-      maxTxCapLabel: "Max Transaction Cap",
-      maxTxCapValue: "$50,000.00",
-      dailyBurnLabel: "Daily Burn Limit",
-      dailyBurnValue: "$250,000.00",
-      actionLabel: "Modify Agent Policy",
-    },
-    auditPrivacy: {
-      title: "Audit & Privacy",
-      grantLabel: "Grant Audit Access",
-      columns: ["Registered Auditor", "Access Level", "Action"],
-      entries: [
-        { id: "auditor-1", auditor: "ChainFirm Ltd.", access: "Full Viewport", actionLabel: "Revoke" },
-        { id: "auditor-2", auditor: "Internal Govt.", access: "Tx Metadata Only", actionLabel: "Revoke" },
-      ],
-      helperText:
-        "Viewing keys allow third parties to monitor transactions without providing signing authority. Revoking a key invalidates all previous session tokens immediately.",
+      maxTxCapLabel: "Treasury PDA",
+      maxTxCapValue: "7M1A...6FH",
+      dailyBurnLabel: "Admin",
+      dailyBurnValue: "Admin...Pubkey",
+      actionLabel: "Read only",
+      actionDisabled: true,
     },
     criticalOps: {
-      title: "Critical Operations: Treasury Kill-switch",
-      body:
-        "Triggering the PAUSE TREASURY command will freeze all non-signed transactions and revoke all AI agent permissions across the protocol.",
-      note:
-        "Note: This action requires the consensus of 3/5 multisig members to resume operations. This is a one-way state transition that emits a global alert to all connected Oracles.",
-      actionLabel: "Pause Treasury",
+      title: "Treasury Pause State: Inactive",
+      body: "The backend reports the treasury is currently unpaused.",
+      note: "Pause and resume controls are not exposed by the current backend API, so this panel is intentionally read-only.",
+      actionLabel: "Read only",
+      actionDisabled: true,
     },
   },
 };
@@ -755,14 +825,14 @@ export const proposalMockData: ProposalApiPayload = {
 };
 
 export const invoicesMockData: InvoicesApiPayload = {
-  title: "Invoice Processing",
-  subtitle: "Financial Intake",
+  title: "Invoice Operations",
+  subtitle: "Parse, review, propose, and optionally convert to fiat",
   upload: {
-    title: "Upload PDF Invoices",
-    helperText: "Drag and drop or click to select files",
-    supportedLabel: "SUPPORTED: PDF, JPG, PNG (MAX 10MB)",
+    title: "Upload a PDF invoice",
+    helperText: "Select a PDF, review the parsed fields, then create an onchain proposal.",
+    supportedLabel: "SUPPORTED: PDF ONLY (MAX 10MB)",
   },
-  historyTitle: "Recent History",
+  historyTitle: "Recent invoices",
   history: [
     {
       id: "inv-aws-jan",
@@ -793,23 +863,23 @@ export const invoicesMockData: InvoicesApiPayload = {
     },
   ],
   analysis: {
-    engineStatusLabel: "Active Engine",
+    engineStatusLabel: "Ready",
     steps: [
       {
         id: "step-ocr",
-        title: "Extracting Text",
+        title: "Extracted text",
         description: "OCR layer identification complete",
         status: "done",
       },
       {
         id: "step-parse",
-        title: "Parsing Fields",
+        title: "Parsed fields",
         description: "Entity extraction (Vendor, Amount, Date)",
         status: "done",
       },
       {
         id: "step-history",
-        title: "Checking History",
+        title: "Checked history",
         description: "Cross-referencing treasury logs...",
         status: "active",
       },
@@ -825,8 +895,55 @@ export const invoicesMockData: InvoicesApiPayload = {
     currency: "USD",
     category: "Cloud Infrastructure",
     department: "Engineering",
-    taxId: "XX-3901923",
+    taxId: "Proposal pending",
     paymentTerms: "Net 30",
-    riskScoreLabel: "Moderate (4.2/10)",
+    riskScoreLabel: "Moderate",
+    invoiceNumber: "49201-X",
+    confidence: 0.82,
+    description: "Infrastructure hosting subscription",
+    dueDate: "2024-02-12",
+    vendorHistory: {
+      vendor: "DigitalOcean Inc.",
+      invoiceCount: 4,
+      averageAmount: 3890,
+      lastSeenDate: "2024-01-02",
+      categories: ["Cloud Infrastructure"],
+    },
+    similarInvoices: [
+      {
+        vendor: "DigitalOcean Inc.",
+        amount: 4210.42,
+        date: "2023-12-12",
+        category: "Cloud Infrastructure",
+        similarity: 0.94,
+      },
+    ],
+  },
+  context: {
+    companyId: "trezo-demo",
+    treasuryPda: "7M1A...6FH",
+    recipientWallet: "wallet...1234",
+    defaultDeptId: "engineering",
+    defaultDeptPda: "FhzK...8iM",
+    departments: [
+      {
+        deptId: "engineering",
+        name: "Engineering",
+        pubkey: "FhzK...8iM",
+        idleThresholdUsdc: 5000,
+        isActive: true,
+      },
+      {
+        deptId: "operations",
+        name: "Operations",
+        pubkey: "Ops...Vault",
+        idleThresholdUsdc: 2000,
+        isActive: true,
+      },
+    ],
+  },
+  meta: {
+    backendHealthy: true,
+    message: "Invoice history is loaded from the backend. Uploads still require treasury and department context.",
   },
 };

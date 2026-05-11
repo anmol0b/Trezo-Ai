@@ -1,84 +1,66 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
-import type { InvoicesApiPayload } from "../../../lib/mockData";
-import { z } from "zod";
-import { createErrorId, errorResponse, fetchWithTimeoutAndRetry, logApiError, parseWithSchema } from "../_backend";
+import { invoicesMockData, type InvoicesApiPayload } from "../../../lib/mockData";
+import {
+  BACKEND_BASE_URL,
+  COMPANY_ID,
+  createErrorId,
+  errorResponse,
+  fetchBackendAndParse,
+  fetchWithTimeoutAndRetry,
+  lamportsToUsdc,
+  logApiError,
+  parseWithSchema,
+} from "../_backend";
+import {
+  BackendInvoicesResponseSchema,
+  ConfirmInvoiceResponseSchema,
+  DepartmentsResponseSchema,
+  HealthResponseSchema,
+  ParseInvoiceBackendResponseSchema,
+  TreasuryResponseSchema,
+  type BackendInvoice,
+} from "../_schemas";
 
-const BACKEND_BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:4000";
-const COMPANY_ID = process.env.COMPANY_ID ?? "trezo-demo";
-const TREASURY_PDA = process.env.NEXT_PUBLIC_TREASURY_PDA ?? "treasury-pda";
-const DEPT_PDA = process.env.NEXT_PUBLIC_DEPT_PDA ?? "engineering-dept-pda";
-const RECIPIENT_WALLET = process.env.NEXT_PUBLIC_RECIPIENT_WALLET ?? "recipient-wallet";
-
-const BackendInvoiceSchema = z.object({
-  id: z.string(),
-  vendor: z.string(),
-  amount: z.coerce.number(),
-  currency: z.string(),
-  amount_usdc: z.coerce.number(),
-  due_date: z.string().nullable(),
-  category: z.string().nullable(),
-  description: z.string().nullable(),
-  invoice_number: z.string().nullable(),
-  flags: z.array(z.string()).nullable(),
-  created_at: z.string(),
-});
-
-const BackendInvoicesResponseSchema = z.object({
-  success: z.boolean(),
-  count: z.number().optional(),
-  data: z.array(BackendInvoiceSchema).optional(),
-});
-
-const ParseInvoiceResponseSchema = z.object({
-  success: z.boolean(),
-  summary: z
-    .object({
-      vendor: z.string().optional(),
-      amountUsdc: z.coerce.number().optional(),
-      currency: z.string().optional(),
-      category: z.string().optional(),
-      description: z.string().optional(),
-      dueDate: z.string().optional(),
-      invoiceNumber: z.string().optional(),
-      confidence: z.coerce.number().optional(),
-      anomalyFlags: z.array(z.string()).optional(),
-      suggestedDepartment: z.string().optional(),
-      metadataUri: z.string().optional(),
-      expiryTimestamp: z.coerce.number().optional(),
-    })
-    .optional(),
-  ragResult: z.unknown().optional(),
-});
-
-const ConfirmInvoiceResponseSchema = z.object({
-  success: z.boolean(),
-  signature: z.string().optional(),
-  proposalPda: z.string().optional(),
-  error: z.string().optional(),
-});
-
-type BackendInvoice = z.infer<typeof BackendInvoiceSchema>;
+const TREASURY_PDA = process.env.NEXT_PUBLIC_TREASURY_PDA ?? invoicesMockData.context.treasuryPda;
+const RECIPIENT_WALLET = process.env.NEXT_PUBLIC_RECIPIENT_WALLET ?? invoicesMockData.context.recipientWallet;
 
 function toHistoryStatus(flags: string[] | null | undefined): "processed" | "flagged" {
   return (flags?.length ?? 0) > 0 ? "flagged" : "processed";
 }
 
-function toInvoicesPayload(rows: BackendInvoice[]): InvoicesApiPayload {
+function toRiskLabel(confidence?: number, hasAnomaly?: boolean): string {
+  if (hasAnomaly) return "High (anomaly detected)";
+  if (typeof confidence !== "number") return "Needs review";
+  if (confidence >= 0.9) return "Low";
+  if (confidence >= 0.75) return "Moderate";
+  return "High";
+}
+
+function toInvoicesPayload(
+  rows: BackendInvoice[],
+  context: {
+    companyId: string;
+    treasuryPda: string;
+    recipientWallet: string;
+    departments: Array<{ deptId: string; name: string; pubkey: string; idleThresholdUsdc: number; isActive: boolean }>;
+    backendHealthy: boolean;
+  },
+): InvoicesApiPayload {
   const latest = rows[0];
   const latestFlags = latest?.flags ?? [];
   const latestHasAnomaly = latestFlags.length > 0;
 
   return {
-    title: "Invoice Processing",
-    subtitle: "Financial Intake",
+    title: "Invoice Operations",
+    subtitle: "Parse, review, propose, and optionally convert to fiat",
     upload: {
-      title: "Upload PDF Invoices",
-      helperText: "Drag and drop or click to select files",
-      supportedLabel: "SUPPORTED: PDF, JPG, PNG (MAX 10MB)",
+      title: "Upload a PDF invoice",
+      helperText: "Select a PDF, review the parsed fields, then create an onchain proposal.",
+      supportedLabel: "SUPPORTED: PDF ONLY (MAX 10MB)",
     },
-    historyTitle: "Recent History",
+    historyTitle: "Recent invoices",
     history: rows.map((row) => ({
       id: row.id,
       fileName: `${row.vendor.replace(/\s+/g, "_").toUpperCase()}_${row.invoice_number ?? "N_A"}.PDF`,
@@ -89,12 +71,18 @@ function toInvoicesPayload(rows: BackendInvoice[]): InvoicesApiPayload {
       status: toHistoryStatus(row.flags),
     })),
     analysis: {
-      engineStatusLabel: "Active Engine",
-      steps: [
-        { id: "step-ocr", title: "Extracting Text", description: "OCR extraction complete", status: "done" },
-        { id: "step-parse", title: "Parsing Fields", description: "Invoice fields parsed", status: "done" },
-        { id: "step-history", title: "Checking History", description: "Vendor pattern checks complete", status: "done" },
-      ],
+      engineStatusLabel: context.backendHealthy ? "Ready" : "Backend unavailable",
+      steps: latest
+        ? [
+            { id: "step-ocr", title: "Extracted text", description: "Stored from the last processed invoice", status: "done" },
+            { id: "step-parse", title: "Parsed fields", description: "Invoice fields were parsed successfully", status: "done" },
+            { id: "step-history", title: "Checked history", description: "Vendor history and anomaly checks completed", status: "done" },
+          ]
+        : [
+            { id: "step-ocr", title: "Extract text", description: "Waiting for a PDF upload", status: "pending" },
+            { id: "step-parse", title: "Parse fields", description: "Parsed data will appear here", status: "pending" },
+            { id: "step-history", title: "Check history", description: "Historical matches will appear after parsing", status: "pending" },
+          ],
       insight: latestHasAnomaly
         ? {
             id: `insight-${latest?.id ?? "none"}`,
@@ -103,14 +91,28 @@ function toInvoicesPayload(rows: BackendInvoice[]): InvoicesApiPayload {
             message: latestFlags.join(", "),
           }
         : undefined,
-      vendorName: latest?.vendor ?? "No invoices yet",
+      vendorName: latest?.vendor ?? "No invoice selected",
       totalAmount: Number(latest?.amount_usdc ?? latest?.amount ?? 0),
       currency: latest?.currency ?? "USD",
       category: latest?.category ?? "Uncategorized",
-      department: "operations",
-      paymentTerms: latest?.due_date ? `Due by ${latest.due_date}` : "—",
-      taxId: "—",
-      riskScoreLabel: latestHasAnomaly ? "High (anomaly detected)" : "Low",
+      department: context.departments[0]?.deptId ?? "unassigned",
+      paymentTerms: latest?.due_date ? `Due by ${latest.due_date}` : "Awaiting parse",
+      taxId: latest?.proposal_pda ?? "Not proposed yet",
+      riskScoreLabel: toRiskLabel(undefined, latestHasAnomaly),
+    },
+    context: {
+      companyId: context.companyId,
+      treasuryPda: context.treasuryPda,
+      recipientWallet: context.recipientWallet,
+      defaultDeptId: context.departments[0]?.deptId ?? "",
+      defaultDeptPda: context.departments[0]?.pubkey ?? "",
+      departments: context.departments,
+    },
+    meta: {
+      backendHealthy: context.backendHealthy,
+      message: context.backendHealthy
+        ? "Invoice history is loaded from the backend. Uploads still require the treasury and department context below."
+        : "Backend is unavailable. You can still review the form, but uploads will fail until the API recovers.",
     },
   };
 }
@@ -122,41 +124,55 @@ export async function GET() {
   }
 
   try {
-    const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/${COMPANY_ID}`, {
-      method: "GET",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+    const [invoiceResponse, treasuryResponse, departmentsResponse, healthResponse] = await Promise.all([
+      fetchBackendAndParse(`/api/invoices/${COMPANY_ID}`, BackendInvoicesResponseSchema),
+      fetchBackendAndParse(`/api/treasury/${COMPANY_ID}`, TreasuryResponseSchema),
+      fetchBackendAndParse(`/api/treasury/${COMPANY_ID}/departments`, DepartmentsResponseSchema),
+      fetchBackendAndParse("/health", HealthResponseSchema),
+    ]);
+
+    if (invoiceResponse.invalid || treasuryResponse.invalid || departmentsResponse.invalid || healthResponse.invalid) {
+      return errorResponse(502, "Invalid backend response shape");
+    }
+
+    const departments = departmentsResponse.data?.success
+      ? departmentsResponse.data.data.map((department) => ({
+          deptId: department.deptId,
+          name: department.name,
+          pubkey: department.pubkey,
+          idleThresholdUsdc: lamportsToUsdc(department.idleThreshold),
+          isActive: department.isActive,
+        }))
+      : [];
+    const backendHealthy = healthResponse.ok && healthResponse.data?.status === "healthy";
+    const resolvedDepartments =
+      departments.length > 0
+        ? departments
+        : !backendHealthy
+          ? invoicesMockData.context.departments
+          : [];
+
+    const payload = toInvoicesPayload(invoiceResponse.data?.success ? invoiceResponse.data.data : [], {
+      companyId: treasuryResponse.data?.data?.companyId ?? invoicesMockData.context.companyId ?? COMPANY_ID,
+      treasuryPda: treasuryResponse.data?.data?.pubkey ?? TREASURY_PDA,
+      recipientWallet: RECIPIENT_WALLET,
+      departments: resolvedDepartments,
+      backendHealthy,
     });
 
-    if (!response.ok) {
-      return errorResponse(response.status, "Failed to fetch invoices from backend");
+    if (!backendHealthy && departments.length === 0) {
+      payload.meta = {
+        backendHealthy: false,
+        message:
+          "Backend is unavailable. Demo department context is shown for browsing, but PDF parsing stays disabled until the API recovers.",
+      };
     }
 
-    const rawPayload = await response.json();
-    const parsedPayload = parseWithSchema(BackendInvoicesResponseSchema, rawPayload);
-    if (!parsedPayload.data) {
-      const errorId = createErrorId("invoices-get-shape");
-      logApiError(errorId, "Invalid invoices response shape from backend", parsedPayload.error);
-      return NextResponse.json(
-        { error: "Invalid invoices response shape from backend", errorId, status: 502 },
-        { status: 502 },
-      );
-    }
-    const backendPayload = parsedPayload.data;
-
-    if (!backendPayload.success) {
-      return errorResponse(502, "Backend returned unsuccessful invoices payload");
-    }
-
-    const rows = backendPayload.data ?? [];
-    return NextResponse.json(toInvoicesPayload(rows), { status: 200 });
+    return NextResponse.json(payload, { status: 200 });
   } catch (error) {
     const errorId = createErrorId("invoices-get");
     logApiError(errorId, "Invoices GET failed", error);
-    return NextResponse.json(
-      { error: "Invoices GET failed", errorId, status: 500 },
-      { status: 500 },
-    );
+    return errorResponse(500, "Invoices GET failed", errorId);
   }
 }
 
@@ -176,30 +192,50 @@ export async function POST(req: Request) {
         return errorResponse(400, "Missing invoice file");
       }
 
+      const treasuryPda = String(formData.get("treasuryPda") ?? TREASURY_PDA);
+      const deptPda = String(formData.get("deptPda") ?? "");
+      const recipientWallet = String(formData.get("recipientWallet") ?? RECIPIENT_WALLET);
+      const companyId = String(formData.get("companyId") ?? COMPANY_ID);
+
+      if (!deptPda) {
+        return errorResponse(400, "Department account is required");
+      }
+
       const backendFormData = new FormData();
       backendFormData.set("invoice", invoice);
-      backendFormData.set("treasuryPda", String(formData.get("treasuryPda") ?? TREASURY_PDA));
-      backendFormData.set("deptPda", String(formData.get("deptPda") ?? DEPT_PDA));
-      backendFormData.set("recipientWallet", String(formData.get("recipientWallet") ?? RECIPIENT_WALLET));
-      backendFormData.set("companyId", String(formData.get("companyId") ?? COMPANY_ID));
+      backendFormData.set("treasuryPda", treasuryPda);
+      backendFormData.set("deptPda", deptPda);
+      backendFormData.set("recipientWallet", recipientWallet);
+      backendFormData.set("companyId", companyId);
 
-      const parseRes = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/parse`, {
+      const parseResponse = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/parse`, {
         method: "POST",
         body: backendFormData,
       });
 
-      if (!parseRes.ok) {
-        return errorResponse(parseRes.status, `Parse failed: ${parseRes.status}`);
+      if (!parseResponse.ok) {
+        return errorResponse(parseResponse.status, `Parse failed: ${parseResponse.status}`);
       }
 
-      const rawParsePayload = await parseRes.json();
-      const parsed = parseWithSchema(ParseInvoiceResponseSchema, rawParsePayload);
-      if (!parsed.data) {
+      const rawPayload = await parseResponse.json();
+      const parsedPayload = parseWithSchema(ParseInvoiceBackendResponseSchema, rawPayload);
+
+      if (!parsedPayload.data) {
         const errorId = createErrorId("invoices-parse-shape");
-        logApiError(errorId, "Invalid parse response shape from backend", parsed.error);
+        logApiError(errorId, "Invalid parse response shape from backend", parsedPayload.error);
         return errorResponse(502, "Invalid parse response from backend", errorId);
       }
-      return NextResponse.json(parsed.data, { status: 200 });
+
+      return NextResponse.json(
+        {
+          ...parsedPayload.data,
+          ragResult: {
+            vendorHistory: parsedPayload.data.vendorHistory,
+            similarInvoices: parsedPayload.data.similarInvoices ?? [],
+          },
+        },
+        { status: 200 },
+      );
     }
 
     if (action === "confirm") {
@@ -215,32 +251,39 @@ export async function POST(req: Request) {
         return errorResponse(400, "Invalid confirm payload JSON");
       }
 
-      const confirmRes = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/confirm`, {
+      const deptPda = String(formData.get("deptPda") ?? "");
+      if (!deptPda) {
+        return errorResponse(400, "Department account is required");
+      }
+
+      const confirmResponse = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           invoice: parsed.invoice,
           ragResult: parsed.ragResult,
           treasuryPda: String(formData.get("treasuryPda") ?? TREASURY_PDA),
-          deptPda: String(formData.get("deptPda") ?? DEPT_PDA),
+          deptPda,
           recipientWallet: String(formData.get("recipientWallet") ?? RECIPIENT_WALLET),
           metadataUri: parsed.metadataUri ?? "ipfs://pending",
           companyId: String(formData.get("companyId") ?? COMPANY_ID),
         }),
       });
 
-      if (!confirmRes.ok) {
-        return errorResponse(confirmRes.status, `Confirm failed: ${confirmRes.status}`);
+      if (!confirmResponse.ok) {
+        return errorResponse(confirmResponse.status, `Confirm failed: ${confirmResponse.status}`);
       }
 
-      const rawConfirmPayload = await confirmRes.json();
-      const confirmed = parseWithSchema(ConfirmInvoiceResponseSchema, rawConfirmPayload);
-      if (!confirmed.data) {
+      const rawPayload = await confirmResponse.json();
+      const confirmedPayload = parseWithSchema(ConfirmInvoiceResponseSchema, rawPayload);
+
+      if (!confirmedPayload.data) {
         const errorId = createErrorId("invoices-confirm-shape");
-        logApiError(errorId, "Invalid confirm response shape from backend", confirmed.error);
+        logApiError(errorId, "Invalid confirm response shape from backend", confirmedPayload.error);
         return errorResponse(502, "Invalid confirm response from backend", errorId);
       }
-      return NextResponse.json(confirmed.data, { status: 200 });
+
+      return NextResponse.json(confirmedPayload.data, { status: 200 });
     }
 
     return errorResponse(400, "Unsupported action");
@@ -250,4 +293,3 @@ export async function POST(req: Request) {
     return errorResponse(500, "Invoices request failed", errorId);
   }
 }
-

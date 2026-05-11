@@ -183,7 +183,28 @@ export const DashboardPage = () => {
               });
             }}
           />
-          <LiveCard data={dashboardData.liveActivities} isLoading={isLoading} />
+          <LiveCard
+            data={dashboardData.liveActivities}
+            isLoading={isLoading}
+            statusLabel={
+              backendStatus === "connected"
+                ? "Live backend"
+                : backendStatus === "unauthorized"
+                  ? "Demo data"
+                  : backendStatus === "loading"
+                    ? "Connecting"
+                    : "Fallback mode"
+            }
+            latencyLabel={
+              backendStatus === "connected"
+                ? "audit feed"
+                : backendStatus === "unauthorized"
+                  ? "sign in required"
+                  : backendStatus === "loading"
+                    ? "initializing"
+                    : "backend unavailable"
+            }
+          />
         </div>
       </div>
     </div>
