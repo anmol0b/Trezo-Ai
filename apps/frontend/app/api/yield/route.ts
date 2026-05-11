@@ -13,6 +13,7 @@ import {
 } from "../_backend";
 
 import {
+  AuditEventsResponseSchema,
   DepartmentsResponseSchema,
   KaminoStatsSchema,
   ProposalsResponseSchema,
