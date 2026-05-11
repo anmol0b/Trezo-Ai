@@ -6,6 +6,12 @@
  */
 
 import {
+  getAssociatedTokenAddressSync,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
+
+import {
   Transaction,
   ComputeBudgetProgram,
   sendAndConfirmTransaction,
@@ -106,7 +112,13 @@ async function initDepartment(deptId: string, name: string): Promise<void> {
   }
 
   // Use agent pubkey as placeholder vault ATA (replace with real ATA later)
-  const deptVaultAta = agentKeypair.publicKey;
+  const [deptVaultAuthPda] = PDAs.deptVaultAuthority(deptPda);
+  const deptVaultAta = getAssociatedTokenAddressSync(
+    DEVNET_USDC_MINT,
+    deptVaultAuthPda,
+    true // allowOwnerOffCurve — PDA is not on curve
+    );
+    console.log(`  🏦 Vault ATA: ${deptVaultAta.toBase58()}`);
   const idleThreshold = new BN(5_000_000_000); // 5000 USDC in lamports
 
   const tx = await program.methods

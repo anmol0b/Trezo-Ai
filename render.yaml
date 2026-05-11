@@ -19,6 +19,8 @@ services:
         sync: false
       - key: PROGRAM_ID
         sync: false
+      - key: HOOK_PROGRAM_ID
+        sync: false
       - key: AGENT_KEYPAIR
         sync: false
       - key: GROQ_API_KEY
@@ -29,9 +31,21 @@ services:
         sync: false
       - key: DODO_SANDBOX
         value: false
+      - key: BACKEND_API_SECRET
+        sync: false
       - key: DODO_API_URL
         sync: false
       - key: COMPANY_ID
         value: trezo-demo
       - key: FRONTEND_URL
+        sync: false
+      - key: COINFLOW_MERCHANT_ID
+        sync: false
+      - key: COINFLOW_ENV
+        value: prod
+      - key: COINFLOW_API_KEY
+        sync: false
+      - key: COINFLOW_WEBHOOK_SECRET
+        sync: false
+      - key: FIAT_WALLET_ADDRESS
         sync: false
