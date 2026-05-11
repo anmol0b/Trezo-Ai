@@ -35,7 +35,7 @@ function formatPosition(pos: any, apy: number, currentBalance: number, kaminoSou
     estimatedApy: apy,
     estimatedApyPercent: `${(apy * 100).toFixed(2)}%`,
     lastDepositAt,
-    kaminoStatus: kaminoSource === 'kamino_mainnet' ? 'live_apy' : 'devnet_simulated',
+    kaminoStatus: kaminoSource === 'kamino_api' ? 'live_apy' : 'devnet_simulated',
   };
 }
 
@@ -132,7 +132,7 @@ yieldRouter.get('/:companyId', async (req: Request, res: Response) => {
             utilizationRate: kaminoStats.utilizationRate,
             source: kaminoStats.source,
           },
-          kaminoStatus: kaminoStats.source === 'kamino_mainnet' ? 'live_apy' : 'devnet_simulated',
+          kaminoStatus: kaminoStats.source === 'kamino_api' ? 'live_apy' : 'devnet_simulated',
         },
         positions,
       },
@@ -196,7 +196,7 @@ yieldRouter.get('/:companyId/:deptId', async (req: Request, res: Response) => {
           supplyApy: kaminoStats.usdcSupplyApy,
           source: kaminoStats.source,
         },
-        kaminoStatus: kaminoStats.source === 'kamino_mainnet' ? 'live_apy' : 'devnet_simulated',
+        kaminoStatus: kaminoStats.source === 'kamino_api' ? 'live_apy' : 'devnet_simulated',
       },
     });
 
