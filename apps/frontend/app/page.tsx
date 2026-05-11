@@ -1,6 +1,6 @@
 // import Image, { type ImageProps } from "next/image";
 import "./globals.css"
-import Landing from "../pages/landing";
+import LandingPage from "../components/landing/LandingPage";
 // import { HeroSection } from "../components/coming-soon/hero";
 
 // type Props = Omit<ImageProps, "src"> & {
@@ -22,7 +22,7 @@ import Landing from "../pages/landing";
 export default function Home() {
   return (
     <div>
-      <Landing />
+      <LandingPage />
       {/* <HeroSection /> */}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import CashCard, { type GovernanceRule } from "./ui/cashCard";
 import SpendingCard, { type SpendingCardData } from "./ui/spendingCard";
 import SpendingGraph, { type SpendingVelocityPoint } from "./ui/spendingGraph";
@@ -17,6 +18,8 @@ import type { AuditApiPayload } from "../audit/ui/types";
 import DepartmentAuditSnapshot from "./ui/departmentAuditSnapshot";
 
 const DEPARTMENT_PAGE_API_URL = process.env.NEXT_PUBLIC_DEPARTMENT_API_URL ?? "/api/department";
+const DASHBOARD_API_URL = process.env.NEXT_PUBLIC_DASHBOARD_API_URL ?? "/api/dashboard";
+type BackendStatus = "loading" | "connected" | "unauthorized" | "unavailable";
 
 async function fetchDepartmentPageData(): Promise<DepartmentPageApiPayload> {
   const response = await fetch(DEPARTMENT_PAGE_API_URL, {
@@ -34,13 +37,30 @@ async function fetchDepartmentPageData(): Promise<DepartmentPageApiPayload> {
   return response.json();
 }
 
+async function fetchDashboardData(): Promise<DashboardApiPayload> {
+  const response = await fetch(DASHBOARD_API_URL, {
+    method: "GET",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const err = new Error(`Dashboard fetch failed: ${response.status}`);
+    (err as Error & { status?: number }).status = response.status;
+    throw err;
+  }
+
+  return response.json();
+}
+
 function normalizeAuditFromDashboard(payload: Partial<DashboardApiPayload>): AuditApiPayload {
   return payload.audit ?? auditMockData;
 }
 
-function mapDashboardToDepartment(payload: Partial<DashboardApiPayload>): DepartmentApiPayload {
+function mapDashboardToDepartment(payload: Partial<DashboardApiPayload>, deptId?: string | null): DepartmentApiPayload {
   const fallbackDepartment = dashboardMockData.departments[0]!;
-  const primaryDepartment = payload.departments?.[0] ?? fallbackDepartment;
+  const primaryDepartment =
+    (deptId ? payload.departments?.find((d) => d.id === deptId) : payload.departments?.[0]) ?? fallbackDepartment;
   const currency = primaryDepartment.currency ?? "USDC";
 
   const spendingCard: SpendingCardData = {
@@ -91,24 +111,48 @@ function mapDashboardToDepartment(payload: Partial<DashboardApiPayload>): Depart
 }
 
 export default function DepartmentPage() {
+  const searchParams = useSearchParams();
+  const deptId = searchParams.get("deptId");
   const [departmentData, setDepartmentData] = useState<DepartmentApiPayload>(departmentPageMockData.department);
   const [auditData, setAuditData] = useState<AuditApiPayload>(departmentPageMockData.audit);
   const [isLoading, setIsLoading] = useState(true);
+  const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
+  const [backendMessage, setBackendMessage] = useState<string>("");
 
   useEffect(() => {
     let mounted = true;
 
     const loadData = async () => {
       try {
-        const payload = await fetchDepartmentPageData();
+        // If a deptId is provided, prefer dashboard payload so we can choose the right department client-side
+        // without requiring any backend changes.
+        const payload = deptId ? null : await fetchDepartmentPageData();
         if (mounted) {
-          setDepartmentData(payload.department);
-          setAuditData(payload.audit);
+          if (payload) {
+            setDepartmentData(payload.department);
+            setAuditData(payload.audit);
+            setBackendStatus("connected");
+            setBackendMessage("");
+          } else {
+            const dashboardPayload = await fetchDashboardData();
+            setDepartmentData(mapDashboardToDepartment(dashboardPayload, deptId));
+            setAuditData(normalizeAuditFromDashboard(dashboardPayload));
+            setBackendStatus("connected");
+            setBackendMessage("");
+          }
         }
-      } catch {
+      } catch (e) {
+        const status = (e as Error & { status?: number }).status;
         if (mounted) {
-          setDepartmentData(mapDashboardToDepartment(dashboardMockData));
+          setDepartmentData(mapDashboardToDepartment(dashboardMockData, deptId));
           setAuditData(normalizeAuditFromDashboard(dashboardMockData));
+          if (status === 401) {
+            setBackendStatus("unauthorized");
+            setBackendMessage("You’re not signed in. Showing demo data.");
+          } else {
+            setBackendStatus("unavailable");
+            setBackendMessage("Backend is unreachable or returned invalid data. Showing demo data.");
+          }
         }
       } finally {
         if (mounted) {
@@ -122,11 +166,32 @@ export default function DepartmentPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [deptId]);
+
+  const showBanner = backendStatus !== "connected";
 
   return (
     <div className="min-h-full bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
       <div className="w-full space-y-6">
+        {showBanner ? (
+          <div
+            className={`rounded-2xl border p-4 text-sm font-medium ${
+              backendStatus === "unauthorized"
+                ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
+                : "border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+            }`}
+            role="status"
+          >
+            <span className="font-semibold uppercase tracking-wide">
+              {backendStatus === "loading"
+                ? "Connecting…"
+                : backendStatus === "unauthorized"
+                  ? "Demo mode (unauthorized)"
+                  : "Demo mode (backend unavailable)"}
+            </span>
+            {backendMessage ? <span className="ml-2">{backendMessage}</span> : null}
+          </div>
+        ) : null}
         <section className="space-y-3">
           {/* Breadcrumbs placeholder: reserving this space for upcoming navigation component. */}
           <div className="h-5" />

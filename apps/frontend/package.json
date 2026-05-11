@@ -36,7 +36,8 @@
     "react-dom": "^19.2.0",
     "styled-jsx": "^5.1.7",
     "tailwind-merge": "^3.5.0",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
