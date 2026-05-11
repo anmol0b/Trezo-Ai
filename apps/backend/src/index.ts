@@ -14,9 +14,9 @@ import { yieldRouter } from './routes/yield';
 import { startYieldPoller, stopYieldPoller } from './jobs/yield-poller';
 import { startOracleWatcher, stopOracleWatcher } from './jobs/oracle-watcher';
 import { startStealthEventIndexer, stopStealthEventIndexer } from './services/sol_rpc';
+import { billingRouter } from './routes/billing';
 
 dotenv.config();
-
 const app = express();
 
 // Middleware
@@ -55,6 +55,7 @@ app.use('/api/treasury', treasuryRouter);
 app.use('/api/proposals', proposalsRouter);
 app.use('/api/fiat', fiatRouter);
 app.use('/api/audit', auditRouter);
+app.use('/api/billing', billingRouter);
 
 // 404 handler
 app.use((_req, res) => {
