@@ -6,6 +6,7 @@ import { queryVendorHistory, storeInvoiceEmbedding } from '../agent/rag';
 import { buildProposalData, buildProposalSummary } from '../agent/proposal-builder';
 import { submitProposePayout } from '../agent/solana-client';
 import { toErrorMessage } from '../utils';
+import { getDb } from '../db/client';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -17,6 +18,55 @@ const upload = multer({
 });
 
 export const invoicesRouter = Router();
+
+// GET /api/invoices/:companyId
+// Returns recent invoices persisted in Postgres
+invoicesRouter.get('/:companyId', async (req: Request, res: Response) => {
+  try {
+    const { companyId } = req.params;
+    const limit = Math.min(parseInt(String(req.query.limit ?? '50'), 10) || 50, 200);
+
+    if (!companyId) {
+      res.status(400).json({ error: 'companyId is required' });
+      return;
+    }
+
+    const db = getDb();
+    const result = await db.query(
+      `
+      SELECT
+        id,
+        vendor,
+        amount,
+        currency,
+        amount_usdc,
+        due_date,
+        category,
+        description,
+        invoice_number,
+        metadata_uri,
+        confidence,
+        flags,
+        proposal_pda,
+        created_at
+      FROM invoices
+      WHERE company_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2
+      `,
+      [companyId, limit],
+    );
+
+    res.json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows,
+    });
+  } catch (err) {
+    console.error('Invoices list fetch error:', err);
+    res.status(500).json({ error: toErrorMessage(err) });
+  }
+});
 
 // POST /api/invoices/parse
 // Step 1 — upload PDF, get AI parsed summary back for human review

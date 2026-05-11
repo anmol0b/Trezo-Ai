@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
-import { dashboardMockData } from "../../../lib/mockData";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/options";
+import { errorResponse } from "../_backend";
 
 export async function GET() {
-  const settings = dashboardMockData.settings;
-  if (!settings) {
-    return NextResponse.json({ error: "Settings payload not configured" }, { status: 500 });
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return errorResponse(401, "Unauthorized");
   }
-  return NextResponse.json(settings, { status: 200 });
+  return errorResponse(501, "Settings endpoint not implemented");
 }
