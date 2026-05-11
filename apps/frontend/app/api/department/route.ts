@@ -81,7 +81,7 @@ async function fetchBackend<T>(path: string, schema: z.ZodSchema<T>): Promise<{ 
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);s
+    const session = await getServerSession(authOptions);
     if (!session) {
       return errorResponse(401, "Unauthorized");
     }
