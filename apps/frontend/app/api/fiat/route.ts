@@ -9,6 +9,7 @@ import {
   fetchWithTimeoutAndRetry,
   logApiError,
   parseWithSchema,
+  backendHeaders,
 } from "../_backend";
 import { FiatStatusSchema } from "../_schemas";
 

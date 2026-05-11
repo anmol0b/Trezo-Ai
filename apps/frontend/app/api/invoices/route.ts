@@ -12,6 +12,7 @@ import {
   lamportsToUsdc,
   logApiError,
   parseWithSchema,
+  backendHeaders,
 } from "../_backend";
 import {
   BackendInvoicesResponseSchema,

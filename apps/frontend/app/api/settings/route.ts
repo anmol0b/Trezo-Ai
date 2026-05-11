@@ -13,6 +13,7 @@ import {
   parseWithSchema,
   shortId,
   BACKEND_BASE_URL,
+  backendHeaders,
 } from "../_backend";
 import { DepartmentsResponseSchema, HealthResponseSchema, TreasuryResponseSchema } from "../_schemas";
 

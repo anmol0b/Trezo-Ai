@@ -3,7 +3,7 @@ import { proposalMockData } from "../../../lib/mockData";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import { z } from "zod";
-import { createErrorId, errorResponse, fetchWithTimeoutAndRetry, logApiError, parseWithSchema } from "../_backend";
+import { createErrorId, errorResponse, fetchWithTimeoutAndRetry, logApiError, parseWithSchema, backendHeaders } from "../_backend";
 
 const BACKEND_BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:4000";
 const COMPANY_ID = process.env.COMPANY_ID ?? "trezo-demo";
