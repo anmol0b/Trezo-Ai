@@ -26,21 +26,25 @@ export const TreasuryResponseSchema = z.object({
     .optional(),
 });
 
+
+export const DepartmentSchema = z.object({
+  pubkey: z.string(),
+  treasuryConfig: z.string(),
+  deptId: z.string(),
+  name: z.string(),
+  deptVaultAta: z.string(),
+  idleThreshold: z.coerce.number(),
+  idleThresholdUsdc: z.coerce.number(),
+  isActive: z.boolean(),
+  createdAt: z.string(),           
+  bump: z.number().optional(),
+});
+
 export const DepartmentsResponseSchema = z.object({
   success: z.boolean(),
-  data: z
-    .array(
-      z.object({
-        pubkey: z.string(),
-        deptId: z.string(),
-        name: z.string(),
-        idleThreshold: z.coerce.number(),
-        isActive: z.boolean(),
-        createdAt: z.coerce.number().optional(),
-      }),
-    )
-    .default([]),
+  data: z.array(DepartmentSchema).default([]),
 });
+
 
 export const ProposalsResponseSchema = z.object({
   success: z.boolean(),
@@ -56,10 +60,11 @@ export const ProposalsResponseSchema = z.object({
         createdAt: z.coerce.number().optional(),
         updatedAt: z.coerce.number().optional(),
         metadataUri: z.string().optional(),
-      }),
+      })
     )
     .default([]),
 });
+
 
 export const AuditEventsResponseSchema = z.object({
   success: z.boolean(),
@@ -73,58 +78,72 @@ export const AuditEventsResponseSchema = z.object({
         encryptedNote: z.string().optional(),
         amount: z.coerce.number(),
         slot: z.coerce.number().optional(),
-      }),
+      })
     )
     .default([]),
 });
 
-export const FlexibleYieldRecordSchema = z
-  .object({
-    deptId: z.string().optional(),
-    department: z.string().optional(),
-    name: z.string().optional(),
-    provider: z.string().optional(),
-    protocol: z.string().optional(),
-    market: z.string().optional(),
-    amount: z.coerce.number().optional(),
-    amountUsdc: z.coerce.number().optional(),
-    idleThreshold: z.coerce.number().optional(),
-    idleThresholdUsdc: z.coerce.number().optional(),
-    apy: z.coerce.number().optional(),
-    isActive: z.boolean().optional(),
-    autoReinvest: z.boolean().optional(),
-    deptPda: z.string().optional(),
-    deptVaultAta: z.string().optional(),
-  })
-  .passthrough();
-
-export const YieldEndpointSchema = z.union([
-  z.array(FlexibleYieldRecordSchema),
-  z.object({
-    success: z.boolean().optional(),
-    data: z.array(FlexibleYieldRecordSchema).optional(),
+export const YieldSummarySchema = z.object({
+  totalDeposited: z.number(),
+  totalCurrentBalance: z.number(),
+  totalEstimatedYield: z.number(),
+  estimatedApy: z.number(),
+  estimatedApyPercent: z.string(),
+  usdcPrice: z.number(),
+  kamino: z.object({
+    supplyApy: z.number(),
+    borrowApy: z.number(),
+    utilizationRate: z.number(),
+    source: z.string(),
   }),
-]);
+  kaminoStatus: z.string(),
+});
 
-export const FlexibleRateRecordSchema = z
-  .object({
-    id: z.string().optional(),
-    label: z.string().optional(),
-    name: z.string().optional(),
-    market: z.string().optional(),
-    symbol: z.string().optional(),
-    apy: z.coerce.number().optional(),
-    apr: z.coerce.number().optional(),
-  })
-  .passthrough();
+export const YieldPositionSchema = z.object({
+  pubkey: z.string(),
+  deptPda: z.string(),
+  // Add more fields here later if needed
+}).passthrough();
 
-export const KaminoStatsSchema = z.union([
-  z.array(FlexibleRateRecordSchema),
-  z.object({
-    success: z.boolean().optional(),
-    data: z.array(FlexibleRateRecordSchema).optional(),
-  }),
-]);
+export const YieldDataSchema = z.object({
+  companyId: z.string(),
+  summary: YieldSummarySchema,
+  positions: z.array(YieldPositionSchema),
+});
+
+export const YieldEndpointSchema = z.object({
+  success: z.boolean(),
+  data: YieldDataSchema,
+});
+
+export const KaminoMarketSchema = z.object({
+  usdcSupplyApy: z.number(),
+  usdcSupplyApyPercent: z.string(),
+  usdcBorrowApy: z.number(),
+  totalDeposits: z.number(),
+  availableLiquidity: z.number(),
+  utilizationRate: z.number(),
+  source: z.string(),
+});
+
+export const KaminoVaultSchema = z.object({
+  address: z.string(),
+  apy: z.number(),
+  apyPercent: z.string(),
+  exchangeRate: z.number(),
+  source: z.string(),
+});
+
+export const KaminoStatsDataSchema = z.object({
+  market: KaminoMarketSchema,
+  vault: KaminoVaultSchema,
+  updatedAt: z.string(),
+});
+
+export const KaminoStatsSchema = z.object({
+  success: z.boolean(),
+  data: KaminoStatsDataSchema,
+});
 
 export const BackendInvoiceSchema = z.object({
   id: z.string(),
@@ -136,7 +155,9 @@ export const BackendInvoiceSchema = z.object({
   category: z.string().nullable(),
   description: z.string().nullable(),
   invoice_number: z.string().nullable(),
-  flags: z.array(z.string()).nullable(),
+  metadata_uri: z.string().nullable().optional(),
+  confidence: z.string().nullable().optional(),
+  flags: z.array(z.string()).nullable().default([]),
   created_at: z.string(),
   proposal_pda: z.string().nullable().optional(),
 });
@@ -207,6 +228,6 @@ export const FiatStatusSchema = z.object({
 });
 
 export type BackendInvoice = z.infer<typeof BackendInvoiceSchema>;
-export type FlexibleYieldRecord = z.infer<typeof FlexibleYieldRecordSchema>;
-export type KaminoStatsPayload = z.infer<typeof KaminoStatsSchema>;
+export type Department = z.infer<typeof DepartmentSchema>;
 export type YieldEndpointPayload = z.infer<typeof YieldEndpointSchema>;
+export type KaminoStatsPayload = z.infer<typeof KaminoStatsSchema>;
