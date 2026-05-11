@@ -53,7 +53,7 @@ export async function getCoinflowSession(
         'x-coinflow-auth-merchant': MERCHANT_ID,
         'x-coinflow-auth-user-id': userId,
         'x-coinflow-auth-blockchain': 'solana',
-        'Authorization': `Bearer ${process.env.COINFLOW_WEBHOOK_SECRET}`,
+        'Authorization': `Bearer ${process.env.COINFLOW_API_KEY}`,
       },
       body: JSON.stringify({
         'x-coinflow-auth-user-id': userId,
