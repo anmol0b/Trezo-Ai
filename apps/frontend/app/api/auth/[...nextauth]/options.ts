@@ -60,7 +60,15 @@ function verifySolanaSignature({
 
 async function consumeNonceIfPossible(nonce: string): Promise<boolean> {
   const supabaseAdmin = getSupabaseAdmin();
-  if (!supabaseAdmin) return true; // fallback to cookie-only mode
+
+  if (!supabaseAdmin) {
+    // In production, don't allow login if Supabase is misconfigured
+    if (process.env.NODE_ENV === 'production') {
+      console.error('❌ Supabase not configured — blocking login in production');
+      return false;
+    }
+    return true; // dev fallback only
+  }
 
   try {
     const nowIso = new Date().toISOString();
@@ -70,9 +78,11 @@ async function consumeNonceIfPossible(nonce: string): Promise<boolean> {
       .eq("nonce", nonce)
       .maybeSingle();
 
-    // No row: nonce insert on GET may have failed (table/RLS); same intent as nonce route's cookie-only fallback.
-    if (error) return true;
-    if (!data) return true;
+    if (error) {
+      // In production, treat DB errors as blocking
+      return process.env.NODE_ENV !== 'production';
+    }
+    if (!data) return process.env.NODE_ENV !== 'production'; // no row = block in prod
     if (data.used_at) return false;
     if (data.expires_at && data.expires_at <= nowIso) return false;
 
@@ -84,7 +94,7 @@ async function consumeNonceIfPossible(nonce: string): Promise<boolean> {
 
     return !updErr;
   } catch {
-    return true; // don't block login if supabase is flaky
+    return process.env.NODE_ENV !== 'production';
   }
 }
 

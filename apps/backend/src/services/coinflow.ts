@@ -4,7 +4,7 @@
 
 const COINFLOW_API = process.env.COINFLOW_ENV === 'prod'
   ? 'https://api.coinflow.cash'
-  : 'https://api.sandbox.coinflow.cash';
+  : 'https://api-sandbox.coinflow.cash';
 
 const MERCHANT_ID = process.env.COINFLOW_MERCHANT_ID ?? 'trezo';
 
@@ -46,20 +46,15 @@ export async function getCoinflowSession(
   walletAddress: string
 ): Promise<CoinflowSession | null> {
   try {
-    const res = await fetch(`${COINFLOW_API}/merchant/session`, {
-      method: 'POST',
+    const res = await fetch(`${COINFLOW_API}/api/auth/session-key`, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Authorization': `${process.env.COINFLOW_API_KEY}`,
+        'x-coinflow-auth-user-id': userId,
+        'x-coinflow-auth-blockchain': 'solana',
         'x-coinflow-auth-merchant': MERCHANT_ID,
-        'x-coinflow-auth-user-id': userId,
-        'x-coinflow-auth-blockchain': 'solana',
-        'Authorization': `Bearer ${process.env.COINFLOW_API_KEY}`,
+        'accept': 'application/json',
       },
-      body: JSON.stringify({
-        'x-coinflow-auth-user-id': userId,
-        'x-coinflow-auth-blockchain': 'solana',
-        walletAddress,
-      }),
     });
 
     if (!res.ok) {
@@ -71,7 +66,7 @@ export async function getCoinflowSession(
     console.log(`✅ Coinflow session created for ${walletAddress.slice(0, 8)}...`);
 
     return {
-      sessionKey: data.sessionKey ?? data.token,
+      sessionKey: data.key,  // response field is "key" not "sessionKey"
       merchantId: MERCHANT_ID,
       env: process.env.COINFLOW_ENV ?? 'sandbox',
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),

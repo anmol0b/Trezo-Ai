@@ -19,6 +19,27 @@ import { billingRouter } from './routes/billing';
 dotenv.config();
 const app = express();
 
+// API key middleware — protects all /api/* routes
+const BACKEND_API_SECRET = process.env.BACKEND_API_SECRET;
+console.log('🔑 BACKEND_API_SECRET loaded:', BACKEND_API_SECRET ? `"${BACKEND_API_SECRET}"` : 'NOT SET');
+
+app.use('/api', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!BACKEND_API_SECRET) return next();
+  if (req.path.startsWith('/billing/webhooks')) return next();
+
+  const provided =
+    (req.headers['x-api-key'] as string) ??
+    req.headers['authorization']?.replace('Bearer ', '');
+
+  console.log('🔐 Auth check:', { provided, expected: BACKEND_API_SECRET, match: provided === BACKEND_API_SECRET });
+
+  if (provided !== BACKEND_API_SECRET) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+  next();
+});
+
 // Middleware
 app.use(helmet());
 app.use(cors({

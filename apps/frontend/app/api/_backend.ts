@@ -19,6 +19,16 @@ async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const BACKEND_API_SECRET = process.env.BACKEND_API_SECRET;
+
+export function backendHeaders(extra?: Record<string, string>): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    ...(BACKEND_API_SECRET ? { 'x-api-key': BACKEND_API_SECRET } : {}),
+    ...extra,
+  };
+}
+
 export async function fetchWithTimeoutAndRetry(
   url: string,
   init: RequestInit,

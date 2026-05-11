@@ -80,13 +80,22 @@ export function getProvider(): AnchorProvider {
 export function getProgram(): Program {
   if (!_program) {
     if (!idl) {
-      throw new Error(
-        'IDL not loaded. Run: anchor build && bash scripts/sync-idl.sh'
-      );
+      throw new Error('IDL not loaded. Run: anchor build && bash scripts/sync-idl.sh');
     }
     const provider = getProvider();
-    const programId = new PublicKey(config.solana.programId);
-    _program = new Program(idl, provider);
+
+    // Guard: ensure IDL address matches env PROGRAM_ID
+    const idlAddress = (idl as any).address;
+    if (idlAddress && idlAddress !== config.solana.programId) {
+      throw new Error(
+        `Program ID mismatch!\n` +
+        `  IDL address:  ${idlAddress}\n` +
+        `  PROGRAM_ID:   ${config.solana.programId}\n` +
+        `  Run: anchor build && bash scripts/sync-idl.sh`
+      );
+    }
+
+    _program = new Program(idl, provider); // 0.32+ — programId comes from IDL
   }
   return _program;
 }
