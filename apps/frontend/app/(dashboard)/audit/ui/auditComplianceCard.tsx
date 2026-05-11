@@ -56,22 +56,28 @@ export default function AuditComplianceCard({ title, items, isLoading = false, c
         <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-slate-900 dark:text-zinc-100">{title}</h2>
         <IconChartBar className="h-5 w-5 text-slate-400 dark:text-zinc-500" stroke={1.5} aria-hidden />
       </header>
-      <ul className="space-y-6">
-        {items.map((item) => (
-          <li key={item.id}>
-            <div className="mb-1.5 flex items-baseline justify-between gap-3">
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-zinc-500">{item.label}</span>
-              <span className="text-sm font-semibold text-slate-900 dark:text-zinc-100">{item.valueLabel}</span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-900">
-              <div
-                className={cn("h-full rounded-full transition-all", toneBar[item.tone])}
-                style={{ width: `${Math.min(100, Math.max(0, item.fillPercent))}%` }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-600 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300">
+          Coverage metrics will appear once the backend returns audit events.
+        </div>
+      ) : (
+        <ul className="space-y-6">
+          {items.map((item) => (
+            <li key={item.id}>
+              <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-zinc-500">{item.label}</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-zinc-100">{item.valueLabel}</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-900">
+                <div
+                  className={cn("h-full rounded-full transition-all", toneBar[item.tone])}
+                  style={{ width: `${Math.min(100, Math.max(0, item.fillPercent))}%` }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </AuditCardShell>
   );
 }

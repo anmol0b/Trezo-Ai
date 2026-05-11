@@ -14,6 +14,9 @@ import {
 import { motion } from "motion/react";
 import { cn } from "../../lib/utils";
 import ThemeToggle from "../themeToggle";
+import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { useWallet } from "@solana/wallet-adapter-react";
  
 export function SidebarDemo({ children }: { children: React.ReactNode }) {
   const links = [
@@ -75,6 +78,23 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
     // },
   ];
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { status } = useSession();
+  const wallet = useWallet();
+  const canDisconnect = status === "authenticated" || wallet.connected;
+
+  const handleDisconnect = async () => {
+    try {
+      await signOut({ redirect: false });
+    } finally {
+      try {
+        if (wallet.connected) await wallet.disconnect();
+      } finally {
+        router.push("/");
+        router.refresh();
+      }
+    }
+  };
   return (
     <div
       className={cn(
@@ -92,7 +112,15 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div>
-          <ThemeToggle className="theme-border theme-text w-full rounded-xl border px-4 py-2" />
+            <ThemeToggle className="theme-border theme-text w-full rounded-xl border px-4 py-2" />
+            <button
+              type="button"
+              onClick={() => void handleDisconnect()}
+              disabled={!canDisconnect}
+              className="theme-border theme-text mt-2 w-full rounded-xl border px-4 py-2 text-left text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Disconnect wallet
+            </button>
             <SidebarLink
               link={{
                 label: "demo",

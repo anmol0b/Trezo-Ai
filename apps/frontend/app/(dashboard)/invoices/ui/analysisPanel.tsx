@@ -6,6 +6,8 @@ type AnalysisPanelProps = {
   analysis: InvoiceAnalysis;
   className?: string;
   isLoading?: boolean;
+  canApprove?: boolean;
+  canReject?: boolean;
   onApprove?: () => void;
   onReject?: () => void;
 };
@@ -17,7 +19,11 @@ const stepTone: Record<InvoiceProcessingStepStatus, { dot: string; text: string 
 };
 
 function money(amount: number, currency: string) {
-  return amount.toLocaleString("en-US", { style: "currency", currency, maximumFractionDigits: 2 });
+  return amount.toLocaleString("en-US", {
+    style: "currency",
+    currency: currency === "USDC" ? "USD" : currency,
+    maximumFractionDigits: 2,
+  });
 }
 
 function AnalysisPanelSkeleton() {
@@ -76,6 +82,8 @@ export default function AnalysisPanel({
   analysis,
   className = "",
   isLoading = false,
+  canApprove = true,
+  canReject = true,
   onApprove,
   onReject,
 }: AnalysisPanelProps) {
@@ -113,7 +121,12 @@ export default function AnalysisPanel({
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Vendor entity</p>
             <div className="mt-2 flex items-end justify-between gap-3">
-              <p className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{analysis.vendorName}</p>
+              <div>
+                <p className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{analysis.vendorName}</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  Invoice {analysis.invoiceNumber ?? "pending"} {typeof analysis.confidence === "number" ? `· ${(analysis.confidence * 100).toFixed(0)}% confidence` : ""}
+                </p>
+              </div>
               <p className="text-2xl font-semibold tabular-nums text-violet-600 dark:text-violet-400">
                 {money(analysis.totalAmount, analysis.currency)}
               </p>
@@ -146,12 +159,55 @@ export default function AnalysisPanel({
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Risk score</p>
             <p className="mt-2 text-sm font-semibold text-amber-700 dark:text-amber-300">{analysis.riskScoreLabel}</p>
           </div>
+
+          {analysis.description ? (
+            <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-4 py-3 dark:border-slate-800/80 dark:bg-slate-900/50">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Description</p>
+              <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">{analysis.description}</p>
+            </div>
+          ) : null}
+
+          {analysis.vendorHistory ? (
+            <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-4 py-3 dark:border-slate-800/80 dark:bg-slate-900/50">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Vendor history</p>
+              <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 dark:text-slate-200">
+                <p>{analysis.vendorHistory.invoiceCount} prior invoice(s)</p>
+                <p>
+                  Average {money(analysis.vendorHistory.averageAmount, analysis.currency)} · Last seen {analysis.vendorHistory.lastSeenDate}
+                </p>
+                <p>Categories: {analysis.vendorHistory.categories.join(", ") || "None"}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {analysis.similarInvoices?.length ? (
+            <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-4 py-3 dark:border-slate-800/80 dark:bg-slate-900/50">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Similar invoices</p>
+              <div className="mt-3 space-y-2">
+                {analysis.similarInvoices.slice(0, 3).map((invoice) => (
+                  <div key={`${invoice.vendor}-${invoice.date}`} className="flex items-center justify-between gap-3 text-sm text-slate-700 dark:text-slate-200">
+                    <div>
+                      <p className="font-semibold">{invoice.vendor}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {invoice.date} · {invoice.category}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">{money(invoice.amount, analysis.currency)}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{Math.round(invoice.similarity * 100)}% match</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={onApprove}
+            disabled={!canApprove}
             className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-600 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-violet-500"
           >
             Approve &amp; Sign
@@ -159,6 +215,7 @@ export default function AnalysisPanel({
           <button
             type="button"
             onClick={onReject}
+            disabled={!canReject}
             className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
           >
             Reject
@@ -168,4 +225,3 @@ export default function AnalysisPanel({
     </article>
   );
 }
-

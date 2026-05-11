@@ -19,6 +19,8 @@ type AiCardListProps = {
   className?: string;
   isLoading?: boolean;
   skeletonCount?: number;
+  onDismiss?: (id: string) => void;
+  onAction?: (id: string, href?: string) => void;
 };
 
 const toneBorderMap: Record<AiCardTone, string> = {
@@ -28,10 +30,20 @@ const toneBorderMap: Record<AiCardTone, string> = {
   critical: "bg-rose-400 dark:bg-rose-300",
 };
 
-function AiInsightCard({ card }: { card: AiCardItem }) {
+function AiInsightCard({
+  card,
+  onDismiss,
+  onAction,
+}: {
+  card: AiCardItem;
+  onDismiss?: (id: string) => void;
+  onAction?: (id: string, href?: string) => void;
+}) {
   const tone = card.tone ?? "neutral";
   const dismissLabel = card.dismissLabel ?? "Dismiss";
   const actionLabel = card.actionLabel ?? "Take Action";
+  const dismissIsLink = Boolean(card.dismissHref && card.dismissHref !== "#");
+  const actionIsLink = Boolean(card.actionHref && card.actionHref !== "#");
 
   return (
     <article className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/90">
@@ -66,20 +78,41 @@ function AiInsightCard({ card }: { card: AiCardItem }) {
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <a
-            href={card.dismissHref ?? "#"}
-            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-5 text-sm font-semibold uppercase tracking-wide text-slate-700 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-          >
-            {dismissLabel}
-          </a>
+          {dismissIsLink ? (
+            <a
+              href={card.dismissHref}
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-5 text-sm font-semibold uppercase tracking-wide text-slate-700 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              {dismissLabel}
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onDismiss?.(card.id)}
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-5 text-sm font-semibold uppercase tracking-wide text-slate-700 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              {dismissLabel}
+            </button>
+          )}
 
-          <a
-            href={card.actionHref ?? "#"}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-indigo-400 dark:bg-indigo-400 dark:text-slate-950 dark:hover:bg-indigo-300"
-          >
-            {actionLabel}
-            <span aria-hidden>→</span>
-          </a>
+          {actionIsLink ? (
+            <a
+              href={card.actionHref}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-indigo-400 dark:bg-indigo-400 dark:text-slate-950 dark:hover:bg-indigo-300"
+            >
+              {actionLabel}
+              <span aria-hidden>→</span>
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onAction?.(card.id, card.actionHref)}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-indigo-400 dark:bg-indigo-400 dark:text-slate-950 dark:hover:bg-indigo-300"
+            >
+              {actionLabel}
+              <span aria-hidden>→</span>
+            </button>
+          )}
         </div>
       </div>
     </article>
@@ -113,6 +146,8 @@ export default function AiCardList({
   className = "",
   isLoading = false,
   skeletonCount = 2,
+  onDismiss,
+  onAction,
 }: AiCardListProps) {
   const skeletonItems = Array.from({ length: skeletonCount });
 
@@ -123,9 +158,15 @@ export default function AiCardList({
       </h2>
 
       <div className="space-y-4">
-        {isLoading
-          ? skeletonItems.map((_, index) => <AiInsightCardSkeleton key={`ai-skeleton-${index}`} />)
-          : data.map((card) => <AiInsightCard key={card.id} card={card} />)}
+        {isLoading ? (
+          skeletonItems.map((_, index) => <AiInsightCardSkeleton key={`ai-skeleton-${index}`} />)
+        ) : data.length > 0 ? (
+          data.map((card) => <AiInsightCard key={card.id} card={card} onDismiss={onDismiss} onAction={onAction} />)
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-10 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
+            No AI insights are available from the current backend data.
+          </div>
+        )}
       </div>
     </section>
   );

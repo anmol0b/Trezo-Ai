@@ -1,12 +1,4 @@
-import CollectiveBrain from "../components/landing/collectiveBrain";
-import FinalCTA from "../components/landing/cta";
-import Footer from "../components/landing/footer";
-import { NavbarDemo } from "../components/navbar/navBar";
-// import Pricing from "../components/price";
-import ProblemSection from "../components/landing/promblex";
-import SocialProof from "../components/landing/social";
-import Hero from "../components/landing/hero";
-import { StickyScrollRevealDemo } from "../components/landing/flowState";
+import LandingPage from "../components/landing/LandingPage";
 
 // const Landing = () => {
 //   return (
@@ -86,27 +78,4 @@ import { StickyScrollRevealDemo } from "../components/landing/flowState";
 
 // export default Landing;
 
-const Landing = () => {
-    return (
-            <main className="theme-bg min-h-screen transition-colors duration-300">
-                <NavbarDemo />
-                <section id="features">
-                  <Hero />
-                  <CollectiveBrain />
-                  <ProblemSection />
-                </section>
-                <section id="how">
-                <StickyScrollRevealDemo />
-                  {/* <HowItWorks /> */}
-                </section>
-                <section id="contact">
-                  <SocialProof />
-                </section>
-                {/* <Pricing /> */}
-                <FinalCTA />
-                <Footer />
-            </main>
-    );
-}
-
-export default Landing;
+export default LandingPage;

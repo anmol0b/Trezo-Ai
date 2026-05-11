@@ -4,6 +4,9 @@ type OracleCardProps = {
   data: OracleConfig;
   className?: string;
   isLoading?: boolean;
+  isSaving?: boolean;
+  onTriggerChange?: (value: number) => void;
+  onSubmit?: () => void;
 };
 
 const cardShell =
@@ -28,7 +31,14 @@ function OracleSkeleton() {
   );
 }
 
-export default function OracleCard({ data, className = "", isLoading = false }: OracleCardProps) {
+export default function OracleCard({
+  data,
+  className = "",
+  isLoading = false,
+  isSaving = false,
+  onTriggerChange,
+  onSubmit,
+}: OracleCardProps) {
   if (isLoading) return <OracleSkeleton />;
 
   return (
@@ -69,8 +79,9 @@ export default function OracleCard({ data, className = "", isLoading = false }: 
               max={data.triggerMax}
               step={0.1}
               value={data.triggerValue}
-              readOnly
-              className="h-2 w-full cursor-not-allowed appearance-none rounded-full bg-slate-200 accent-violet-500 dark:bg-slate-800"
+              onChange={(event) => onTriggerChange?.(Number(event.target.value))}
+              disabled={!data.canEdit || isSaving}
+              className="h-2 w-full appearance-none rounded-full bg-slate-200 accent-violet-500 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-800"
             />
             <div className="mt-2 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-500">
               <span>{data.triggerMin.toFixed(1)}%</span>
@@ -91,9 +102,11 @@ export default function OracleCard({ data, className = "", isLoading = false }: 
           <div className="flex items-end">
             <button
               type="button"
-              className="h-11 w-full rounded-xl bg-slate-900 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+              onClick={onSubmit}
+              disabled={!data.canEdit || isSaving}
+              className="h-11 w-full rounded-xl bg-slate-900 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
             >
-              {data.commitLabel}
+              {isSaving ? "Saving..." : data.commitLabel}
             </button>
           </div>
         </div>
@@ -101,4 +114,3 @@ export default function OracleCard({ data, className = "", isLoading = false }: 
     </article>
   );
 }
-

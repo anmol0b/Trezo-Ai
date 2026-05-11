@@ -88,11 +88,11 @@ export default function AgentAuthorityCard({ data, className = "", isLoading = f
 
       <button
         type="button"
-        className="mt-5 h-11 w-full rounded-xl bg-slate-900 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        disabled={data.actionDisabled}
+        className="mt-5 h-11 w-full rounded-xl bg-slate-900 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         {data.actionLabel}
       </button>
     </article>
   );
 }
-
