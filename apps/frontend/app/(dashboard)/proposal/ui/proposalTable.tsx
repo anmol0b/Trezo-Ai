@@ -3,6 +3,7 @@ import type { ProposalRow, ProposalStatus } from "../../../../lib/mockData";
 type ProposalTableProps = {
   data: ProposalRow[];
   isLoading?: boolean;
+  onOpen?: (proposalId: string) => void;
 };
 
 const statusClassMap: Record<ProposalStatus, string> = {
@@ -51,7 +52,7 @@ function ApprovalAvatars({ reviewers }: { reviewers: string[] }) {
   );
 }
 
-export default function ProposalTable({ data, isLoading = false }: ProposalTableProps) {
+export default function ProposalTable({ data, isLoading = false, onOpen }: ProposalTableProps) {
   if (isLoading) {
     return <ProposalTableSkeleton />;
   }
@@ -76,7 +77,10 @@ export default function ProposalTable({ data, isLoading = false }: ProposalTable
           </thead>
           <tbody>
             {data.map((proposal) => (
-              <tr key={proposal.id} className="border-b border-slate-200/60 last:border-0 dark:border-slate-800/60">
+              <tr
+                key={proposal.id}
+                className="border-b border-slate-200/60 last:border-0 dark:border-slate-800/60"
+              >
                 <td className="px-3 py-4 text-xs font-semibold tracking-[0.16em] text-slate-500 dark:text-slate-500">{proposal.index}</td>
                 <td className="px-3 py-4">
                   <p className="font-semibold text-slate-900 dark:text-slate-100">{proposal.vendor}</p>
@@ -116,6 +120,7 @@ export default function ProposalTable({ data, isLoading = false }: ProposalTable
                 <td className="px-3 py-4">
                   <button
                     type="button"
+                    onClick={() => onOpen?.(proposal.id)}
                     className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                     aria-label="Open row actions"
                   >
@@ -127,26 +132,6 @@ export default function ProposalTable({ data, isLoading = false }: ProposalTable
           </tbody>
         </table>
       </div>
-      <footer className="flex items-center justify-between gap-3 border-t border-slate-200/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800/80 dark:text-slate-500">
-        <p>
-          Showing 1-{data.length} of 42 proposals
-        </p>
-        <div className="flex items-center gap-2">
-          {["<", "1", "2", "3", ">"].map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={`inline-flex h-8 w-8 items-center justify-center rounded-md border text-xs ${
-                item === "1"
-                  ? "border-violet-400/70 bg-violet-500/30 text-violet-100"
-                  : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </footer>
     </article>
   );
 }

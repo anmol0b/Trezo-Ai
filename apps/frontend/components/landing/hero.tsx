@@ -5,7 +5,6 @@ import Link from "next/link";
 import { SpecialText } from "../ui/test";
 import { SlideUpText } from "../ui/split";
 import { LandingButton } from "../ui/landingButton";
-// import WalletAuthButton from "../walletAuthButton";
 
 
 
@@ -84,7 +83,6 @@ export default function Hero() {
           animate="visible"
           className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4"
         >
-          {/* <WalletAuthButton /> */}
           {/* <Link
             href="https://github.com"
             target="_blank"

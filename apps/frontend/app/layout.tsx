@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./provider";
 // import NextTopLoader from 'nextjs-toploader'
-// import AppWalletProvider from "../components/walletAdapter";
 import { ThemeProvider } from "./theme-provider";
 
 const geistSans = localFont({
@@ -27,14 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* <Providers> */}
-        {/* <AppWalletProvider> */}
-          <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen transition-colors duration-300`}>
-            {/* <NextTopLoader color="#333" /> */}
-            <ThemeProvider>{children}</ThemeProvider>
-          </body>
-        {/* </AppWalletProvider> */}
-      {/* </Providers> */}
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen transition-colors duration-300`}>
+        <Providers>
+          {/* <NextTopLoader color="#333" /> */}
+          <ThemeProvider>{children}</ThemeProvider>
+        </Providers>
+      </body>
     </html>
   );
 }

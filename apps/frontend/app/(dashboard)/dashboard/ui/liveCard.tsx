@@ -122,9 +122,15 @@ export default function LiveCard({
         </div>
 
         <div className="divide-y border rounded-md border-slate-500 p-4 divide-slate-200 dark:divide-slate-800">
-          {isLoading
-            ? skeletonItems.map((_, index) => <LiveActivityRowSkeleton key={`live-skeleton-${index}`} />)
-            : data.map((item) => <LiveActivityRow key={item.id} item={item} />)}
+          {isLoading ? (
+            skeletonItems.map((_, index) => <LiveActivityRowSkeleton key={`live-skeleton-${index}`} />)
+          ) : data.length > 0 ? (
+            data.map((item) => <LiveActivityRow key={item.id} item={item} />)
+          ) : (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
+              No live activity has been returned by the backend yet.
+            </div>
+          )}
         </div>
       </div>
     </section>

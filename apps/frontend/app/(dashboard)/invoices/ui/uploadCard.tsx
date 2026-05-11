@@ -4,6 +4,9 @@ type UploadCardProps = {
   supportedLabel: string;
   className?: string;
   isLoading?: boolean;
+  isDisabled?: boolean;
+  selectedFileName?: string;
+  statusText?: string;
   onSelectFiles?: (files: FileList) => void;
 };
 
@@ -25,6 +28,9 @@ export default function UploadCard({
   supportedLabel,
   className = "",
   isLoading = false,
+  isDisabled = false,
+  selectedFileName,
+  statusText,
   onSelectFiles,
 }: UploadCardProps) {
   if (isLoading) return <UploadCardSkeleton />;
@@ -46,18 +52,28 @@ export default function UploadCard({
             <p className="text-sm text-slate-600 dark:text-slate-300">{helperText}</p>
           </div>
 
-          <label className="mt-2 inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900">
+          <label
+            className={`mt-2 inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 ${
+              isDisabled
+                ? "cursor-not-allowed opacity-70"
+                : "cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900"
+            }`}
+          >
             <input
               type="file"
-              accept=".pdf,image/*"
-              multiple
+              accept=".pdf,application/pdf"
               className="sr-only"
+              disabled={isDisabled}
               onChange={(event) => {
                 if (event.target.files && onSelectFiles) onSelectFiles(event.target.files);
               }}
             />
-            Select files
+            {isDisabled ? "Processing..." : "Select PDF"}
           </label>
+
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            {selectedFileName ? `Selected: ${selectedFileName}` : statusText ?? "Choose a PDF to start parsing."}
+          </p>
 
           <p className="mt-2 inline-flex items-center rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
             {supportedLabel}
@@ -67,4 +83,3 @@ export default function UploadCard({
     </article>
   );
 }
-

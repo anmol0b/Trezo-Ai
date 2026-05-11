@@ -40,7 +40,8 @@ export default function KillSwitchCard({ data, className = "", isLoading = false
 
         <button
           type="button"
-          className="h-12 w-full rounded-2xl bg-rose-200 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-rose-900 shadow-sm transition hover:bg-rose-300 dark:bg-rose-200 dark:text-rose-900 md:w-auto"
+          disabled={data.actionDisabled}
+          className="h-12 w-full rounded-2xl bg-rose-200 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-rose-900 shadow-sm transition hover:bg-rose-300 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-rose-200 dark:text-rose-900 md:w-auto"
         >
           {data.actionLabel}
         </button>
@@ -48,4 +49,3 @@ export default function KillSwitchCard({ data, className = "", isLoading = false
     </article>
   );
 }
-

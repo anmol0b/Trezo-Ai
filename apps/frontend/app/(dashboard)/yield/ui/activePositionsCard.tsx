@@ -73,7 +73,7 @@ function PositionRow({ item }: { item: YieldPosition }) {
             href={item.manageHref ?? "#"}
             className="inline-flex w-full items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 md:w-auto"
           >
-            Manage
+            Open Dept
           </a>
         </div>
       </div>
@@ -105,25 +105,28 @@ export default function ActivePositionsCard({ positions, isLoading = false }: Ac
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-          Active Positions
+          Department Yield Readiness
         </h2>
-        <a
-          href="#"
-          className="text-sm font-semibold uppercase tracking-[0.14em] text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200"
-        >
-          Deploy Capital
-        </a>
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
+          Read only
+        </span>
       </div>
 
-      <div className="space-y-3">
-        {rows.map((item, index) =>
-          isLoading ? (
-            <PositionRowSkeleton key={`yield-position-skeleton-${index}`} />
-          ) : (
-            <PositionRow key={(item as YieldPosition).id} item={item as YieldPosition} />
-          ),
-        )}
-      </div>
+      {!isLoading && positions.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
+          No departments or yield positions were returned by the backend yet.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {rows.map((item, index) =>
+            isLoading ? (
+              <PositionRowSkeleton key={`yield-position-skeleton-${index}`} />
+            ) : (
+              <PositionRow key={(item as YieldPosition).id} item={item as YieldPosition} />
+            ),
+          )}
+        </div>
+      )}
     </section>
   );
 }
