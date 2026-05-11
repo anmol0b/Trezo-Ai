@@ -99,6 +99,9 @@ async function fetchInvoiceContext(): Promise<InvoiceContextResponse> {
 export default function ProposalPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const statusParam = searchParams?.get("status") ?? null;
+const queryParam = searchParams?.get("q") ?? "";
+const pageParam = searchParams?.get("page") ?? null;
   const [proposalData, setProposalData] = useState<ProposalApiPayload>(proposalMockData);
   const [invoiceContext, setInvoiceContext] = useState<InvoiceContextResponse>({
     context: invoicesMockData.context,
@@ -108,15 +111,13 @@ export default function ProposalPage() {
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
   const [backendMessage, setBackendMessage] = useState<string>("");
   const [activeFilterId, setActiveFilterId] = useState<string>(() => {
-    const status = searchParams?.get("status");
-    return status ?? proposalMockData.filters.find((f) => f.active)?.id ?? proposalMockData.filters[0]?.id ?? "all";
-  });
-  const [query, setQuery] = useState(() => searchParams?.get("q") ?? "");
-  const [page, setPage] = useState(() => {
-    const raw = searchParams?.get("page");
-    const n = raw ? Number(raw) : 1;
-    return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
-  });
+  return statusParam ?? proposalMockData.filters.find((f) => f.active)?.id ?? proposalMockData.filters[0]?.id ?? "all";
+});
+const [query, setQuery] = useState(() => queryParam);
+const [page, setPage] = useState(() => {
+  const n = pageParam ? Number(pageParam) : 1;
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
+});
   const pageSize = 10;
   const [openProposalId, setOpenProposalId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
