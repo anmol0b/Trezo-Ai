@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 pub mod instructions;
 pub use instructions::*;
 
-declare_id!("8h1qfZ42zcZpTTmYLLG8TrcPurgnGHCD2NHn3nRcZyXH");
+declare_id!("AkVudTF3DrGYYHeEC3ACL8LRB77GQF7G8N63ZMTX6kYe");
 
 #[program]
 pub mod trezo_hook {

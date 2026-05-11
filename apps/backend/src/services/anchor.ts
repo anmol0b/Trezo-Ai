@@ -14,9 +14,11 @@ import { config } from '../config';
 let idl: Idl | null = null;
 try {
   idl = require('../idl/trezo_core.json');
-} catch {
+  console.log('✅ IDL loaded:', (idl as any).address); // add this
+} catch (err) {
   console.warn('⚠️  IDL not found at src/idl/trezo_core.json');
   console.warn('   Run: anchor build && bash scripts/sync-idl.sh');
+  console.warn('   Error:', err); // add this to see actual error
 }
 
 let _connection: Connection | null = null;

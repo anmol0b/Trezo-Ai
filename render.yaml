@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: trezo-backend
+    runtime: docker
+    dockerfilePath: ./apps/backend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        sync: false
+      - key: SOLANA_RPC_URL
+        sync: false
+      - key: HELIUS_API_KEY
+        sync: false
+      - key: HELIUS_WS_URL
+        sync: false
+      - key: PROGRAM_ID
+        sync: false
+      - key: AGENT_KEYPAIR
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DODO_API_KEY
+        sync: false
+      - key: DODO_SANDBOX
+        value: false
+      - key: DODO_API_URL
+        sync: false
+      - key: COMPANY_ID
+        value: trezo-demo
+      - key: FRONTEND_URL
+        sync: false

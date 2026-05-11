@@ -13,7 +13,8 @@
     "test:programs": "anchor test",
     "migrate": "tsx apps/backend/src/db/migrate.ts",
     "seed": "tsx scripts/seed.ts",
-    "seed:reset": "tsx scripts/seed.ts --reset"
+    "seed:reset": "tsx scripts/seed.ts --reset",
+    "init-treasury": "tsx scripts/init-treasury.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.32.1",

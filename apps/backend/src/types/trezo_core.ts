@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/trezo_core.json`.
  */
 export type TrezoCore = {
-  "address": "Fg6PaFpoGXkYsidMpWxTWqkZxJotP7R9R3jJfG8h6Y2G",
+  "address": "47qSrNsBPRje72jF1qfeTvTzkpJz5PUuFw9JBDRsCzDn",
   "metadata": {
     "name": "trezoCore",
     "version": "0.1.0",

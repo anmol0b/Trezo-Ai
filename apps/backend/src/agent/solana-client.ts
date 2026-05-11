@@ -172,3 +172,88 @@ export async function submitTriggerFiatConversion(
     error: err instanceof Error ? err.message : String(err),
   }));
 }
+export async function submitRegisterViewingKey(
+  viewerPubkey: string,
+  encryptedKey: string,
+  companyId: string
+): Promise<SubmitResult> {
+  return withRetry(async () => {
+    const program = getProgram();
+    const agentKeypair = getAgentKeypair();
+    const connection = getConnection();
+
+    const [treasuryPda] = PDAs.treasury(companyId);
+    const viewer = new PublicKey(viewerPubkey);
+    const [viewingKeyPda] = PDAs.viewingKey(treasuryPda, viewer);
+
+    const tx = await program.methods
+      .registerViewingKey(encryptedKey)
+      .accounts({
+        treasuryConfig: treasuryPda,
+        viewer,
+        viewingKey: viewingKeyPda,
+        systemProgram: PublicKey.default,
+      })
+      .transaction();
+
+    addPriorityFee(tx);
+    tx.feePayer = agentKeypair.publicKey;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [agentKeypair],
+      { commitment: 'confirmed' }
+    );
+
+    console.log(`✅ register_viewing_key: ${signature.slice(0, 8)}...`);
+    return { success: true, signature };
+
+  }, 3, 2000).catch((err) => ({
+    success: false,
+    error: err instanceof Error ? err.message : String(err),
+  }));
+}
+
+export async function submitRevokeViewingKey(
+  viewerPubkey: string,
+  companyId: string
+): Promise<SubmitResult> {
+  return withRetry(async () => {
+    const program = getProgram();
+    const agentKeypair = getAgentKeypair();
+    const connection = getConnection();
+
+    const [treasuryPda] = PDAs.treasury(companyId);
+    const viewer = new PublicKey(viewerPubkey);
+    const [viewingKeyPda] = PDAs.viewingKey(treasuryPda, viewer);
+
+    const tx = await program.methods
+      .revokeViewingKey()
+      .accounts({
+        treasuryConfig: treasuryPda,
+        viewingKey: viewingKeyPda,
+        authority: agentKeypair.publicKey,
+      })
+      .transaction();
+
+    addPriorityFee(tx);
+    tx.feePayer = agentKeypair.publicKey;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [agentKeypair],
+      { commitment: 'confirmed' }
+    );
+
+    console.log(`✅ revoke_viewing_key: ${signature.slice(0, 8)}...`);
+    return { success: true, signature };
+
+  }, 3, 2000).catch((err) => ({
+    success: false,
+    error: err instanceof Error ? err.message : String(err),
+  }));
+}

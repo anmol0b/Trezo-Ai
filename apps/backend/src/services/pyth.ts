@@ -1,7 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import { PythHttpClient, getPythClusterApiUrl, getPythProgramKeyForCluster } from '@pythnetwork/client';
 import { config } from '../config';
-import { getConnection } from './anchor';
 
 export interface PriceData {
   price: number;
@@ -11,55 +8,56 @@ export interface PriceData {
   isStale: boolean;
 }
 
-// Devnet USDC/USD Pyth price account
-const USDC_USD_DEVNET = new PublicKey('5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7');
+// Pyth Hermes HTTP API — more reliable than on-chain client
+const PYTH_HERMES_URL = 'https://hermes.pyth.network';
+
+// USDC/USD price feed ID
+const USDC_USD_FEED_ID = '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a';
 
 const PRICE_STALENESS_THRESHOLD_MS = 30_000; // 30 seconds
 
-let _pythClient: PythHttpClient | null = null;
 let _lastPrice: PriceData | null = null;
 
-// Rate change callbacks registered by oracle-watcher job
+// Rate change callbacks registered by oracle-watcher
 const rateCallbacks: Array<(price: PriceData) => void> = [];
-
-export function getPythClient(): PythHttpClient {
-  if (!_pythClient) {
-    const connection = getConnection();
-    const pythPublicKey = getPythProgramKeyForCluster('devnet');
-    _pythClient = new PythHttpClient(connection, pythPublicKey);
-  }
-  return _pythClient;
-}
 
 export async function getUsdcUsdPrice(): Promise<PriceData | null> {
   try {
-    const client = getPythClient();
-    const data = await client.getAssetPricesFromAccounts([USDC_USD_DEVNET]);
+    const res = await fetch(
+      `${PYTH_HERMES_URL}/v2/updates/price/latest?ids[]=${USDC_USD_FEED_ID}`
+    );
 
-    if (!data || data.length === 0) return null;
+    if (!res.ok) {
+      console.error('❌ Pyth Hermes error:', res.status, res.statusText);
+      return null;
+    }
 
-    const feed = data[0];
-    if (feed?.price == null || feed?.confidence == null) return null;
+    const json = await res.json() as any;
+    const feed = json?.parsed?.[0];
+    if (!feed) {
+      console.warn('⚠️  Pyth returned empty feed');
+      return null;
+    }
 
-    const publishTime = Date.now();
-    const isStale = false;
+    const price = parseFloat(feed.price.price) * Math.pow(10, feed.price.expo);
+    const confidence = parseFloat(feed.price.conf) * Math.pow(10, feed.price.expo);
+    const publishTime = feed.price.publish_time * 1000;
+    const isStale = Date.now() - publishTime > PRICE_STALENESS_THRESHOLD_MS;
 
     const priceData: PriceData = {
-      price: feed.price,
-      confidence: feed.confidence,
-      status: feed.status?.toString() ?? 'unknown',
+      price,
+      confidence,
+      status: 'Trading',
       publishTime,
       isStale,
     };
 
     _lastPrice = priceData;
-
-    // Notify all registered callbacks
     rateCallbacks.forEach((cb) => cb(priceData));
-
     return priceData;
+
   } catch (err) {
-    console.error('❌ Pyth price fetch failed:', err);
+    console.error('❌ Pyth price fetch failed:', err instanceof Error ? err.message : err);
     return null;
   }
 }
@@ -73,16 +71,11 @@ export function isRateAboveTrigger(price: PriceData): boolean {
     console.warn('⚠️  Pyth price is stale — skipping rate trigger check');
     return false;
   }
-  if (price.status !== 'Trading') {
-    console.warn(`⚠️  Pyth price status is "${price.status}" — skipping`);
-    return false;
-  }
   return price.price >= config.pyth.rateTrigger;
 }
 
 export function onRateUpdate(callback: (price: PriceData) => void): () => void {
   rateCallbacks.push(callback);
-  // Return unsubscribe function
   return () => {
     const idx = rateCallbacks.indexOf(callback);
     if (idx !== -1) rateCallbacks.splice(idx, 1);
@@ -99,10 +92,12 @@ export function startPythPoller(intervalMs = 10_000): void {
   const poll = async () => {
     const price = await getUsdcUsdPrice();
     if (price) {
-      const status = price.isStale ? '(stale)' : '';
+      const staleTag = price.isStale ? ' (stale)' : '';
       if (config.isDev) {
-        console.log(`💱 USDC/USD: ${price.price.toFixed(6)} ${status}`);
+        console.log(`💱 USDC/USD: ${price.price.toFixed(6)}${staleTag}`);
       }
+    } else {
+      console.warn('⚠️  Pyth returned null price');
     }
     pollTimer = setTimeout(poll, intervalMs);
   };

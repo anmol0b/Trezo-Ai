@@ -91,7 +91,7 @@ export default function Hero() {
             View on GitHub
           </Link> */}
           <LandingButton asChild variant="secondary">
-            <Link href="https://github.com" target="_blank">
+            <Link href="https://github.com/anmol0b/Trezo-Ai" target="_blank">
               View on GitHub
             </Link>
           </LandingButton>
