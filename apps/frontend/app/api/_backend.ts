@@ -44,7 +44,6 @@ export async function fetchWithTimeoutAndRetry(
       const res = await fetch(url, { ...init, signal: controller.signal });
       clearTimeout(timeout);
 
-      // Retry transient backend issues only.
       if (res.status >= 500 && attempt < retries) {
         await sleep(150 * (attempt + 1));
         continue;
@@ -73,11 +72,7 @@ export function parseWithSchema<T>(schema: z.ZodSchema<T>, raw: unknown): { data
 
 export function errorResponse(status: number, error: string, errorId?: string) {
   return NextResponse.json(
-    {
-      error,
-      errorId: errorId ?? createErrorId("api"),
-      status,
-    },
+    { error, errorId: errorId ?? createErrorId("api"), status },
     { status },
   );
 }
@@ -98,15 +93,14 @@ export async function fetchBackendAndParse<T>(
     const response = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}${path}`, {
       cache: "no-store",
       ...init,
+      headers: {
+        ...backendHeaders(),
+        ...(init.headers as Record<string, string> ?? {}),
+      },
     });
 
     if (!response.ok) {
-      return {
-        ok: false,
-        status: response.status,
-        data: null,
-        invalid: false,
-      };
+      return { ok: false, status: response.status, data: null, invalid: false };
     }
 
     const raw = await response.json();
@@ -119,12 +113,7 @@ export async function fetchBackendAndParse<T>(
       invalid: !parsed.data,
     };
   } catch {
-    return {
-      ok: false,
-      status: 0,
-      data: null,
-      invalid: false,
-    };
+    return { ok: false, status: 0, data: null, invalid: false };
   }
 }
 
@@ -144,23 +133,12 @@ export function formatUnixDate(unixSeconds: number) {
 
 export function formatRelativeFromUnix(unixSeconds: number) {
   const deltaSeconds = Math.max(0, Math.floor(Date.now() / 1000) - unixSeconds);
-
-  if (deltaSeconds < 60) {
-    return `${Math.max(1, deltaSeconds)}s ago`;
-  }
-
+  if (deltaSeconds < 60) return `${Math.max(1, deltaSeconds)}s ago`;
   const deltaMinutes = Math.floor(deltaSeconds / 60);
-  if (deltaMinutes < 60) {
-    return `${deltaMinutes}m ago`;
-  }
-
+  if (deltaMinutes < 60) return `${deltaMinutes}m ago`;
   const deltaHours = Math.floor(deltaMinutes / 60);
-  if (deltaHours < 24) {
-    return `${deltaHours}h ago`;
-  }
-
-  const deltaDays = Math.floor(deltaHours / 24);
-  return `${deltaDays}d ago`;
+  if (deltaHours < 24) return `${deltaHours}h ago`;
+  return `${Math.floor(deltaHours / 24)}d ago`;
 }
 
 export function lamportsToUsdc(value: number) {
