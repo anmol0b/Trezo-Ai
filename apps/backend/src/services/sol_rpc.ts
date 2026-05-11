@@ -120,6 +120,8 @@ export function startStealthEventIndexer(programId: PublicKey): void {
 
     wsConnection.on('message', (data: WebSocket.Data) => {
       try {
+        const raw = data.toString();
+        if (!raw.startsWith('{') && !raw.startsWith('[')) return; 
         const msg = JSON.parse(data.toString());
         if (msg.method !== 'logsNotification') return;
 
