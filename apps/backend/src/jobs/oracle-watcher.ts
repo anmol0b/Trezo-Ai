@@ -6,7 +6,7 @@ import {
   PriceData,
   isRateAboveTrigger,
 } from '../services/pyth';
-import { triggerFiatConversion, generateIdempotencyKey } from '../services/dodo';
+import { getCoinflowSession } from '../services/coinflow';
 import { submitTriggerFiatConversion } from '../agent/solana-client';
 
 const CONVERSION_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
@@ -14,6 +14,26 @@ const CONVERSION_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 let lastConversionTime = 0;
 let unsubscribe: (() => void) | null = null;
 let isTriggering = false;
+
+// Pending trigger that the frontend polls for
+export interface PendingConversionTrigger {
+  triggeredAt: string;
+  onchainSignature: string;
+  amountUsdc: number;
+  targetCurrency: string;
+  sessionKey?: string;
+}
+
+let pendingTrigger: PendingConversionTrigger | null = null;
+
+// Frontend polls this to know when to open CoinflowWithdraw
+export function getPendingTrigger(): PendingConversionTrigger | null {
+  return pendingTrigger;
+}
+
+export function clearPendingTrigger(): void {
+  pendingTrigger = null;
+}
 
 async function handleRateUpdate(price: PriceData): Promise<void> {
   if (isTriggering) return;
@@ -46,27 +66,30 @@ async function handleRateUpdate(price: PriceData): Promise<void> {
 
     console.log(`  ✅ Onchain event: ${onchainResult.signature?.slice(0, 8)}...`);
 
-    // Step 2 — call Dodo Payments API
+    // Step 2 — Coinflow is frontend-driven, so we queue a pending trigger
+    // The frontend polls GET /api/fiat/pending and opens CoinflowWithdraw when set
     const amountUsdc = parseFloat(process.env.FIAT_CONVERSION_AMOUNT_USDC ?? '1000');
-    const targetIban = process.env.FIAT_TARGET_IBAN ?? 'GB82WEST12345698765432';
     const targetCurrency = process.env.FIAT_TARGET_CURRENCY ?? 'USD';
+    const walletAddress = process.env.FIAT_WALLET_ADDRESS ?? '';
+    const userId = process.env.COMPANY_ID ?? 'trezo-demo';
 
-    const dodoResult = await triggerFiatConversion({
+    // Pre-fetch a session key so frontend can open the widget immediately
+    const session = walletAddress
+      ? await getCoinflowSession(userId, walletAddress)
+      : null;
+
+    pendingTrigger = {
+      triggeredAt: new Date().toISOString(),
+      onchainSignature: onchainResult.signature ?? '',
       amountUsdc,
       targetCurrency,
-      targetIban,
-      reference: onchainResult.signature ?? '',
-      idempotencyKey: generateIdempotencyKey(onchainResult.signature ?? 'fallback'),
-    });
+      sessionKey: session?.sessionKey,
+    };
 
-    if (dodoResult.success && dodoResult.data) {
-      console.log(
-        `  ✅ Dodo conversion: ${dodoResult.data.id} ` +
-        `(${amountUsdc} USDC → ${dodoResult.data.targetAmount?.toFixed(2)} ${targetCurrency})`
-      );
-    } else {
-      console.error('  ❌ Dodo API failed:', dodoResult.error);
-    }
+    console.log(
+      `  ✅ Conversion trigger queued: ${amountUsdc} USDC → ${targetCurrency}` +
+      (session ? ' (session ready)' : ' (no session — wallet address not configured)')
+    );
 
   } catch (err) {
     console.error('❌ Oracle watcher error:', err instanceof Error ? err.message : err);
