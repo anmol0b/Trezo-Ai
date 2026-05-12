@@ -6,6 +6,7 @@ import ProblemSection from "./promblex";
 import SocialProof from "./social";
 import Hero from "./hero";
 import { StickyScrollRevealDemo } from "./flowState";
+import Pricing from "../../app/pricing/page";
 
 export default function LandingPage() {
   return (
@@ -22,7 +23,7 @@ export default function LandingPage() {
       <section id="contact">
         <SocialProof />
       </section>
-      <FinalCTA />
+       <FinalCTA />
       <Footer />
     </main>
   );

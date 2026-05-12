@@ -1,4 +1,4 @@
-import LandingPage from "../components/landing/LandingPage";
+// import LandingPage from "../components/landing/LandingPage";
 
 // const Landing = () => {
 //   return (
@@ -78,4 +78,4 @@ import LandingPage from "../components/landing/LandingPage";
 
 // export default Landing;
 
-export default LandingPage;
+// export default LandingPage;

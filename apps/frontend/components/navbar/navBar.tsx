@@ -12,26 +12,27 @@ import {
 import { useState } from "react";
 import ThemeToggle from "../themeToggle";
 import WalletAuthButton from "../walletAuthButton";
+// import ConnectPage from "../../app/(auth)/connect/page";
 
-export function NavbarDemo() {
-  const navItems = [
-    {
-      name: "Features",
-      link: "#features",
-    },
-    {
-      name: "How",
-      link: "#how",
-    },
-    {
-      name: "Pricing",
-      link: "/pricing",
-    },
-    {
-      name: "Contact",
-      link: "#contact",
-    },
+type NavItem = {
+  name: string;
+  link: string;
+};
+
+type NavbarDemoProps = {
+  navItems?: NavItem[];
+};
+
+export function NavbarDemo({ navItems }: NavbarDemoProps) {
+
+  const defaultArgs = [
+    { name: "Features", link: "#features" },
+    { name: "How", link: "#how" },
+    { name: "Pricing", link: "/pricing" },
+    // { name: "Contact", link: "#contact" },
   ];
+
+  const items = navItems ?? defaultArgs;
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -40,10 +41,14 @@ export function NavbarDemo() {
       <Navbar>
         <NavBody>
           <NavbarLogo />
-          <NavItems items={navItems} />
+          <NavItems items={items} />
           <div className="flex items-center gap-4">
             <ThemeToggle className="theme-border theme-text rounded-xl border px-4 py-2" />
             <WalletAuthButton />
+            {/* <div className="flex items-center justify-center"> */}
+{/* <ConnectPage /> */}
+            {/* </div> */}
+            
           </div>
         </NavBody>
 
@@ -60,7 +65,7 @@ export function NavbarDemo() {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            {navItems.map((item, idx) => (
+            {items.map((item, idx) => (
               <a
                 key={`mobile-link-${idx}`}
                 href={item.link}
