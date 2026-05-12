@@ -105,7 +105,6 @@ export default function DepartmentPage() {
   const [auditData, setAuditData] = useState<AuditApiPayload>(departmentPageMockData.audit);
   const [isLoading, setIsLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
-  const [backendMessage, setBackendMessage] = useState<string>("");
 
   useEffect(() => {
     let mounted = true;
@@ -117,7 +116,6 @@ export default function DepartmentPage() {
           setDepartmentData(payload.department);
           setAuditData(payload.audit);
           setBackendStatus("connected");
-          setBackendMessage("");
         }
       } catch (e) {
         const status = (e as Error & { status?: number }).status;
@@ -126,10 +124,8 @@ export default function DepartmentPage() {
           setAuditData(normalizeAuditFromDashboard(dashboardMockData));
           if (status === 401) {
             setBackendStatus("unauthorized");
-            setBackendMessage("You’re not signed in. Showing demo data.");
           } else {
             setBackendStatus("unavailable");
-            setBackendMessage("Backend is unreachable or returned invalid data. Showing demo data.");
           }
         }
       } finally {
@@ -146,30 +142,9 @@ export default function DepartmentPage() {
     };
   }, [deptId]);
 
-  const showBanner = backendStatus !== "connected";
-
   return (
-    <div className="min-h-full bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <div className="theme-bg min-h-full p-4 md:p-6">
       <div className="w-full space-y-6">
-        {showBanner ? (
-          <div
-            className={`rounded-2xl border p-4 text-sm font-medium ${
-              backendStatus === "unauthorized"
-                ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
-                : "border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
-            }`}
-            role="status"
-          >
-            <span className="font-semibold uppercase tracking-wide">
-              {backendStatus === "loading"
-                ? "Connecting…"
-                : backendStatus === "unauthorized"
-                  ? "Demo mode (unauthorized)"
-                  : "Demo mode (backend unavailable)"}
-            </span>
-            {backendMessage ? <span className="ml-2">{backendMessage}</span> : null}
-          </div>
-        ) : null}
         <section className="space-y-3">
           {/* Breadcrumbs placeholder: reserving this space for upcoming navigation component. */}
           <div className="h-5" />

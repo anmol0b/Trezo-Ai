@@ -10,7 +10,7 @@ type OracleCardProps = {
 };
 
 const cardShell =
-  "rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6";
+  "theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6";
 
 const formatUsd = (value: number) =>
   value.toLocaleString("en-US", {

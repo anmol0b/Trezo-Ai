@@ -195,9 +195,7 @@ export async function GET() {
         treasuryPaused: treasuryResponse.data?.data?.isPaused ?? false,
         yieldEndpointAvailable: yieldResponse.ok,
         kaminoStatsAvailable: statsResponse.ok,
-        message: yieldResponse.ok
-          ? "Rendering live yield data from /api/yield"
-          : "Using department thresholds as fallback",
+        message: yieldResponse.ok ? "Rendering live yield data from /api/yield" : "",
       },
     };
 

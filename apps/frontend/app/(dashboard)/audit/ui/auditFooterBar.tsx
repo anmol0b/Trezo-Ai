@@ -13,7 +13,7 @@ export default function AuditFooterBar({ message, nodeLabel, latencyLabel, isLoa
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-xl border border-slate-200/90 bg-slate-50 px-4 py-3 text-xs dark:border-zinc-800 dark:bg-zinc-950/80 sm:flex-row sm:items-center sm:justify-between sm:px-5",
+        "theme-surface theme-border flex flex-col gap-3 rounded-xl border px-4 py-3 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-5",
         className,
       )}
     >
@@ -21,9 +21,9 @@ export default function AuditFooterBar({ message, nodeLabel, latencyLabel, isLoa
         <IconLock className="mt-0.5 h-4 w-4 shrink-0 text-slate-500 dark:text-zinc-500" stroke={1.5} aria-hidden />
         {isLoading ? (
           <div className="h-4 w-full max-w-xl animate-pulse rounded bg-slate-200 dark:bg-zinc-800" />
-        ) : (
+        ) : message ? (
           <p className="font-medium leading-relaxed">{message}</p>
-        )}
+        ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-slate-500 dark:text-zinc-500">
         {isLoading ? (
@@ -33,8 +33,8 @@ export default function AuditFooterBar({ message, nodeLabel, latencyLabel, isLoa
           </>
         ) : (
           <>
-            <span>{nodeLabel}</span>
-            <span>{latencyLabel}</span>
+            {nodeLabel ? <span>{nodeLabel}</span> : null}
+            {latencyLabel ? <span>{latencyLabel}</span> : null}
           </>
         )}
       </div>

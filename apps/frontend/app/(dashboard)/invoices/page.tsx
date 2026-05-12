@@ -493,7 +493,7 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="min-h-full bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <div className="theme-bg min-h-full p-4 md:p-6">
       <div className="w-full space-y-6">
         {pageError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-100">
@@ -515,7 +515,7 @@ export default function InvoicesPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+        <section className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Company ID</p>
@@ -600,7 +600,7 @@ export default function InvoicesPage() {
         </section>
 
         {proposalReference ? (
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+          <section className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Fiat conversion</p>

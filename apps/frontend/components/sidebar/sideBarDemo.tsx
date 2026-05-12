@@ -83,7 +83,7 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen w-full flex-1 flex-col overflow-hidden bg-[#0a0a0c] md:flex-row">
+    <div className="theme-bg flex h-screen w-full flex-1 flex-col overflow-hidden md:flex-row">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           {/* Top: logo + nav links */}
@@ -100,8 +100,7 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-2 px-2">
             <ThemeToggle
               className={cn(
-                "w-full rounded-lg border border-white/[0.06] px-3 py-2",
-                "text-white/40 hover:text-white/80 transition-colors",
+                "theme-border theme-muted w-full rounded-lg border px-3 py-2 hover:theme-text transition-colors",
                 !open && "justify-center px-0"
               )}
             />
@@ -113,9 +112,8 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
               disabled={!canDisconnect}
               title={!open ? "Disconnect wallet" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg border border-white/[0.06]",
-                "px-3 py-2 text-[13px] font-medium text-white/40",
-                "hover:text-white/80 hover:border-white/10 transition-all duration-150",
+                "theme-border theme-muted flex items-center gap-3 rounded-lg border",
+                "px-3 py-2 text-[13px] font-medium hover:theme-text transition-all duration-150",
                 "disabled:cursor-not-allowed disabled:opacity-40",
                 !open && "justify-center px-0"
               )}
@@ -138,12 +136,12 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
               title={!open ? displayName : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2",
-                "border border-white/[0.06]",
+                "theme-border border",
                 !open && "justify-center px-0"
               )}
             >
               {/* Identicon-style monogram instead of a face */}
-              <span className="shrink-0 h-6 w-6 rounded-full bg-violet-600/80 flex items-center justify-center text-[11px] font-bold text-white uppercase">
+              <span className="shrink-0 h-6 w-6 rounded-full bg-slate-700 dark:bg-slate-500 flex items-center justify-center text-[11px] font-bold text-white uppercase">
                 {displayName.slice(0, 1)}
               </span>
               <motion.span
@@ -152,7 +150,7 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
                   opacity: open ? 1 : 0,
                 }}
                 transition={{ duration: 0.15 }}
-                className="whitespace-nowrap text-[13px] text-white/40 overflow-hidden"
+                className="theme-muted whitespace-nowrap text-[13px] overflow-hidden"
               >
                 {displayName}
               </motion.span>
@@ -175,7 +173,7 @@ export const Logo = () => (
     <motion.span
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="font-semibold whitespace-pre text-white"
+      className="theme-text font-semibold whitespace-pre"
     >
       Trezo AI
     </motion.span>
@@ -187,6 +185,6 @@ export const LogoIcon = () => (
     href="#"
     className="relative z-20 flex items-center py-1"
   >
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-violet-500" />
+    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-slate-700 dark:bg-slate-500" />
   </a>
 );

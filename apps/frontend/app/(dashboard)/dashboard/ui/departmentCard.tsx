@@ -51,14 +51,14 @@ function DepartmentCard({ item }: { item: DepartmentCardItem }) {
   const detailsHref = buildDepartmentDetailsHref(item);
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{item.name}</h3>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{truncateAddress(item.walletAddress)}</p>
         </div>
         {item.status ? (
-          <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-300">
+          <span className="rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
             {item.status}
           </span>
         ) : null}
@@ -81,14 +81,14 @@ function DepartmentCard({ item }: { item: DepartmentCardItem }) {
         </p>
       </div>
 
-      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-5 text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
         {item.spendingRule}
       </div>
 
       {detailsHref ? (
         <a
           href={detailsHref}
-          className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200"
+          className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-700 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
         >
           View Details <span aria-hidden>→</span>
         </a>
@@ -99,7 +99,7 @@ function DepartmentCard({ item }: { item: DepartmentCardItem }) {
 
 function DepartmentCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm">
       <div className="animate-pulse">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">

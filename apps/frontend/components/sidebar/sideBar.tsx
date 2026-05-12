@@ -97,7 +97,7 @@ export const DesktopSidebar = ({ className, children }: DesktopSidebarProps) => 
     <motion.div
       className={cn(
         "h-full py-4 hidden md:flex md:flex-col",
-        "bg-[#0f0f11] border-r border-white/[0.06]",
+        "theme-surface theme-border border-r",
         "shrink-0 overflow-hidden",
         className
       )}
@@ -128,12 +128,12 @@ export const MobileSidebar = ({
     <div
       className={cn(
         "h-14 px-4 flex flex-row md:hidden items-center justify-between",
-        "bg-[#0f0f11] border-b border-white/[0.06] w-full"
+        "theme-surface theme-border border-b w-full"
       )}
     >
       <div className="flex justify-end z-20 w-full">
         <IconMenu2
-          className="text-white/50 hover:text-white transition-colors cursor-pointer"
+          className="theme-muted hover:theme-text transition-colors cursor-pointer"
           onClick={() => setOpen(!open)}
         />
       </div>
@@ -147,12 +147,12 @@ export const MobileSidebar = ({
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className={cn(
               "fixed inset-0 z-[100] flex h-full w-full flex-col justify-between",
-              "bg-[#0f0f11] p-8",
+              "theme-surface p-8",
               className
             )}
           >
             <div
-              className="absolute right-8 top-8 z-50 text-white/50 hover:text-white transition-colors cursor-pointer"
+              className="theme-muted absolute right-8 top-8 z-50 hover:theme-text transition-colors cursor-pointer"
               onClick={() => setOpen(false)}
             >
               <IconX />
@@ -186,8 +186,8 @@ export const SidebarLink = ({
         "relative flex items-center gap-3 px-3 py-2 mx-2 rounded-lg",
         "transition-all duration-150 group/sidebar",
         isActive
-          ? "bg-white/[0.08] text-white"
-          : "text-white/40 hover:bg-white/[0.05] hover:text-white/80",
+          ? "bg-slate-200 text-slate-900 dark:bg-white/[0.08] dark:text-white"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-white/40 dark:hover:bg-white/[0.05] dark:hover:text-white/80",
         className
       )}
     >
@@ -196,7 +196,7 @@ export const SidebarLink = ({
       </span>
 
       {isActive && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-violet-500" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-slate-500 dark:bg-slate-300" />
       )}
 
       <motion.span

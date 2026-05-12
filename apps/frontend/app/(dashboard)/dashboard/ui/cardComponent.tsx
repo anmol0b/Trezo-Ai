@@ -34,7 +34,7 @@ export default function CardComponent({
         {visibleCards.map((card, index) => (
           <article
             key={isLoading ? `skeleton-${index}` : `${(card as DashboardCardData).title}-${index}`}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950"
+            className="theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors"
           >
             {isLoading ? (
               <div className="animate-pulse">

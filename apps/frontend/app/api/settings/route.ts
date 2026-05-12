@@ -182,11 +182,11 @@ export async function GET() {
         actionDisabled: true,
       },
       criticalOps: {
-        title: treasury?.isPaused ? "Treasury Pause State: Active" : "Treasury Pause State: Inactive",
+        title: "Treasury Pause State",
         body: treasury?.isPaused
-          ? "The backend reports the treasury is currently paused."
-          : "The backend reports the treasury is currently unpaused.",
-        note: "Pause and resume controls are not exposed by the current backend API, so this panel is intentionally read-only.",
+          ? "Treasury pause is active."
+          : "Treasury pause is inactive.",
+        note: "",
         actionLabel: "Read only",
         actionDisabled: true,
       },

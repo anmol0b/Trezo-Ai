@@ -7,7 +7,7 @@ type SummaryCardsProps = {
 
 function SummaryCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm">
       <div className="animate-pulse space-y-3">
         <div className="h-3 w-28 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="h-9 w-40 rounded bg-slate-200 dark:bg-slate-800" />
@@ -28,7 +28,7 @@ export default function SummaryCards({ data, isLoading = false }: SummaryCardsPr
         ) : (
           <article
             key={(item as YieldSummaryCard).id}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950"
+            className="theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
               {(item as YieldSummaryCard).title}

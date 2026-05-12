@@ -122,9 +122,9 @@ export async function GET() {
       footer: {
         message: eventsResponse.ok
           ? "Audit feed is backed by the live backend event indexer. Exported data is read-only."
-          : "The audit backend is unavailable. No placeholder events are being injected.",
-        nodeLabel: `Node: ${nodeLabel}`,
-        latencyLabel: healthResponse.data ? `As of ${new Date(healthResponse.data.timestamp).toLocaleTimeString("en-US")}` : "As of unavailable",
+          : "",
+        nodeLabel: healthResponse.data ? `Node: ${nodeLabel}` : "",
+        latencyLabel: healthResponse.data ? `As of ${new Date(healthResponse.data.timestamp).toLocaleTimeString("en-US")}` : "",
       },
     };
 

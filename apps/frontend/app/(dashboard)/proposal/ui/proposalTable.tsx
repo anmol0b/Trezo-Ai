@@ -22,7 +22,7 @@ const formatCurrency = (amount: number, currency: string) =>
 
 function ProposalTableSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 md:p-5">
+    <article className="theme-surface theme-border rounded-2xl border p-4 shadow-sm md:p-5">
       <div className="animate-pulse space-y-3">
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={`proposal-row-skeleton-${index}`} className="h-16 rounded-xl bg-slate-100 dark:bg-slate-900" />
@@ -58,7 +58,7 @@ export default function ProposalTable({ data, isLoading = false, onOpen }: Propo
   }
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90">
+    <article className="theme-surface theme-border overflow-hidden rounded-2xl border shadow-sm">
       <div className="overflow-x-auto">
         <table className="min-w-[1100px] w-full text-left">
           <thead className="border-b border-slate-200/80 bg-slate-100/70 dark:border-slate-800/80 dark:bg-slate-900/70">

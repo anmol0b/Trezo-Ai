@@ -22,7 +22,7 @@ const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
 
 function SpendingCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div
         className="mx-auto h-44 w-44 animate-pulse rounded-full border border-slate-200 dark:border-slate-800 sm:h-52 sm:w-52"
         style={{ borderWidth: 10 }}
@@ -54,7 +54,7 @@ export default function SpendingCard({ data, className = "", isLoading = false }
 
   return (
     <article
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6 ${className}`}
+      className={`theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6 ${className}`}
     >
       <header className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">

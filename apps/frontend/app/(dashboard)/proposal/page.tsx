@@ -109,7 +109,6 @@ const pageParam = searchParams?.get("page") ?? null;
   });
   const [isLoading, setIsLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
-  const [backendMessage, setBackendMessage] = useState<string>("");
   const [activeFilterId, setActiveFilterId] = useState<string>(() => {
   return statusParam ?? proposalMockData.filters.find((f) => f.active)?.id ?? proposalMockData.filters[0]?.id ?? "all";
 });
@@ -139,7 +138,6 @@ const [page, setPage] = useState(() => {
         if (mounted) {
           setProposalData(payload);
           setBackendStatus("connected");
-          setBackendMessage("");
         }
       } catch (e) {
         const status = (e as Error & { status?: number }).status;
@@ -147,10 +145,8 @@ const [page, setPage] = useState(() => {
           setProposalData(proposalMockData);
           if (status === 401) {
             setBackendStatus("unauthorized");
-            setBackendMessage("You’re not signed in. Showing demo data.");
           } else {
             setBackendStatus("unavailable");
-            setBackendMessage("Backend is unreachable or returned invalid data. Showing demo data.");
           }
         }
       } finally {
@@ -244,7 +240,6 @@ const [page, setPage] = useState(() => {
     setPage(1);
   }, [activeFilterId, query]);
 
-  const showBanner = backendStatus !== "connected";
   const openProposal = openProposalId ? proposalData.proposals.find((p) => p.id === openProposalId) : null;
   const createContextReady = Boolean(
     overrideFields.companyId && overrideFields.treasuryPda && overrideFields.deptPda && overrideFields.recipientWallet,
@@ -360,28 +355,8 @@ const [page, setPage] = useState(() => {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <main className="theme-bg min-h-screen p-4 md:p-6">
       <div className="mx-auto w-full max-w-[1400px] space-y-6">
-        {showBanner ? (
-          <div
-            className={`rounded-2xl border p-4 text-sm font-medium ${
-              backendStatus === "unauthorized"
-                ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
-                : "border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
-            }`}
-            role="status"
-          >
-            <span className="font-semibold uppercase tracking-wide">
-              {backendStatus === "loading"
-                ? "Connecting…"
-                : backendStatus === "unauthorized"
-                  ? "Demo mode (unauthorized)"
-                  : "Demo mode (backend unavailable)"}
-            </span>
-            {backendMessage ? <span className="ml-2">{backendMessage}</span> : null}
-          </div>
-        ) : null}
-
         <section className="space-y-4">
           {/* Breadcrumbs placeholder: reserving this space for upcoming navigation component. */}
           <div className="h-5" />
@@ -429,7 +404,7 @@ const [page, setPage] = useState(() => {
           <div className="space-y-3">
             <ProposalTable data={pageItems} isLoading={isLoading} onOpen={(id) => setOpenProposalId(id)} />
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800/80 dark:bg-slate-950/90 dark:text-slate-500">
+            <div className="theme-surface theme-border flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-500">
               <p>
                 Showing{" "}
                 {filteredProposals.length === 0 ? 0 : (safePage - 1) * pageSize + 1}-
@@ -458,7 +433,7 @@ const [page, setPage] = useState(() => {
               </div>
             </div>
             {!isLoading && filteredProposals.length === 0 ? (
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-6 text-sm font-medium text-slate-700 dark:border-slate-800/80 dark:bg-slate-950/90 dark:text-slate-200">
+              <div className="theme-surface theme-border rounded-2xl border p-6 text-sm font-medium text-slate-700 dark:text-slate-200">
                 No proposals match your filters.
               </div>
             ) : null}
@@ -473,7 +448,7 @@ const [page, setPage] = useState(() => {
 
       {openProposal ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="theme-surface theme-border w-full max-w-2xl rounded-2xl border p-5 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
@@ -545,7 +520,7 @@ const [page, setPage] = useState(() => {
 
       {showCreateModal ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="theme-surface theme-border w-full max-w-xl rounded-2xl border p-5 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">

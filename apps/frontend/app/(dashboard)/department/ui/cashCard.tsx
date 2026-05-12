@@ -65,7 +65,7 @@ function RuleToggle({ enabled }: { enabled: boolean }) {
 
 function CashCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function CashCard({
 
   return (
     <article
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6 ${className}`}
+      className={`theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6 ${className}`}
     >
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
