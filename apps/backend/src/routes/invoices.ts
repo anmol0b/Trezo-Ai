@@ -18,7 +18,7 @@ const upload = multer({
 });
 
 export const invoicesRouter = Router();
-const PDFParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 
 // GET /api/invoices/:companyId
 // Returns recent invoices persisted in Postgres
@@ -96,7 +96,7 @@ invoicesRouter.post(
       }
 
       // Extract text from PDF
-      const pdfData = await PDFParse(req.file.buffer);
+      const pdfData = await new PDFParse({ data: req.file.buffer }).getText();
       const invoiceText = pdfData.text.trim();
 
       if (!invoiceText) {
