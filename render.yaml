@@ -49,3 +49,7 @@ services:
         sync: false
       - key: FIAT_WALLET_ADDRESS
         sync: false
+      - key: DODO_PRO_PRODUCT_ID
+        value: false
+      - key: DODO_BASIC_PRODUCT_ID
+        value: false

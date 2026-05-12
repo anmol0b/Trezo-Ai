@@ -2,12 +2,13 @@ import { PublicKey } from '@solana/web3.js';
 import { ParsedInvoice } from './invoice-parser';
 import { RAGResult } from './rag';
 import { usdcToLamports, toPubkey } from '../utils';
+import BN from 'bn.js';
 
 export interface ProposalInstructionData {
   treasuryPda: PublicKey;
   deptPda: PublicKey;
   recipientAta: PublicKey;
-  amountLamports: bigint;
+  amountLamports: BN;
   category: number;
   metadataUri: string;
   expiryTimestamp: number;
@@ -62,7 +63,7 @@ export function buildProposalData(input: BuildProposalInput): ProposalInstructio
     treasuryPda: treasury,
     deptPda: dept,
     recipientAta: recipient,
-    amountLamports: BigInt(usdcToLamports(invoice.amountUsdc)),
+    amountLamports: new BN(usdcToLamports(invoice.amountUsdc)),
     category: categoryMask,
     metadataUri,
     expiryTimestamp,

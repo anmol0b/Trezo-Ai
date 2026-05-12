@@ -6,8 +6,8 @@ import BN from 'bn.js';
 const USDC_DECIMALS = 6;
 const USDC_MULTIPLIER = Math.pow(10, USDC_DECIMALS);
 
-export function usdcToLamports(usdc: number): number {
-  return Math.round(usdc * USDC_MULTIPLIER);
+export function usdcToLamports(usdc: number): BN {
+  return new BN(Math.round(usdc * USDC_MULTIPLIER));
 }
 
 export function lamportsToUsdc(lamports: BN | number): number {
