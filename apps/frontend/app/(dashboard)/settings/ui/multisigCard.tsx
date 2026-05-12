@@ -1,4 +1,6 @@
 import type { MultisigConfig, MultisigMember } from "./types";
+import { useState } from "react";
+import CustomSelect from "../../../../components/ui/customSelect";
 
 type MultisigCardProps = {
   data: MultisigConfig;
@@ -38,6 +40,7 @@ function MultisigSkeleton() {
 }
 
 export default function MultisigCard({ data, className = "", isLoading = false }: MultisigCardProps) {
+  const [selectedRole, setSelectedRole] = useState(data.defaultRole);
   if (isLoading) return <MultisigSkeleton />;
 
   const isReadOnly = Boolean(data.readOnlyNotice);
@@ -91,16 +94,12 @@ export default function MultisigCard({ data, className = "", isLoading = false }
               placeholder={data.addressPlaceholder}
               className="h-11 w-full rounded-xl border border-slate-300 bg-slate-100 px-4 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-500 dark:placeholder:text-slate-500"
             />
-            <div className="relative">
-              <select className="h-11 w-full appearance-none rounded-xl border border-slate-300 bg-slate-100 px-4 pr-10 text-sm font-semibold text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-500">
-                {data.roleOptions.map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">▾</span>
-            </div>
+            <CustomSelect
+              value={selectedRole}
+              onChange={(next) => setSelectedRole(next as MultisigMember["role"])}
+              options={data.roleOptions.map((role) => ({ value: role, label: role }))}
+              placeholder="Select role"
+            />
             <button
               type="button"
               className="h-11 rounded-xl bg-slate-800 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-sm transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"

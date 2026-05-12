@@ -6,6 +6,7 @@ import GovernanceMetrics from "./ui/governanceMetrics";
 import LiveAuditFeed from "./ui/liveAuditFeed";
 import ProposalFilters from "./ui/proposalFilters";
 import ProposalTable from "./ui/proposalTable";
+import CustomSelect from "../../../components/ui/customSelect";
 import {
   invoicesMockData,
   proposalMockData,
@@ -575,21 +576,19 @@ const [page, setPage] = useState(() => {
                 </div>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Department
-                  <div className="relative mt-1">
-                    <select
-                      value={overrideFields.deptPda}
-                      onChange={(e) => setOverrideFields((prev) => ({ ...prev, deptPda: e.target.value }))}
-                      className="h-10 w-full appearance-none rounded-xl border border-zinc-300 bg-zinc-100 px-3 pr-9 text-sm font-medium text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
-                    >
-                      <option value="">Select department</option>
-                      {invoiceContext.context.departments.map((department) => (
-                        <option key={department.pubkey} value={department.pubkey}>
-                          {department.name} ({department.deptId})
-                        </option>
-                      ))}
-                    </select>
-                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">▾</span>
-                  </div>
+                  <CustomSelect
+                    className="mt-1"
+                    value={overrideFields.deptPda}
+                    onChange={(next) => setOverrideFields((prev) => ({ ...prev, deptPda: next }))}
+                    options={[
+                      { value: "", label: "Select department" },
+                      ...invoiceContext.context.departments.map((department) => ({
+                        value: department.pubkey,
+                        label: `${department.name} (${department.deptId})`,
+                      })),
+                    ]}
+                    placeholder="Select department"
+                  />
                 </label>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Recipient wallet
