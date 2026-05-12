@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Plan = {
   name: string;
@@ -11,14 +13,15 @@ type Plan = {
   features: string[];
   cta: string;
   highlighted: boolean;
+  planKey: "basic" | "pro";
 };
 
 const plans: Plan[] = [
   {
-    name: "Starter",
-    tag: "For small teams",
-    monthlyPrice: 49,
-    yearlyPrice: 39,
+    name: "Basic",
+    tag: "Get started free",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
     description: "Everything you need to get treasury operations off the ground.",
     features: [
       "Up to 50 invoices / month",
@@ -27,14 +30,15 @@ const plans: Plan[] = [
       "Basic anomaly detection",
       "Email support",
     ],
-    cta: "Get started",
+    cta: "Get started free",
     highlighted: false,
+    planKey: "basic",
   },
   {
     name: "Pro",
     tag: "Most popular",
-    monthlyPrice: 149,
-    yearlyPrice: 119,
+    monthlyPrice: 199,
+    yearlyPrice: 159,
     description: "Full automation for growing organizations with complex payouts.",
     features: [
       "Unlimited invoices",
@@ -46,23 +50,7 @@ const plans: Plan[] = [
     ],
     cta: "Start free trial",
     highlighted: true,
-  },
-  {
-    name: "Enterprise",
-    tag: "Custom scale",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    description: "Tailored deployment for institutions that need full control.",
-    features: [
-      "Unlimited everything",
-      "Custom wallet integrations",
-      "Dedicated Solana RPC node",
-      "SSO & role-based access",
-      "SLA guarantees",
-      "Dedicated account manager",
-    ],
-    cta: "Contact us",
-    highlighted: false,
+    planKey: "pro",
   },
 ];
 
@@ -88,9 +76,7 @@ export const Pricing = () => {
           <button
             onClick={() => setYearly(false)}
             className={`px-5 py-2 rounded-full font-mono text-xs tracking-widest uppercase font-semibold transition-all duration-200 ${
-              !yearly
-                ? "bg-[#1a1a2e] text-[#f0ebe1]"
-                : "bg-transparent text-[#8a7f70]"
+              !yearly ? "bg-[#1a1a2e] text-[#f0ebe1]" : "bg-transparent text-[#8a7f70]"
             }`}
           >
             Monthly
@@ -98,9 +84,7 @@ export const Pricing = () => {
           <button
             onClick={() => setYearly(true)}
             className={`px-5 py-2 rounded-full font-mono text-xs tracking-widest uppercase font-semibold transition-all duration-200 flex items-center gap-2 ${
-              yearly
-                ? "bg-[#1a1a2e] text-[#f0ebe1]"
-                : "bg-transparent text-[#8a7f70]"
+              yearly ? "bg-[#1a1a2e] text-[#f0ebe1]" : "bg-transparent text-[#8a7f70]"
             }`}
           >
             Yearly
@@ -111,14 +95,13 @@ export const Pricing = () => {
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto items-start">
+      {/* Cards — centered two-column */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto items-center">
         {plans.map((plan) => (
           <PricingCard key={plan.name} plan={plan} yearly={yearly} />
         ))}
       </div>
 
-      {/* Footer note */}
       <p className="text-center mt-12 font-mono text-xs text-[#a09585] tracking-wide">
         All plans include 14-day free trial · No credit card required
       </p>
@@ -128,12 +111,58 @@ export const Pricing = () => {
 
 function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
-  const isEnterprise = plan.monthlyPrice === 0;
+  const isFree = plan.monthlyPrice === 0;
   const h = plan.highlighted;
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCTA = async () => {
+    // Basic / free plan — just go to dashboard
+    if (isFree) {
+      router.push(session ? "/dashboard" : "/connect");
+      return;
+    }
+
+    // Pro — need to be logged in
+    if (!session?.user?.email) {
+      router.push("/connect");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan: plan.planKey,
+          email: session.user.email,
+          companyId: (session.user as any).companyId ?? session.user.email,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.data?.checkoutUrl) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      window.location.href = data.data.checkoutUrl;
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
-      className={`relative rounded-3xl transition-all duration-300 group
+      className={`relative rounded-3xl transition-all duration-300
         ${
           h
             ? "bg-[#1a1a2e] border border-[#2e2e4a] shadow-2xl scale-[1.03] px-8 py-10"
@@ -144,9 +173,7 @@ function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
       <div className="mb-6">
         <span
           className={`font-mono text-[11px] tracking-[0.14em] uppercase font-bold px-3 py-1 rounded-full ${
-            h
-              ? "text-[#c8b89a] bg-[rgba(200,184,154,0.12)]"
-              : "text-[#8a7f70] bg-[#f5f0e8]"
+            h ? "text-[#c8b89a] bg-[rgba(200,184,154,0.12)]" : "text-[#8a7f70] bg-[#f5f0e8]"
           }`}
         >
           {plan.tag}
@@ -163,55 +190,31 @@ function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
       </h3>
 
       {/* Description */}
-      <p
-        className={`text-sm leading-relaxed mb-7 ${
-          h ? "text-[#9d9ab0]" : "text-[#7a7060]"
-        }`}
-      >
+      <p className={`text-sm leading-relaxed mb-7 ${h ? "text-[#9d9ab0]" : "text-[#7a7060]"}`}>
         {plan.description}
       </p>
 
       {/* Price */}
       <div className="mb-7">
-        {isEnterprise ? (
-          <div
-            className={`text-3xl font-extrabold tracking-tight ${
-              h ? "text-[#f0ebe1]" : "text-[#1a1a2e]"
-            }`}
-          >
-            Custom
+        {isFree ? (
+          <div className={`text-5xl font-extrabold tracking-tight ${h ? "text-[#f0ebe1]" : "text-[#1a1a2e]"}`}>
+            Free
           </div>
         ) : (
           <div className="flex items-end gap-1">
-            <span
-              className={`text-base font-semibold mb-1.5 ${
-                h ? "text-[#9d9ab0]" : "text-[#8a7f70]"
-              }`}
-            >
+            <span className={`text-base font-semibold mb-1.5 ${h ? "text-[#9d9ab0]" : "text-[#8a7f70]"}`}>
               $
             </span>
-            <span
-              className={`text-5xl font-extrabold leading-none tracking-[-0.04em] ${
-                h ? "text-[#f0ebe1]" : "text-[#1a1a2e]"
-              }`}
-            >
+            <span className={`text-5xl font-extrabold leading-none tracking-[-0.04em] ${h ? "text-[#f0ebe1]" : "text-[#1a1a2e]"}`}>
               {price}
             </span>
-            <span
-              className={`text-sm mb-1.5 ${
-                h ? "text-[#9d9ab0]" : "text-[#8a7f70]"
-              }`}
-            >
+            <span className={`text-sm mb-1.5 ${h ? "text-[#9d9ab0]" : "text-[#8a7f70]"}`}>
               / mo
             </span>
           </div>
         )}
-        {!isEnterprise && yearly && (
-          <p
-            className={`font-mono text-[11px] mt-1 tracking-wide ${
-              h ? "text-[#c8b89a]" : "text-[#a09585]"
-            }`}
-          >
+        {!isFree && yearly && (
+          <p className={`font-mono text-[11px] mt-1 tracking-wide ${h ? "text-[#c8b89a]" : "text-[#a09585]"}`}>
             Billed ${price * 12}/year
           </p>
         )}
@@ -239,26 +242,27 @@ function PricingCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
                 />
               </svg>
             </span>
-            <span
-              className={`text-sm leading-snug ${
-                h ? "text-[#c8c6d4]" : "text-[#4a4438]"
-              }`}
-            >
+            <span className={`text-sm leading-snug ${h ? "text-[#c8c6d4]" : "text-[#4a4438]"}`}>
               {f}
             </span>
           </li>
         ))}
       </ul>
 
+      {/* Error */}
+      {error && <p className="text-red-400 text-xs mb-3 font-mono">{error}</p>}
+
       {/* CTA */}
       <button
-        className={`w-full py-3.5 rounded-2xl font-mono text-xs font-bold tracking-[0.14em] uppercase transition-all duration-200 ${
+        onClick={handleCTA}
+        disabled={loading}
+        className={`w-full py-3.5 rounded-2xl font-mono text-xs font-bold tracking-[0.14em] uppercase transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${
           h
             ? "bg-[#f0ebe1] text-[#1a1a2e] hover:bg-[#e0d8cc]"
             : "bg-transparent text-[#1a1a2e] border border-[#1a1a2e] hover:bg-[#1a1a2e] hover:text-[#f0ebe1]"
         }`}
       >
-        {plan.cta} →
+        {loading ? "Redirecting..." : `${plan.cta} →`}
       </button>
     </div>
   );
