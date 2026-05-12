@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import PDFParse from 'pdf-parse';
+import * as PDFParseModule from 'pdf-parse';
 import { parseInvoice } from '../agent/invoice-parser';
 import { queryVendorHistory, storeInvoiceEmbedding } from '../agent/rag';
 import { buildProposalData, buildProposalSummary } from '../agent/proposal-builder';
@@ -18,6 +18,7 @@ const upload = multer({
 });
 
 export const invoicesRouter = Router();
+const PDFParse = (PDFParseModule as any).default ?? PDFParseModule;
 
 // GET /api/invoices/:companyId
 // Returns recent invoices persisted in Postgres
