@@ -174,7 +174,7 @@ export const VendorHistorySchema = z.object({
   averageAmount: z.coerce.number(),
   lastSeenDate: z.string(),
   categories: z.array(z.string()).default([]),
-});
+}).nullable();
 
 export const SimilarInvoiceSchema = z.object({
   vendor: z.string(),
