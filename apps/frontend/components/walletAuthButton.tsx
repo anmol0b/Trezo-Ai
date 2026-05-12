@@ -178,9 +178,6 @@ export default function WalletAuthButton({
       ) : null}
       {showDebug ? (
         <p className="theme-muted mt-2 text-[11px]">
-          auth-debug: status={status} connected={shortPubkey} authed={String(isAuthed)} signing=
-          {String(isSigningIn)} inflight={String(globalSignInInFlight)} autoTried=
-          {globalAutoAttemptedPubkey ? "yes" : "no"}
         </p>
       ) : null}
     </div>
