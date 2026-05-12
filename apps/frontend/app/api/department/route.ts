@@ -170,7 +170,8 @@ export async function GET(req: Request) {
             enabled: true,
           },
         ],
-        spendingVelocity: departmentPageMockData.department.spendingVelocity,
+        // spendingVelocity: departmentPageMockData.department.spendingVelocity,   
+        spendingVelocity: [],
       },
       audit: auditEventsRes.payload.success
         ? {

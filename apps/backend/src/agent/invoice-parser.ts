@@ -9,7 +9,7 @@ export function _resetGroqClient(): void { _groq = null; }
 export const ParsedInvoiceSchema = z.object({
   vendor: z.string(),
   amount: z.number().positive(),
-  currency: z.string().length(3),
+  currency: z.string().min(1).max(4).transform(s => s.trim().slice(0, 3).toUpperCase()),
   amountUsdc: z.number().positive(),
   dueDate: z.string(),
   category: z.enum(INVOICE_CATEGORIES),

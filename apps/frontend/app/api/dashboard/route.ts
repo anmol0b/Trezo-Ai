@@ -231,12 +231,20 @@ export async function GET() {
         : null,
     ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
+    // const payload = {
+    //   ...dashboardMockData,
+    //   summaryCards,
+    //   departments: mappedDepartments,
+    //   insights: mappedInsights,
+    //   liveActivities: mappedLiveActivities,
+    // };
     const payload = {
-      ...dashboardMockData,
       summaryCards,
       departments: mappedDepartments,
       insights: mappedInsights,
       liveActivities: mappedLiveActivities,
+      proposal: dashboardMockData.proposal, 
+      audit: dashboardMockData.audit,
     };
 
     return NextResponse.json(payload, { status: 200 });

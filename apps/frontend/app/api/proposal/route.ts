@@ -120,7 +120,8 @@ export async function GET() {
             date: formatDateFromUnixSeconds(p.createdAt),
           };
         })
-      : proposalMockData.proposals;
+      // : proposalMockData.proposals; 
+      : [];
 
     const pendingCount = proposals.filter((p) => normalizeStatus(p.status) === "pending").length;
     const executedCount = proposals.filter((p) => normalizeStatus(p.status) === "executed").length;
@@ -154,7 +155,7 @@ export async function GET() {
         },
       ],
       auditFeed: [
-        { id: "audit-prop-1", title: `Fetched ${proposals.length} proposals`, timeAgo: "just now", tone: "neutral" as const },
+        { id: "audit-prop-1", title: `${proposals.length} proposals fetched`, timeAgo: "just now", tone: "neutral" as const },
       ],
     };
 

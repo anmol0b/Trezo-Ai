@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import { PDFParse } from 'pdf-parse';
+import PDFParse from 'pdf-parse';
 import { parseInvoice } from '../agent/invoice-parser';
 import { queryVendorHistory, storeInvoiceEmbedding } from '../agent/rag';
 import { buildProposalData, buildProposalSummary } from '../agent/proposal-builder';
@@ -95,8 +95,7 @@ invoicesRouter.post(
       }
 
       // Extract text from PDF
-      const parser = new PDFParse({ data: req.file.buffer });
-      const pdfData = await parser.getText();
+      const pdfData = await PDFParse(req.file.buffer);
       const invoiceText = pdfData.text.trim();
 
       if (!invoiceText) {

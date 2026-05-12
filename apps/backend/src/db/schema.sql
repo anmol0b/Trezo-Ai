@@ -136,3 +136,12 @@ CREATE TABLE IF NOT EXISTS auth_nonces (
   expires_at  TIMESTAMPTZ NOT NULL,
   used_at     TIMESTAMPTZ
 );
+
+-- ─── Demo seed data ───────────────────────────────────────────────────────────
+INSERT INTO companies (id, name, plan)
+VALUES ('trezo-demo', 'Trezo Protocol DAO', 'pro')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO vendor_history (vendor, company_id, invoice_count, total_amount, average_amount, last_seen_at, categories)
+VALUES ('NovaSpark Labs Inc.', 'trezo-demo', 3, 18450.00, 6150.00, NOW() - INTERVAL '45 days', ARRAY['infrastructure', 'engineering'])
+ON CONFLICT (vendor, company_id) DO NOTHING;

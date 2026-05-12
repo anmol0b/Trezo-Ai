@@ -211,6 +211,9 @@ export async function POST(req: Request) {
 
       const parseResponse = await fetchWithTimeoutAndRetry(`${BACKEND_BASE_URL}/api/invoices/parse`, {
         method: "POST",
+        headers: {
+          'x-api-key': process.env.BACKEND_API_SECRET ?? '',
+        },
         body: backendFormData,
       });
 
