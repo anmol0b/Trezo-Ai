@@ -6,7 +6,7 @@ import { config } from '../config';
 export interface CheckoutRequest {
   companyId: string;
   email: string;
-  plan: 'pro' | 'enterprise';
+  plan: 'basic' | 'pro' | 'enterprise';
 }
 
 export interface CheckoutResponse {
@@ -28,7 +28,9 @@ export interface SubscriptionStatus {
 }
 
 // Plan product IDs — create these in Dodo dashboard
+// TODO: replace prod_basic_placeholder when Dodo product is created
 const PLAN_PRODUCT_IDS: Record<string, string> = {
+  basic: process.env.DODO_BASIC_PRODUCT_ID ?? 'prod_basic_placeholder',
   pro: process.env.DODO_PRO_PRODUCT_ID ?? 'prod_pro_placeholder',
   enterprise: process.env.DODO_ENTERPRISE_PRODUCT_ID ?? 'prod_enterprise_placeholder',
 };
