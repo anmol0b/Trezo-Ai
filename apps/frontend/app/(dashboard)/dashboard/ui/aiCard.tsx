@@ -46,7 +46,7 @@ function AiInsightCard({
   const actionIsLink = Boolean(card.actionHref && card.actionHref !== "#");
 
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/90">
+    <article className="theme-surface theme-border relative overflow-hidden rounded-2xl border p-5 shadow-sm transition-colors">
       <span
         className={`absolute inset-y-3 left-0 w-1 rounded-r-full ${toneBorderMap[tone]}`}
         aria-hidden
@@ -98,7 +98,7 @@ function AiInsightCard({
           {actionIsLink ? (
             <a
               href={card.actionHref}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-indigo-400 dark:bg-indigo-400 dark:text-slate-950 dark:hover:bg-indigo-300"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-800 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
             >
               {actionLabel}
               <span aria-hidden>→</span>
@@ -107,7 +107,7 @@ function AiInsightCard({
             <button
               type="button"
               onClick={() => onAction?.(card.id, card.actionHref)}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-indigo-400 dark:bg-indigo-400 dark:text-slate-950 dark:hover:bg-indigo-300"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-800 px-5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
             >
               {actionLabel}
               <span aria-hidden>→</span>
@@ -121,7 +121,7 @@ function AiInsightCard({
 
 function AiInsightCardSkeleton() {
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950/90">
+    <article className="theme-surface theme-border relative overflow-hidden rounded-2xl border p-5 shadow-sm">
       <div className="animate-pulse pl-4 sm:pl-5">
         <div className="flex items-start gap-3">
           <div className="h-11 w-11 rounded-xl bg-slate-200 dark:bg-slate-800" />

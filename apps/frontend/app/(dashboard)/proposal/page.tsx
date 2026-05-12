@@ -6,6 +6,7 @@ import GovernanceMetrics from "./ui/governanceMetrics";
 import LiveAuditFeed from "./ui/liveAuditFeed";
 import ProposalFilters from "./ui/proposalFilters";
 import ProposalTable from "./ui/proposalTable";
+import CustomSelect from "../../../components/ui/customSelect";
 import {
   invoicesMockData,
   proposalMockData,
@@ -109,7 +110,6 @@ const pageParam = searchParams?.get("page") ?? null;
   });
   const [isLoading, setIsLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("loading");
-  const [backendMessage, setBackendMessage] = useState<string>("");
   const [activeFilterId, setActiveFilterId] = useState<string>(() => {
   return statusParam ?? proposalMockData.filters.find((f) => f.active)?.id ?? proposalMockData.filters[0]?.id ?? "all";
 });
@@ -139,7 +139,6 @@ const [page, setPage] = useState(() => {
         if (mounted) {
           setProposalData(payload);
           setBackendStatus("connected");
-          setBackendMessage("");
         }
       } catch (e) {
         const status = (e as Error & { status?: number }).status;
@@ -147,10 +146,8 @@ const [page, setPage] = useState(() => {
           setProposalData(proposalMockData);
           if (status === 401) {
             setBackendStatus("unauthorized");
-            setBackendMessage("You’re not signed in. Showing demo data.");
           } else {
             setBackendStatus("unavailable");
-            setBackendMessage("Backend is unreachable or returned invalid data. Showing demo data.");
           }
         }
       } finally {
@@ -244,7 +241,6 @@ const [page, setPage] = useState(() => {
     setPage(1);
   }, [activeFilterId, query]);
 
-  const showBanner = backendStatus !== "connected";
   const openProposal = openProposalId ? proposalData.proposals.find((p) => p.id === openProposalId) : null;
   const createContextReady = Boolean(
     overrideFields.companyId && overrideFields.treasuryPda && overrideFields.deptPda && overrideFields.recipientWallet,
@@ -360,28 +356,8 @@ const [page, setPage] = useState(() => {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <main className="theme-bg min-h-screen p-4 md:p-6">
       <div className="mx-auto w-full max-w-[1400px] space-y-6">
-        {showBanner ? (
-          <div
-            className={`rounded-2xl border p-4 text-sm font-medium ${
-              backendStatus === "unauthorized"
-                ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
-                : "border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
-            }`}
-            role="status"
-          >
-            <span className="font-semibold uppercase tracking-wide">
-              {backendStatus === "loading"
-                ? "Connecting…"
-                : backendStatus === "unauthorized"
-                  ? "Demo mode (unauthorized)"
-                  : "Demo mode (backend unavailable)"}
-            </span>
-            {backendMessage ? <span className="ml-2">{backendMessage}</span> : null}
-          </div>
-        ) : null}
-
         <section className="space-y-4">
           {/* Breadcrumbs placeholder: reserving this space for upcoming navigation component. */}
           <div className="h-5" />
@@ -401,7 +377,7 @@ const [page, setPage] = useState(() => {
                 resetCreate();
                 setShowCreateModal(true);
               }}
-              className="inline-flex items-center rounded-xl border border-violet-300 bg-violet-500/80 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-violet-500 dark:border-violet-500/50 dark:bg-violet-500/60"
+              className="inline-flex items-center rounded-xl border border-slate-500 bg-slate-800 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-slate-700 dark:border-slate-300 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
             >
               Create via invoice
             </button>
@@ -419,7 +395,7 @@ const [page, setPage] = useState(() => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filter by vendor, dept, hash…"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-900 placeholder:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400"
+                className="h-10 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 text-sm text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               />
             </div>
           </div>
@@ -429,7 +405,7 @@ const [page, setPage] = useState(() => {
           <div className="space-y-3">
             <ProposalTable data={pageItems} isLoading={isLoading} onOpen={(id) => setOpenProposalId(id)} />
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800/80 dark:bg-slate-950/90 dark:text-slate-500">
+            <div className="theme-surface theme-border flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-500">
               <p>
                 Showing{" "}
                 {filteredProposals.length === 0 ? 0 : (safePage - 1) * pageSize + 1}-
@@ -458,7 +434,7 @@ const [page, setPage] = useState(() => {
               </div>
             </div>
             {!isLoading && filteredProposals.length === 0 ? (
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-6 text-sm font-medium text-slate-700 dark:border-slate-800/80 dark:bg-slate-950/90 dark:text-slate-200">
+              <div className="theme-surface theme-border rounded-2xl border p-6 text-sm font-medium text-slate-700 dark:text-slate-200">
                 No proposals match your filters.
               </div>
             ) : null}
@@ -473,7 +449,7 @@ const [page, setPage] = useState(() => {
 
       {openProposal ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="theme-surface theme-border w-full max-w-2xl rounded-2xl border p-5 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
@@ -533,7 +509,7 @@ const [page, setPage] = useState(() => {
                 <button
                   type="button"
                   onClick={() => setOpenProposalId(null)}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                 >
                   Done
                 </button>
@@ -545,7 +521,7 @@ const [page, setPage] = useState(() => {
 
       {showCreateModal ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="theme-surface theme-border w-full max-w-xl rounded-2xl border p-5 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
@@ -600,18 +576,19 @@ const [page, setPage] = useState(() => {
                 </div>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Department
-                  <select
+                  <CustomSelect
+                    className="mt-1"
                     value={overrideFields.deptPda}
-                    onChange={(e) => setOverrideFields((prev) => ({ ...prev, deptPda: e.target.value }))}
-                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-                  >
-                    <option value="">Select department</option>
-                    {invoiceContext.context.departments.map((department) => (
-                      <option key={department.pubkey} value={department.pubkey}>
-                        {department.name} ({department.deptId})
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(next) => setOverrideFields((prev) => ({ ...prev, deptPda: next }))}
+                    options={[
+                      { value: "", label: "Select department" },
+                      ...invoiceContext.context.departments.map((department) => ({
+                        value: department.pubkey,
+                        label: `${department.name} (${department.deptId})`,
+                      })),
+                    ]}
+                    placeholder="Select department"
+                  />
                 </label>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Recipient wallet
@@ -663,14 +640,14 @@ const [page, setPage] = useState(() => {
                       type="file"
                       accept="application/pdf"
                       onChange={(e) => setCreateFile(e.target.files?.[0] ?? null)}
-                      className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-xl file:border-0 file:bg-violet-500 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.12em] file:text-white hover:file:bg-violet-400 dark:text-slate-200"
+                      className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.12em] file:text-white hover:file:bg-slate-700 dark:text-slate-200 dark:file:bg-slate-200 dark:file:text-slate-900 dark:hover:file:bg-slate-100"
                     />
                   </label>
                   <button
                     type="button"
                     disabled={!createFile || createBusy || !createContextReady}
                     onClick={() => void doParse()}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                   >
                     {createBusy ? "Parsing…" : "Parse invoice"}
                   </button>
@@ -713,7 +690,7 @@ const [page, setPage] = useState(() => {
                       type="button"
                       disabled={createBusy || !createContextReady}
                       onClick={() => void doConfirm()}
-                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 disabled:opacity-60 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 disabled:opacity-60 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                     >
                       {createBusy ? "Submitting…" : "Submit proposal"}
                     </button>
@@ -741,7 +718,7 @@ const [page, setPage] = useState(() => {
                     <button
                       type="button"
                       onClick={() => setShowCreateModal(false)}
-                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                     >
                       Done
                     </button>

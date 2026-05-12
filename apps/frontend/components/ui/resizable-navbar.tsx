@@ -86,9 +86,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: "blur(10px)",
-        boxShadow:
-          "0 12px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(148, 163, 184, 0.2) inset",
+        boxShadow: visible ? "0 8px 20px rgba(0, 0, 0, 0.08)" : "0 4px 12px rgba(0, 0, 0, 0.05)",
         y: visible ? 2 : 0,
       }}
       transition={{
@@ -97,7 +95,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         damping: 50,
       }}
       className={cn(
-        "theme-surface theme-border relative z-[60] mx-auto hidden w-full max-w-6xl flex-row items-center justify-between rounded-2xl border px-5 py-2.5 lg:flex",
+        "theme-surface theme-border relative z-[60] mx-auto hidden w-full max-w-6xl flex-row items-center justify-between rounded-xl border px-5 py-2.5 lg:flex",
         className,
       )}
     >
@@ -121,14 +119,14 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <a
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          className="theme-muted relative rounded-full px-4 py-2 transition-colors hover:theme-text"
+          className="theme-muted relative rounded-md px-4 py-2 transition-colors hover:theme-text"
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-black/5 dark:bg-white/10"
+              className="absolute inset-0 h-full w-full rounded-md bg-black/5 dark:bg-white/10"
             />
           )}
           <span className="relative z-20">{item.name}</span>
@@ -142,9 +140,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: "blur(10px)",
-        boxShadow:
-          "0 12px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(148, 163, 184, 0.2) inset",
+        boxShadow: visible ? "0 8px 20px rgba(0, 0, 0, 0.08)" : "0 4px 12px rgba(0, 0, 0, 0.05)",
         y: visible ? 2 : 0,
       }}
       transition={{
@@ -153,7 +149,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "theme-surface theme-border relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between rounded-2xl border p-3 lg:hidden",
+        "theme-surface theme-border relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between rounded-xl border p-3 lg:hidden",
         className,
       )}
     >
@@ -201,7 +197,7 @@ export const MobileNavMenu = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={cn(
-            "theme-surface theme-border absolute inset-x-0 top-[calc(100%+0.5rem)] z-50 flex w-full flex-col items-start justify-start gap-4 rounded-2xl border p-4 shadow-[0_12px_30px_rgba(0,0,0,0.08)]",
+            "theme-surface theme-border absolute inset-x-0 top-[calc(100%+0.5rem)] z-50 flex w-full flex-col items-start justify-start gap-4 rounded-xl border p-4 shadow-[0_8px_20px_rgba(0,0,0,0.08)]",
             className,
           )}
         >
@@ -232,13 +228,7 @@ export const NavbarLogo = () => {
       href="#"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="https://assets.aceternity.com/logo-dark.png"
-        alt="logo"
-        width={30}
-        height={30}
-      />
+      <span className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-slate-700 dark:bg-slate-500" />
       <span className="theme-text font-medium">Trezo AI</span>
     </a>
   );

@@ -116,7 +116,7 @@ export default function AuditPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 dark:bg-zinc-950 md:p-6">
+    <main className="theme-bg min-h-screen p-4 md:p-6">
       <div className="mx-auto w-full max-w-[1400px] space-y-6">
         {pageError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-100">

@@ -27,10 +27,12 @@ export default function WalletAuthButton({
   className,
   redirectTo = "/dashboard",
   autoSignInOnConnect = true,
+  showAuthActions = true,
 }: {
   className?: string;
   redirectTo?: string;
   autoSignInOnConnect?: boolean;
+  showAuthActions?: boolean;
 }) {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -144,7 +146,7 @@ export default function WalletAuthButton({
           </button>
         )}
 
-        {isAuthed ? (
+        {showAuthActions && isAuthed ? (
           <>
             <button
               type="button"
@@ -161,7 +163,7 @@ export default function WalletAuthButton({
               Sign out
             </button>
           </>
-        ) : (
+        ) : showAuthActions ? (
           <button
             type="button"
             onClick={() => void handleSignIn("manual")}
@@ -170,7 +172,7 @@ export default function WalletAuthButton({
           >
             {isSigningIn ? "Signing…" : showReauth ? "Re-auth" : "Sign in"}
           </button>
-        )}
+        ) : null}
       </div>
 
       {error ? (
@@ -178,9 +180,6 @@ export default function WalletAuthButton({
       ) : null}
       {showDebug ? (
         <p className="theme-muted mt-2 text-[11px]">
-          auth-debug: status={status} connected={shortPubkey} authed={String(isAuthed)} signing=
-          {String(isSigningIn)} inflight={String(globalSignInInFlight)} autoTried=
-          {globalAutoAttemptedPubkey ? "yes" : "no"}
         </p>
       ) : null}
     </div>

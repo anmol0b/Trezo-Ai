@@ -164,8 +164,7 @@ export async function GET() {
     if (!backendHealthy && departments.length === 0) {
       payload.meta = {
         backendHealthy: false,
-        message:
-          "Backend is unavailable. Demo department context is shown for browsing, but PDF parsing stays disabled until the API recovers.",
+        message: "",
       };
     }
 

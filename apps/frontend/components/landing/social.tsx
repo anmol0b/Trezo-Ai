@@ -7,23 +7,12 @@ import LogosCarousel from "../ui/logoCou";
 import Image from "next/image";
 
 const logos = [
-  { src: "/logos/vercel.svg", alt: "Vercel logo" },
-  { src: "/logos/google.svg", alt: "Google logo" },
-  { src: "/logos/framer.svg", alt: "Framer logo" },
-  { src: "/logos/discord.svg", alt: "Discord logo" },
-  { src: "/logos/openai.svg", alt: "OpenAI logo" },
-  { src: "/logos/phantom.svg", alt: "Phantom logo" },
-  { src: "/logos/descript.svg", alt: "Descript logo" },
-  { src: "/logos/netflix.svg", alt: "Netflix logo" },
-  { src: "/logos/linear.svg", alt: "Linear logo" },
-  { src: "/logos/notion.svg", alt: "Notion logo" },
-  { src: "/logos/shopify.svg", alt: "Shopify logo" },
-  { src: "/logos/duolingo.svg", alt: "Duolingo logo" },
-  { src: "/logos/ramp.svg", alt: "Ramp logo" },
-  { src: "/logos/tesla.svg", alt: "Tesla logo" },
-  { src: "/logos/opensea.svg", alt: "OpenSea logo" },
-  { src: "/logos/cursor.svg", alt: "Cursor logo" },
+  { src: "/logo/phantom.svg", alt: "Phantom logo" },
+  { src: "/logo/metamask.svg", alt: "Metamask logo" },
+  { src: "/logo/solana.svg", alt: "Solana logo" },
+  { src: "/logo/superteam.svg", alt: "Superteam logo" },
 ];
+const loopedLogos = [...logos, ...logos];
 
 export default function SocialProof() {
   const ref = useRef(null);
@@ -61,15 +50,15 @@ export default function SocialProof() {
                 <span className="font-medium">{tool.name}</span>
               </motion.div>
             ))} */}
-            <LogosCarousel count={4} className="gap-8 sm:gap-8image.png flex-wrap">
-              {logos.map((logo) => (
+            <LogosCarousel count={4} className="flex-wrap gap-8 sm:gap-8">
+              {loopedLogos.map((logo, index) => (
                 <Image
-                  key={logo.src}
+                  key={`${logo.src}-${index}`}
                   src={logo.src}
                   alt={logo.alt}
-                  width={97}
-                  height={97}
-                  className={`h-27 w-27 object-contain opacity-70 not-dark:invert-100 pointer-events-none select-none`}
+                  width={160}
+                  height={56}
+                  className="pointer-events-none h-12 w-auto select-none object-contain opacity-80 dark:opacity-70"
                   unoptimized
                 />
               ))}

@@ -22,7 +22,7 @@ export function MarketRatesCard({ title = "Market Rates", data, isLoading = fals
   const items = isLoading ? Array.from({ length: 3 }) : data;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-5">
+    <section className="theme-surface theme-border rounded-2xl border p-4 shadow-sm sm:p-5">
       <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{title}</h2>
       {!isLoading && data.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
@@ -58,7 +58,7 @@ export function MarketRatesCard({ title = "Market Rates", data, isLoading = fals
 
 const toneClassMap: Record<NonNullable<YieldAuditItem["tone"]>, string> = {
   success: "text-emerald-500 dark:text-emerald-400",
-  info: "text-indigo-500 dark:text-indigo-300",
+  info: "text-slate-600 dark:text-slate-300",
   neutral: "text-slate-500 dark:text-slate-400",
 };
 
@@ -66,7 +66,7 @@ export function AuditLogCard({ title = "Audit Log", data, isLoading = false }: A
   const items = isLoading ? Array.from({ length: 3 }) : data;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-5">
+    <section className="theme-surface theme-border rounded-2xl border p-4 shadow-sm sm:p-5">
       <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{title}</h2>
       {!isLoading && data.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">

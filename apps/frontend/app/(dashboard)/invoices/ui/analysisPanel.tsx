@@ -14,7 +14,7 @@ type AnalysisPanelProps = {
 
 const stepTone: Record<InvoiceProcessingStepStatus, { dot: string; text: string }> = {
   done: { dot: "bg-emerald-500", text: "text-slate-900 dark:text-slate-100" },
-  active: { dot: "bg-violet-500 animate-pulse", text: "text-slate-900 dark:text-slate-100" },
+  active: { dot: "bg-slate-500 animate-pulse", text: "text-slate-900 dark:text-slate-100" },
   pending: { dot: "bg-slate-300 dark:bg-slate-700", text: "text-slate-500 dark:text-slate-400" },
 };
 
@@ -28,7 +28,7 @@ function money(amount: number, currency: string) {
 
 function AnalysisPanelSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-5">
         <div className="flex items-center justify-between gap-3">
           <div className="h-5 w-44 rounded bg-slate-200 dark:bg-slate-800" />
@@ -93,7 +93,7 @@ export default function AnalysisPanel({
 
   return (
     <article
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6 ${className}`}
+      className={`theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6 ${className}`}
     >
       <header className="mb-5 flex items-center justify-between gap-3">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">{title}</h3>
@@ -127,7 +127,7 @@ export default function AnalysisPanel({
                   Invoice {analysis.invoiceNumber ?? "pending"} {typeof analysis.confidence === "number" ? `· ${(analysis.confidence * 100).toFixed(0)}% confidence` : ""}
                 </p>
               </div>
-              <p className="text-2xl font-semibold tabular-nums text-violet-600 dark:text-violet-400">
+              <p className="text-2xl font-semibold tabular-nums text-slate-700 dark:text-slate-200">
                 {money(analysis.totalAmount, analysis.currency)}
               </p>
             </div>
@@ -208,7 +208,7 @@ export default function AnalysisPanel({
             type="button"
             onClick={onApprove}
             disabled={!canApprove}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-600 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-violet-500"
+            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
           >
             Approve &amp; Sign
           </button>

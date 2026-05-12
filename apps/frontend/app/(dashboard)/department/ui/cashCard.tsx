@@ -49,7 +49,7 @@ function RuleToggle({ enabled }: { enabled: boolean }) {
     <span
       className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors ${
         enabled
-          ? "border-violet-400/70 bg-violet-500/30 dark:border-violet-500/60 dark:bg-violet-500/40"
+          ? "border-slate-500/80 bg-slate-400/30 dark:border-slate-400/70 dark:bg-slate-300/30"
           : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-800"
       }`}
       aria-hidden
@@ -65,7 +65,7 @@ function RuleToggle({ enabled }: { enabled: boolean }) {
 
 function CashCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function CashCard({
 
   return (
     <article
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6 ${className}`}
+      className={`theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6 ${className}`}
     >
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>

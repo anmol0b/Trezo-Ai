@@ -7,13 +7,13 @@ type LiveAuditFeedProps = {
 
 const feedToneClassMap: Record<NonNullable<AuditFeedItem["tone"]>, string> = {
   positive: "bg-emerald-500",
-  neutral: "bg-indigo-300 dark:bg-indigo-400",
+  neutral: "bg-slate-400 dark:bg-slate-500",
   critical: "bg-rose-500",
 };
 
 function LiveAuditFeedSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-4">
         <div className="h-5 w-40 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="space-y-3">
@@ -32,7 +32,7 @@ export default function LiveAuditFeed({ data, isLoading = false }: LiveAuditFeed
   }
 
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Live Audit Feed</h2>
       <div className="mt-4 space-y-4">
         {data.length > 0 ? (

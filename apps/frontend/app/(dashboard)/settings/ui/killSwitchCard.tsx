@@ -7,7 +7,7 @@ type KillSwitchCardProps = {
 };
 
 const cardShell =
-  "rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6";
+  "theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6";
 
 function KillSwitchSkeleton() {
   return (
@@ -34,7 +34,7 @@ export default function KillSwitchCard({ data, className = "", isLoading = false
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-500 dark:text-rose-400">{data.title}</h2>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{data.body}</p>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{data.note}</p>
+            {data.note ? <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{data.note}</p> : null}
           </div>
         </div>
 

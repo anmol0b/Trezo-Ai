@@ -27,7 +27,7 @@ const toneDotMap: Record<LiveActivityTone, string> = {
   success: "bg-emerald-400 dark:bg-emerald-300",
   warning: "bg-amber-400 dark:bg-amber-300",
   critical: "bg-rose-400 dark:bg-rose-300",
-  info: "bg-violet-400 dark:bg-violet-300",
+  info: "bg-slate-500 dark:bg-slate-300",
 };
 
 const formatAmount = (amount: number | string) => {
@@ -110,7 +110,7 @@ export default function LiveCard({
 
   return (
     <section className={`w-full ${className}`}>
-      <div className="rounded-2xl bg-white/95 p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/90 sm:p-5">
+      <div className="theme-surface rounded-2xl p-4 shadow-sm transition-colors sm:p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 dark:border-slate-800">
           <h2 className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
@@ -121,7 +121,7 @@ export default function LiveCard({
           </p>
         </div>
 
-        <div className="divide-y border rounded-md border-slate-500 p-4 divide-slate-200 dark:divide-slate-800">
+        <div className="divide-y rounded-md p-4 divide-slate-200 dark:divide-slate-800">
           {isLoading ? (
             skeletonItems.map((_, index) => <LiveActivityRowSkeleton key={`live-skeleton-${index}`} />)
           ) : data.length > 0 ? (

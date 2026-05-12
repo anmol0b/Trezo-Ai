@@ -54,7 +54,7 @@ function PositionRow({ item }: { item: YieldPosition }) {
             <span
               className={`inline-flex h-7 w-12 items-center rounded-full border p-1 transition-colors ${
                 item.autoReinvest
-                  ? "border-indigo-400 bg-indigo-600/90 dark:border-indigo-400 dark:bg-indigo-500"
+                  ? "border-slate-500 bg-slate-700/90 dark:border-slate-400 dark:bg-slate-300"
                   : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-800"
               }`}
               aria-label={`${item.team} auto reinvest ${item.autoReinvest ? "enabled" : "disabled"}`}
@@ -102,7 +102,7 @@ export default function ActivePositionsCard({ positions, isLoading = false }: Ac
   const rows = isLoading ? Array.from({ length: 3 }) : positions;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-5">
+    <section className="theme-surface theme-border rounded-2xl border p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
           Department Yield Readiness

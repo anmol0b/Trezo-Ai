@@ -7,7 +7,7 @@ type AgentAuthorityCardProps = {
 };
 
 const cardShell =
-  "rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6";
+  "theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6";
 
 function AgentAuthoritySkeleton() {
   return (
@@ -28,7 +28,7 @@ function CheckboxRow({ checked, label }: { checked: boolean; label: string }) {
       <span
         className={`inline-flex h-5 w-5 items-center justify-center rounded border ${
           checked
-            ? "border-violet-400 bg-violet-500/20 text-violet-600 dark:border-violet-500/70 dark:text-violet-300"
+            ? "border-slate-500 bg-slate-300/40 text-slate-700 dark:border-slate-400 dark:text-slate-200"
             : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-900"
         }`}
         aria-hidden

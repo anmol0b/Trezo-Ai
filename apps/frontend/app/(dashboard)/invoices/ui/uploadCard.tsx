@@ -12,7 +12,7 @@ type UploadCardProps = {
 
 function UploadCardSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-4">
         <div className="h-6 w-56 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="h-40 rounded-2xl border border-dashed border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 sm:h-56" />
@@ -37,7 +37,7 @@ export default function UploadCard({
 
   return (
     <article
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6 ${className}`}
+      className={`theme-surface theme-border rounded-2xl border p-5 shadow-sm transition-colors sm:p-6 ${className}`}
     >
       <div className="rounded-2xl border border-dashed border-slate-300/80 bg-slate-50/70 px-5 py-10 text-center dark:border-slate-700/80 dark:bg-slate-900/40 sm:px-8 sm:py-14">
         <div className="mx-auto grid max-w-md place-items-center gap-3">

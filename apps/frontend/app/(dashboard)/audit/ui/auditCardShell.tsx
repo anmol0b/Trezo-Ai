@@ -9,7 +9,7 @@ export default function AuditCardShell({ children, className }: AuditCardShellPr
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/95 dark:shadow-none sm:p-5",
+        "theme-surface theme-border rounded-xl border p-4 shadow-sm dark:shadow-none sm:p-5",
         className,
       )}
     >

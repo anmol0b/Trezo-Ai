@@ -117,8 +117,6 @@ export default function SettingsPage() {
   const [isSavingOracle, setIsSavingOracle] = useState(false);
   const [savingDeptId, setSavingDeptId] = useState<string | null>(null);
   const focusedDeptId = searchParams?.get("deptId") ?? undefined;
-  const settingsWriteUnavailable =
-    !settings.backend.settingsEndpointAvailable || !settings.backend.spendingRulesEndpointAvailable;
 
   useEffect(() => {
     let mounted = true;
@@ -215,7 +213,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-full bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <div className="theme-bg min-h-full p-4 md:p-6">
       <div className="w-full space-y-6">
         {pageError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-100">
@@ -236,55 +234,36 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-                Company {settings.subtitleBadge}
-              </span>
-              <span
-                className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                  settings.backend.settingsEndpointAvailable
-                    ? "border border-emerald-300/70 bg-emerald-100 text-emerald-700 dark:border-emerald-600/40 dark:bg-emerald-900/30 dark:text-emerald-300"
-                    : "border border-amber-300/70 bg-amber-100 text-amber-700 dark:border-amber-600/40 dark:bg-amber-900/30 dark:text-amber-300"
-                }`}
-              >
-                {settings.backend.settingsEndpointAvailable ? "Settings API live" : "Partial backend coverage"}
-              </span>
-            </div>
+            <div />
           </div>
-
-          {!isLoading && settingsWriteUnavailable ? (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
-              Treasury reads are live, but this repo’s backend does not expose every settings write route yet. Oracle, signer, and
-              threshold panels stay visibly read-only until those APIs exist.
-            </div>
-          ) : null}
         </section>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-          <MultisigCard data={settings.multisig} isLoading={isLoading} />
+          <MultisigCard data={settings.multisig} isLoading={isLoading} className="min-h-[430px]" />
           <OracleCard
             data={{ ...settings.oracle, triggerValue: oracleDraft }}
             isLoading={isLoading}
             isSaving={isSavingOracle}
             onTriggerChange={setOracleDraft}
             onSubmit={saveOracleTrigger}
+            className="min-h-[430px]"
           />
         </section>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-          <DepartmentThresholdCard
-            data={settings.departments}
-            isLoading={isLoading}
-            savingDeptId={savingDeptId}
-            feedbackMessage={feedbackMessage}
-            focusedDeptId={focusedDeptId}
-            onSave={saveDepartmentThreshold}
-          />
-          <AgentAuthorityCard data={settings.agentAuthority} isLoading={isLoading} />
-        </section>
-
-        <section>
-          <KillSwitchCard data={settings.criticalOps} isLoading={isLoading} />
+          <div className="space-y-4">
+            <DepartmentThresholdCard
+              data={settings.departments}
+              isLoading={isLoading}
+              savingDeptId={savingDeptId}
+              feedbackMessage={feedbackMessage}
+              focusedDeptId={focusedDeptId}
+              onSave={saveDepartmentThreshold}
+              className="min-h-[220px]"
+            />
+            <KillSwitchCard data={settings.criticalOps} isLoading={isLoading} className="min-h-[140px]" />
+          </div>
+          <AgentAuthorityCard data={settings.agentAuthority} isLoading={isLoading} className="min-h-[380px]" />
         </section>
       </div>
     </div>

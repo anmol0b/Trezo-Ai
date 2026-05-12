@@ -78,7 +78,7 @@ export default function YieldPage() {
   }, []);
 
   return (
-    <div className="min-h-full bg-slate-50 p-4 dark:bg-slate-950 md:p-6">
+    <div className="theme-bg min-h-full p-4 md:p-6">
       <div className="w-full space-y-6">
         {pageError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-100">
@@ -90,9 +90,6 @@ export default function YieldPage() {
           <div className="h-5" />
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                Company {yieldData.meta?.companyId ?? "unknown"}
-              </p>
               <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
                 {yieldData.title ?? "Yield Operations"}
               </h1>
@@ -100,15 +97,6 @@ export default function YieldPage() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span
-                className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                  yieldData.meta?.yieldEndpointAvailable
-                    ? "border border-emerald-300/70 bg-emerald-100 text-emerald-700 dark:border-emerald-600/40 dark:bg-emerald-900/30 dark:text-emerald-300"
-                    : "border border-amber-300/70 bg-amber-100 text-amber-700 dark:border-amber-600/40 dark:bg-amber-900/30 dark:text-amber-300"
-                }`}
-              >
-                {yieldData.meta?.yieldEndpointAvailable ? "Live yield route" : "Derived from treasury config"}
-              </span>
               {yieldData.meta?.treasuryPaused ? (
                 <span className="inline-flex items-center rounded-full border border-rose-300/70 bg-rose-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rose-700 dark:border-rose-600/40 dark:bg-rose-900/30 dark:text-rose-300">
                   Treasury paused

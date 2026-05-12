@@ -13,7 +13,7 @@ const helperToneClassMap: Record<NonNullable<GovernanceMetric["helperTone"]>, st
 
 function GovernanceMetricsSkeleton() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <div className="animate-pulse space-y-4">
         <div className="h-5 w-64 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -32,7 +32,7 @@ export default function GovernanceMetrics({ data, isLoading = false }: Governanc
   }
 
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/90 sm:p-6">
+    <article className="theme-surface theme-border rounded-2xl border p-5 shadow-sm sm:p-6">
       <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Governance Health Metrics</h2>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {data.map((metric) => (
