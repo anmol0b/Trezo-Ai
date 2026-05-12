@@ -8,7 +8,7 @@ export interface ProposalInstructionData {
   treasuryPda: PublicKey;
   deptPda: PublicKey;
   recipientAta: PublicKey;
-  amountLamports: BN;
+  amountLamports: number;
   category: number;
   metadataUri: string;
   expiryTimestamp: number;
@@ -63,7 +63,7 @@ export function buildProposalData(input: BuildProposalInput): ProposalInstructio
     treasuryPda: treasury,
     deptPda: dept,
     recipientAta: recipient,
-    amountLamports: new BN(usdcToLamports(invoice.amountUsdc)),
+    amountLamports: usdcToLamports(invoice.amountUsdc),
     category: categoryMask,
     metadataUri,
     expiryTimestamp,
