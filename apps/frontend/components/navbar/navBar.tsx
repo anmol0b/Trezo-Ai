@@ -24,6 +24,10 @@ export function NavbarDemo() {
       link: "#how",
     },
     {
+      name: "Pricing",
+      link: "/pricing",
+    },
+    {
       name: "Contact",
       link: "#contact",
     },
@@ -34,7 +38,6 @@ export function NavbarDemo() {
   return (
     <div className="relative w-full">
       <Navbar>
-
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
@@ -73,7 +76,6 @@ export function NavbarDemo() {
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-      {/* Navbar */}
     </div>
   );
 }
