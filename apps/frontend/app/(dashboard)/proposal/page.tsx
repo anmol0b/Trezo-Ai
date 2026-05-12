@@ -376,7 +376,7 @@ const [page, setPage] = useState(() => {
                 resetCreate();
                 setShowCreateModal(true);
               }}
-              className="inline-flex items-center rounded-xl border border-violet-300 bg-violet-500/80 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-violet-500 dark:border-violet-500/50 dark:bg-violet-500/60"
+              className="inline-flex items-center rounded-xl border border-slate-500 bg-slate-800 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-slate-700 dark:border-slate-300 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
             >
               Create via invoice
             </button>
@@ -394,7 +394,7 @@ const [page, setPage] = useState(() => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filter by vendor, dept, hash…"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-900 placeholder:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400"
+                className="h-10 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 text-sm text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               />
             </div>
           </div>
@@ -508,7 +508,7 @@ const [page, setPage] = useState(() => {
                 <button
                   type="button"
                   onClick={() => setOpenProposalId(null)}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                 >
                   Done
                 </button>
@@ -575,18 +575,21 @@ const [page, setPage] = useState(() => {
                 </div>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Department
-                  <select
-                    value={overrideFields.deptPda}
-                    onChange={(e) => setOverrideFields((prev) => ({ ...prev, deptPda: e.target.value }))}
-                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-                  >
-                    <option value="">Select department</option>
-                    {invoiceContext.context.departments.map((department) => (
-                      <option key={department.pubkey} value={department.pubkey}>
-                        {department.name} ({department.deptId})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative mt-1">
+                    <select
+                      value={overrideFields.deptPda}
+                      onChange={(e) => setOverrideFields((prev) => ({ ...prev, deptPda: e.target.value }))}
+                      className="h-10 w-full appearance-none rounded-xl border border-zinc-300 bg-zinc-100 px-3 pr-9 text-sm font-medium text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
+                    >
+                      <option value="">Select department</option>
+                      {invoiceContext.context.departments.map((department) => (
+                        <option key={department.pubkey} value={department.pubkey}>
+                          {department.name} ({department.deptId})
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">▾</span>
+                  </div>
                 </label>
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Recipient wallet
@@ -638,14 +641,14 @@ const [page, setPage] = useState(() => {
                       type="file"
                       accept="application/pdf"
                       onChange={(e) => setCreateFile(e.target.files?.[0] ?? null)}
-                      className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-xl file:border-0 file:bg-violet-500 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.12em] file:text-white hover:file:bg-violet-400 dark:text-slate-200"
+                      className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.12em] file:text-white hover:file:bg-slate-700 dark:text-slate-200 dark:file:bg-slate-200 dark:file:text-slate-900 dark:hover:file:bg-slate-100"
                     />
                   </label>
                   <button
                     type="button"
                     disabled={!createFile || createBusy || !createContextReady}
                     onClick={() => void doParse()}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                   >
                     {createBusy ? "Parsing…" : "Parse invoice"}
                   </button>
@@ -688,7 +691,7 @@ const [page, setPage] = useState(() => {
                       type="button"
                       disabled={createBusy || !createContextReady}
                       onClick={() => void doConfirm()}
-                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 disabled:opacity-60 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 disabled:opacity-60 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                     >
                       {createBusy ? "Submitting…" : "Submit proposal"}
                     </button>
@@ -716,7 +719,7 @@ const [page, setPage] = useState(() => {
                     <button
                       type="button"
                       onClick={() => setShowCreateModal(false)}
-                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-violet-500 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-violet-400 dark:bg-violet-400 dark:text-slate-950 dark:hover:bg-violet-300"
+                      className="inline-flex min-h-10 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
                     >
                       Done
                     </button>

@@ -78,7 +78,7 @@ export default function DepartmentThresholdCard({
               key={item.id}
               className={`rounded-xl border bg-slate-50/70 p-4 dark:bg-slate-900/50 ${
                 isFocused
-                  ? "border-violet-300 bg-violet-50/70 ring-2 ring-violet-200 dark:border-violet-600/50 dark:bg-violet-950/20 dark:ring-violet-900/40"
+                  ? "border-slate-400 bg-slate-100 ring-2 ring-slate-300 dark:border-slate-500 dark:bg-slate-800 dark:ring-slate-700"
                   : "border-slate-200/70 dark:border-slate-800/80"
               }`}
             >
@@ -96,7 +96,7 @@ export default function DepartmentThresholdCard({
                     {item.isActive ? "Active" : "Inactive"}
                   </span>
                   {isFocused ? (
-                    <span className="inline-flex rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+                    <span className="inline-flex rounded-full bg-slate-200 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-700 dark:bg-slate-700 dark:text-slate-100">
                       Selected
                     </span>
                   ) : null}
@@ -122,7 +122,7 @@ export default function DepartmentThresholdCard({
                         [item.deptId]: event.target.value,
                       }))
                     }
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                    className="h-11 w-full rounded-xl border border-slate-300 bg-slate-100 px-4 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-500"
                   />
                 </label>
 

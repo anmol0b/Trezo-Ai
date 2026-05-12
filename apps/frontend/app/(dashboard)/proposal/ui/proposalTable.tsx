@@ -61,8 +61,8 @@ export default function ProposalTable({ data, isLoading = false, onOpen }: Propo
     <article className="theme-surface theme-border overflow-hidden rounded-2xl border shadow-sm">
       <div className="overflow-x-auto">
         <table className="min-w-[1100px] w-full text-left">
-          <thead className="border-b border-slate-200/80 bg-slate-100/70 dark:border-slate-800/80 dark:bg-slate-900/70">
-            <tr className="text-[11px] uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+          <thead className="border-b border-zinc-200/80 bg-zinc-100/70 dark:border-zinc-800/80 dark:bg-zinc-900/70">
+            <tr className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
               <th className="px-3 py-3">#</th>
               <th className="px-3 py-3">Vendor</th>
               <th className="px-3 py-3">Department</th>
@@ -79,7 +79,7 @@ export default function ProposalTable({ data, isLoading = false, onOpen }: Propo
             {data.map((proposal) => (
               <tr
                 key={proposal.id}
-                className="border-b border-slate-200/60 last:border-0 dark:border-slate-800/60"
+                className="border-b border-zinc-200/60 last:border-0 dark:border-zinc-800/60"
               >
                 <td className="px-3 py-4 text-xs font-semibold tracking-[0.16em] text-slate-500 dark:text-slate-500">{proposal.index}</td>
                 <td className="px-3 py-4">

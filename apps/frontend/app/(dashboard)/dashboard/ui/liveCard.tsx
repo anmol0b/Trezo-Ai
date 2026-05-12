@@ -27,7 +27,7 @@ const toneDotMap: Record<LiveActivityTone, string> = {
   success: "bg-emerald-400 dark:bg-emerald-300",
   warning: "bg-amber-400 dark:bg-amber-300",
   critical: "bg-rose-400 dark:bg-rose-300",
-  info: "bg-violet-400 dark:bg-violet-300",
+  info: "bg-slate-500 dark:bg-slate-300",
 };
 
 const formatAmount = (amount: number | string) => {

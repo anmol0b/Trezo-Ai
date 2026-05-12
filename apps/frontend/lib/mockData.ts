@@ -732,9 +732,9 @@ export const dashboardMockData: DashboardApiPayload = {
       actionDisabled: true,
     },
     criticalOps: {
-      title: "Treasury Pause State: Inactive",
-      body: "The backend reports the treasury is currently unpaused.",
-      note: "Pause and resume controls are not exposed by the current backend API, so this panel is intentionally read-only.",
+      title: "Treasury Pause State",
+      body: "Treasury pause is inactive.",
+      note: "",
       actionLabel: "Read only",
       actionDisabled: true,
     },

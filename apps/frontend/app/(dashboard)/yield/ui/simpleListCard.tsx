@@ -58,7 +58,7 @@ export function MarketRatesCard({ title = "Market Rates", data, isLoading = fals
 
 const toneClassMap: Record<NonNullable<YieldAuditItem["tone"]>, string> = {
   success: "text-emerald-500 dark:text-emerald-400",
-  info: "text-indigo-500 dark:text-indigo-300",
+  info: "text-slate-600 dark:text-slate-300",
   neutral: "text-slate-500 dark:text-slate-400",
 };
 

@@ -15,7 +15,7 @@ function RolePill({ role }: { role: MultisigMember["role"] }) {
     <span
       className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${
         isAdmin
-          ? "border-violet-300/80 bg-violet-100 text-violet-700 dark:border-violet-600/40 dark:bg-violet-900/30 dark:text-violet-300"
+          ? "border-slate-400 bg-slate-200 text-slate-800 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
           : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
       }`}
     >
@@ -89,10 +89,10 @@ export default function MultisigCard({ data, className = "", isLoading = false }
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
             <input
               placeholder={data.addressPlaceholder}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 placeholder:text-slate-400 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600"
+              className="h-11 w-full rounded-xl border border-slate-300 bg-slate-100 px-4 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-500 dark:placeholder:text-slate-500"
             />
             <div className="relative">
-              <select className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
+              <select className="h-11 w-full appearance-none rounded-xl border border-slate-300 bg-slate-100 px-4 pr-10 text-sm font-semibold text-slate-900 outline-none focus:border-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-500">
                 {data.roleOptions.map((role) => (
                   <option key={role} value={role}>
                     {role}
@@ -103,7 +103,7 @@ export default function MultisigCard({ data, className = "", isLoading = false }
             </div>
             <button
               type="button"
-              className="h-11 rounded-xl bg-violet-500 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-sm transition hover:bg-violet-400"
+              className="h-11 rounded-xl bg-slate-800 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-sm transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
             >
               {data.addLabel}
             </button>

@@ -12,7 +12,7 @@ type AuditComplianceCardProps = {
 
 const toneBar: Record<AuditComplianceItem["tone"], string> = {
   emerald: "bg-emerald-500 dark:bg-emerald-400",
-  violet: "bg-violet-400 dark:bg-violet-500",
+  violet: "bg-slate-400 dark:bg-slate-500",
 };
 
 function ComplianceSkeleton() {

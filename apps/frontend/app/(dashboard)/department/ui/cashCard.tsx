@@ -49,7 +49,7 @@ function RuleToggle({ enabled }: { enabled: boolean }) {
     <span
       className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors ${
         enabled
-          ? "border-violet-400/70 bg-violet-500/30 dark:border-violet-500/60 dark:bg-violet-500/40"
+          ? "border-slate-500/80 bg-slate-400/30 dark:border-slate-400/70 dark:bg-slate-300/30"
           : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-800"
       }`}
       aria-hidden

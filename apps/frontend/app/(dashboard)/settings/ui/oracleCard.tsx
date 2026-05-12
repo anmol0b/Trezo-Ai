@@ -81,11 +81,11 @@ export default function OracleCard({
               value={data.triggerValue}
               onChange={(event) => onTriggerChange?.(Number(event.target.value))}
               disabled={!data.canEdit || isSaving}
-              className="h-2 w-full appearance-none rounded-full bg-slate-200 accent-violet-500 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-800"
+              className="h-2 w-full appearance-none rounded-full bg-slate-200 accent-slate-500 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-800"
             />
             <div className="mt-2 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-500">
               <span>{data.triggerMin.toFixed(1)}%</span>
-              <span className="text-violet-600 dark:text-violet-400">{data.triggerValue.toFixed(1)}%</span>
+              <span className="text-slate-700 dark:text-slate-200">{data.triggerValue.toFixed(1)}%</span>
               <span>{data.triggerMax.toFixed(1)}%</span>
             </div>
           </div>

@@ -167,9 +167,9 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
 export const Logo = () => (
   <a
     href="#"
-    className="relative z-20 flex items-center gap-2 py-1 text-sm font-normal"
+    className="relative z-20 flex w-full items-center justify-center gap-2 py-1 text-sm font-normal"
   >
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-violet-500" />
+    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-slate-700 dark:bg-slate-500" />
     <motion.span
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -183,7 +183,7 @@ export const Logo = () => (
 export const LogoIcon = () => (
   <a
     href="#"
-    className="relative z-20 flex items-center py-1"
+    className="relative z-20 flex w-full items-center justify-center py-1"
   >
     <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-slate-700 dark:bg-slate-500" />
   </a>

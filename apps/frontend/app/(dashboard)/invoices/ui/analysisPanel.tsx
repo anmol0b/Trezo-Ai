@@ -14,7 +14,7 @@ type AnalysisPanelProps = {
 
 const stepTone: Record<InvoiceProcessingStepStatus, { dot: string; text: string }> = {
   done: { dot: "bg-emerald-500", text: "text-slate-900 dark:text-slate-100" },
-  active: { dot: "bg-violet-500 animate-pulse", text: "text-slate-900 dark:text-slate-100" },
+  active: { dot: "bg-slate-500 animate-pulse", text: "text-slate-900 dark:text-slate-100" },
   pending: { dot: "bg-slate-300 dark:bg-slate-700", text: "text-slate-500 dark:text-slate-400" },
 };
 
@@ -127,7 +127,7 @@ export default function AnalysisPanel({
                   Invoice {analysis.invoiceNumber ?? "pending"} {typeof analysis.confidence === "number" ? `· ${(analysis.confidence * 100).toFixed(0)}% confidence` : ""}
                 </p>
               </div>
-              <p className="text-2xl font-semibold tabular-nums text-violet-600 dark:text-violet-400">
+              <p className="text-2xl font-semibold tabular-nums text-slate-700 dark:text-slate-200">
                 {money(analysis.totalAmount, analysis.currency)}
               </p>
             </div>
@@ -208,7 +208,7 @@ export default function AnalysisPanel({
             type="button"
             onClick={onApprove}
             disabled={!canApprove}
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-600 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-violet-500"
+            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-slate-800 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
           >
             Approve &amp; Sign
           </button>

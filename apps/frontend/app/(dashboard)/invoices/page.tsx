@@ -529,23 +529,26 @@ export default function InvoicesPage() {
 
             <label className="space-y-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Department</span>
-              <select
-                value={selectedDeptPda}
-                onChange={(event) => {
-                  const nextDeptPda = event.target.value;
-                  const nextDepartment = data.context.departments.find((department) => department.pubkey === nextDeptPda);
-                  setSelectedDeptPda(nextDeptPda);
-                  setSelectedDeptId(nextDepartment?.deptId ?? "");
-                }}
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-              >
-                <option value="">Select department</option>
-                {data.context.departments.map((department) => (
-                  <option key={department.pubkey} value={department.pubkey}>
-                    {department.name} ({department.deptId})
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedDeptPda}
+                  onChange={(event) => {
+                    const nextDeptPda = event.target.value;
+                    const nextDepartment = data.context.departments.find((department) => department.pubkey === nextDeptPda);
+                    setSelectedDeptPda(nextDeptPda);
+                    setSelectedDeptId(nextDepartment?.deptId ?? "");
+                  }}
+                  className="h-11 w-full appearance-none rounded-xl border border-zinc-300 bg-zinc-100 px-4 pr-10 text-sm font-medium text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
+                >
+                  <option value="">Select department</option>
+                  {data.context.departments.map((department) => (
+                    <option key={department.pubkey} value={department.pubkey}>
+                      {department.name} ({department.deptId})
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">▾</span>
+              </div>
             </label>
 
             <label className="space-y-2">
@@ -553,7 +556,7 @@ export default function InvoicesPage() {
               <input
                 value={recipientWallet}
                 onChange={(event) => setRecipientWallet(event.target.value)}
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                className="h-11 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
               />
             </label>
           </div>
@@ -623,7 +626,7 @@ export default function InvoicesPage() {
                 <input
                   value={targetCurrency}
                   onChange={(event) => setTargetCurrency(event.target.value.toUpperCase())}
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                  className="h-11 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
                 />
               </label>
 
@@ -633,7 +636,7 @@ export default function InvoicesPage() {
                   value={targetIban}
                   onChange={(event) => setTargetIban(event.target.value)}
                   placeholder="GB82WEST12345698765432"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-violet-400/40 focus:ring-4 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                  className="h-11 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
                 />
               </label>
 

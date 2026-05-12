@@ -239,13 +239,14 @@ export default function SettingsPage() {
         </section>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-          <MultisigCard data={settings.multisig} isLoading={isLoading} />
+          <MultisigCard data={settings.multisig} isLoading={isLoading} className="min-h-[430px]" />
           <OracleCard
             data={{ ...settings.oracle, triggerValue: oracleDraft }}
             isLoading={isLoading}
             isSaving={isSavingOracle}
             onTriggerChange={setOracleDraft}
             onSubmit={saveOracleTrigger}
+            className="min-h-[430px]"
           />
         </section>
 
@@ -258,10 +259,11 @@ export default function SettingsPage() {
               feedbackMessage={feedbackMessage}
               focusedDeptId={focusedDeptId}
               onSave={saveDepartmentThreshold}
+              className="min-h-[220px]"
             />
-            <KillSwitchCard data={settings.criticalOps} isLoading={isLoading} />
+            <KillSwitchCard data={settings.criticalOps} isLoading={isLoading} className="min-h-[140px]" />
           </div>
-          <AgentAuthorityCard data={settings.agentAuthority} isLoading={isLoading} />
+          <AgentAuthorityCard data={settings.agentAuthority} isLoading={isLoading} className="min-h-[380px]" />
         </section>
       </div>
     </div>

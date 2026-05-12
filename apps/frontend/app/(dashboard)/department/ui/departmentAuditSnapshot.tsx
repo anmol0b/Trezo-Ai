@@ -17,7 +17,7 @@ export default function DepartmentAuditSnapshot({ summary, isLoading = false }: 
         </div>
         <Link
           href="/audit"
-          className="text-sm font-semibold text-violet-600 underline-offset-4 hover:underline dark:text-violet-400"
+          className="text-sm font-semibold text-slate-700 underline-offset-4 hover:underline dark:text-slate-300"
         >
           Open full audit trail
         </Link>

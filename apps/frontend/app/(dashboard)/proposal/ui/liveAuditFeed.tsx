@@ -7,7 +7,7 @@ type LiveAuditFeedProps = {
 
 const feedToneClassMap: Record<NonNullable<AuditFeedItem["tone"]>, string> = {
   positive: "bg-emerald-500",
-  neutral: "bg-indigo-300 dark:bg-indigo-400",
+  neutral: "bg-slate-400 dark:bg-slate-500",
   critical: "bg-rose-500",
 };
 

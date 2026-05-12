@@ -54,7 +54,7 @@ function PositionRow({ item }: { item: YieldPosition }) {
             <span
               className={`inline-flex h-7 w-12 items-center rounded-full border p-1 transition-colors ${
                 item.autoReinvest
-                  ? "border-indigo-400 bg-indigo-600/90 dark:border-indigo-400 dark:bg-indigo-500"
+                  ? "border-slate-500 bg-slate-700/90 dark:border-slate-400 dark:bg-slate-300"
                   : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-800"
               }`}
               aria-label={`${item.team} auto reinvest ${item.autoReinvest ? "enabled" : "disabled"}`}

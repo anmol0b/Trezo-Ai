@@ -131,10 +131,13 @@ function CardPreivew() {
   return (
     <div className="group relative mx-auto mt-12 w-full max-w-7xl overflow-hidden rounded-[3rem] border-[15px] theme-border theme-surface shadow-2xl">
       <div className="relative w-full overflow-hidden rounded-[2.5rem] aspect-video">
-        <iframe src="" allow="autoplay; fullscreen; picture-in-picture" className="absolute h-[140%] w-[120%] top-[-11%] left-[50%]rounded-[2.5rem] border-none pointer-events-none"></iframe>
+        <iframe src="" allow="autoplay; fullscreen; picture-in-picture" className="absolute h-[140%] w-[120%] top-[-11%] left-[50%] rounded-[2.5rem] border-none pointer-events-none"></iframe>
       </div>
       <div className="absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
-        <a href="/demo" className="theme-text transform rounded-full bg-white/90 px-6 py-3 text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-white active:scale-95">
+        <a
+          href="/demo"
+          className="transform rounded-full bg-slate-900 px-6 py-3 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-slate-800 active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        >
       Try Demo Now
       </a>
       </div>

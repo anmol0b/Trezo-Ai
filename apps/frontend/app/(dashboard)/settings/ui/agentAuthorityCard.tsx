@@ -28,7 +28,7 @@ function CheckboxRow({ checked, label }: { checked: boolean; label: string }) {
       <span
         className={`inline-flex h-5 w-5 items-center justify-center rounded border ${
           checked
-            ? "border-violet-400 bg-violet-500/20 text-violet-600 dark:border-violet-500/70 dark:text-violet-300"
+            ? "border-slate-500 bg-slate-300/40 text-slate-700 dark:border-slate-400 dark:text-slate-200"
             : "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-900"
         }`}
         aria-hidden

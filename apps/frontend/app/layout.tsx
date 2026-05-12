@@ -17,6 +17,11 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Trezo AI",
   description: "Autonomous Treasury",
+  icons: {
+    icon: "/trezo-mark.svg",
+    shortcut: "/trezo-mark.svg",
+    apple: "/trezo-mark.svg",
+  },
 };
 
 export default function RootLayout({

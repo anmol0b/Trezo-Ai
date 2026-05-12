@@ -44,7 +44,7 @@ export function NavbarDemo({ navItems }: NavbarDemoProps) {
           <NavItems items={items} />
           <div className="flex items-center gap-4">
             <ThemeToggle className="theme-border theme-text rounded-xl border px-4 py-2" />
-            <WalletAuthButton />
+            <WalletAuthButton showAuthActions={false} />
             {/* <div className="flex items-center justify-center"> */}
 {/* <ConnectPage /> */}
             {/* </div> */}
@@ -77,6 +77,7 @@ export function NavbarDemo({ navItems }: NavbarDemoProps) {
             ))}
             <div className="flex w-full flex-col gap-4">
               <ThemeToggle className="theme-border theme-text w-full rounded-xl border px-4 py-2" />
+              <WalletAuthButton showAuthActions={false} />
             </div>
           </MobileNavMenu>
         </MobileNav>
