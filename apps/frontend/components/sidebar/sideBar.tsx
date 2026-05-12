@@ -68,34 +68,29 @@ export const Sidebar = ({
   );
 };
 
-// Plain HTML wrapper — no motion props needed here
+// SidebarBody only accepts children + className — never spreads into motion components
 export const SidebarBody = ({
   children,
   className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <>
-      <DesktopSidebar className={className} {...props}>
-        {children}
-      </DesktopSidebar>
-      <MobileSidebar className={className} {...props}>
-        {children}
-      </MobileSidebar>
+      <DesktopSidebar className={className}>{children}</DesktopSidebar>
+      <MobileSidebar className={className}>{children}</MobileSidebar>
     </>
   );
 };
 
-// Omit onDrag to avoid the React DragEvent vs Framer MouseEvent conflict
-type DesktopSidebarProps = Omit<HTMLMotionProps<"div">, "onDrag"> & {
+// Omit all drag-related HTML event props that conflict with Framer Motion's types
+type DesktopSidebarProps = {
+  className?: string;
   children?: React.ReactNode;
 };
 
-export const DesktopSidebar = ({
-  className,
-  children,
-  ...props
-}: DesktopSidebarProps) => {
+export const DesktopSidebar = ({ className, children }: DesktopSidebarProps) => {
   const { open, setOpen, animate } = useSidebar();
 
   return (
@@ -112,7 +107,6 @@ export const DesktopSidebar = ({
       transition={{ duration: 0.2, ease: "easeInOut" }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
-      {...props}
     >
       <div className="flex flex-col h-full w-full overflow-hidden">
         {children}
@@ -124,8 +118,10 @@ export const DesktopSidebar = ({
 export const MobileSidebar = ({
   className,
   children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   const { open, setOpen } = useSidebar();
 
   return (
@@ -134,7 +130,6 @@ export const MobileSidebar = ({
         "h-14 px-4 flex flex-row md:hidden items-center justify-between",
         "bg-[#0f0f11] border-b border-white/[0.06] w-full"
       )}
-      {...props}
     >
       <div className="flex justify-end z-20 w-full">
         <IconMenu2
