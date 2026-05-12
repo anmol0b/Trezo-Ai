@@ -62,7 +62,7 @@ export function buildProposalData(input: BuildProposalInput): ProposalInstructio
     treasuryPda: treasury,
     deptPda: dept,
     recipientAta: recipient,
-    amountLamports: BigInt(usdcToLamports(invoice.amountUsdc).toString()),
+    amountLamports: BigInt(usdcToLamports(invoice.amountUsdc)),
     category: categoryMask,
     metadataUri,
     expiryTimestamp,
