@@ -7,6 +7,7 @@ import {
 import { getProgram, getAgentKeypair, getConnection, PDAs } from '../services/anchor';
 import { ProposalInstructionData } from './proposal-builder';
 import { withRetry } from '../utils';
+import { BN } from '@coral-xyz/anchor';
 
 const PRIORITY_FEE_MICROLAMPORTS = 100_000;
 
@@ -50,7 +51,7 @@ export async function submitProposePayout(
 
     const tx = await program.methods
       .proposePayout(
-        data.amountLamports,
+        new BN(data.amountLamports),
         data.category,
         data.metadataUri,
         data.expiryTimestamp
