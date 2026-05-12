@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "../../lib/utils";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, HTMLMotionProps } from "motion/react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -68,26 +68,39 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
+// Plain HTML wrapper — no motion props needed here
+export const SidebarBody = ({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <DesktopSidebar className={className} {...props}>
+        {children}
+      </DesktopSidebar>
+      <MobileSidebar className={className} {...props}>
+        {children}
+      </MobileSidebar>
     </>
   );
+};
+
+// Omit onDrag to avoid the React DragEvent vs Framer MouseEvent conflict
+type DesktopSidebarProps = Omit<HTMLMotionProps<"div">, "onDrag"> & {
+  children?: React.ReactNode;
 };
 
 export const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}: DesktopSidebarProps) => {
   const { open, setOpen, animate } = useSidebar();
 
   return (
     <motion.div
       className={cn(
-        // Match your app's dark background, not generic neutral-800
         "h-full py-4 hidden md:flex md:flex-col",
         "bg-[#0f0f11] border-r border-white/[0.06]",
         "shrink-0 overflow-hidden",
@@ -101,7 +114,6 @@ export const DesktopSidebar = ({
       onMouseLeave={() => setOpen(false)}
       {...props}
     >
-      {/* Inner wrapper: keeps content from overflowing during animation */}
       <div className="flex flex-col h-full w-full overflow-hidden">
         {children}
       </div>
@@ -113,7 +125,7 @@ export const MobileSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<"div">) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const { open, setOpen } = useSidebar();
 
   return (
@@ -174,7 +186,7 @@ export const SidebarLink = ({
   return (
     <Link
       href={link.href}
-      title={!open ? link.label : undefined} // native tooltip when collapsed
+      title={!open ? link.label : undefined}
       className={cn(
         "relative flex items-center gap-3 px-3 py-2 mx-2 rounded-lg",
         "transition-all duration-150 group/sidebar",
@@ -184,20 +196,17 @@ export const SidebarLink = ({
         className
       )}
     >
-      {/* Icon — fixed width so it never shifts during expand/collapse */}
       <span className="shrink-0 w-5 h-5 flex items-center justify-center">
         {link.icon}
       </span>
 
-      {/* Active indicator dot */}
       {isActive && (
         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-violet-500" />
       )}
 
-      {/* Label — animates in/out */}
       <motion.span
         animate={{
-          display: animate ? (open ? "block" : "none") : "block",
+          display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
           x: animate ? (open ? 0 : -4) : 0,
         }}
