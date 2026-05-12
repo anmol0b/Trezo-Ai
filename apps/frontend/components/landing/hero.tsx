@@ -106,8 +106,8 @@ export default function Hero() {
           className="relative mx-auto mt-14 w-full max-w-4xl sm:mt-20"
         >
           {/* <div className="rounded-2xl border border-[#1E1E2E] bg-[#13131F] overflow-hidden shadow-2xl shadow-black/60"> */}
-            {/* Window chrome */}
-            {/* <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1E1E2E]">
+          {/* Window chrome */}
+          {/* <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1E1E2E]">
               <span className="w-3 h-3 rounded-full bg-[#EF4444]/70" />
               <span className="w-3 h-3 rounded-full bg-[#F59E0B]/70" />
               <span className="w-3 h-3 rounded-full bg-[#22C55E]/70" />
@@ -115,9 +115,9 @@ export default function Hero() {
                 app.trezoai.com/dashboard
               </span>
             </div> */}
-            {/* Mock dashboard */}
-            {/* <DashboardPreview /> */}
-            <CardPreivew />
+          {/* Mock dashboard */}
+          {/* <DashboardPreview /> */}
+          <CardPreivew />
           {/* </div> */}
           {/* Fade bottom */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--bg)] to-transparent" />
@@ -131,15 +131,23 @@ function CardPreivew() {
   return (
     <div className="group relative mx-auto mt-12 w-full max-w-7xl overflow-hidden rounded-[3rem] border-[15px] theme-border theme-surface shadow-2xl">
       <div className="relative w-full overflow-hidden rounded-[2.5rem] aspect-video">
-        <iframe src="" allow="autoplay; fullscreen; picture-in-picture" className="absolute h-[140%] w-[120%] top-[-11%] left-[50%] rounded-[2.5rem] border-none pointer-events-none"></iframe>
+        {/* <iframe src="./recoding.mp4" allow="autoplay; fullscreen; picture-in-picture" className="absolute h-[140%] w-[120%] top-[-11%] left-[1%] rounded-[2.5rem] border-none pointer-events-none"></iframe> */}
+        <video
+          src="/recoding.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute h-[140%] w-[120%] top-[-23%] left-[1%] rounded-[2.5rem] border-none pointer-events-none"
+        />
       </div>
       <div className="absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
         <a
           href="/demo"
           className="transform rounded-full bg-slate-900 px-6 py-3 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-slate-800 active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
         >
-      Try Demo Now
-      </a>
+          Try Demo Now
+        </a>
       </div>
     </div>
   );
