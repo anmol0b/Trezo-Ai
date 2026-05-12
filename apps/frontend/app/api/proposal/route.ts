@@ -16,10 +16,10 @@ const BackendProposalsResponseSchema = z.object({
       z.object({
         pubkey: z.string(),
         deptAccount: z.string(),
-        amountLamports: z.coerce.number(),
+        amountLamports: z.union([z.coerce.number(), z.string()]),
         status: z.string(),
         approvalsCount: z.coerce.number().optional(),
-        createdAt: z.coerce.number(),
+        createdAt: z.union([z.coerce.number(), z.string()]),
         updatedAt: z.coerce.number().optional(),
         metadataUri: z.string().optional(),
       }),
@@ -107,7 +107,7 @@ export async function GET() {
             vendor: "Metadata unavailable",
             hash: shortHash,
             department: p.deptAccount,
-            amount: toUsdcFromLamports(p.amountLamports),
+            amount: toUsdcFromLamports(Number(parseInt(String(p.amountLamports), 16))),
             currency: "USDC",
             category: "Unknown",
             aiScore: 0,
@@ -117,7 +117,7 @@ export async function GET() {
               reviewers: [],
             },
             status: normalizeStatus(p.status),
-            date: formatDateFromUnixSeconds(p.createdAt),
+            date: formatDateFromUnixSeconds(Number(parseInt(String(p.createdAt), 16))),
           };
         })
       // : proposalMockData.proposals; 
