@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { ParsedInvoice } from './invoice-parser';
 import { RAGResult } from './rag';
 import { usdcToLamports, toPubkey } from '../utils';
-import BN from 'bn.js';
+import { BN } from '@coral-xyz/anchor';
 
 export interface ProposalInstructionData {
   treasuryPda: PublicKey;
