@@ -233,8 +233,8 @@ export default function InvoicesPage() {
     };
   }, [fiatConversion]);
 
-  const uploadsEnabled = Boolean(data.meta?.backendHealthy) && Boolean(selectedDeptPda) && Boolean(recipientWallet);
-  const canApprove = Boolean(data.meta?.backendHealthy) && !isSubmitting && Boolean(lastParsePayload?.summary);
+  const uploadsEnabled = Boolean(selectedDeptPda) && Boolean(recipientWallet);
+  const canApprove = !isSubmitting && Boolean(lastParsePayload?.summary);
   const canReject = !isSubmitting && Boolean(lastParsePayload);
 
   const setProcessingSteps = () => {
