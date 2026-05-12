@@ -124,7 +124,7 @@ export async function GET() {
     const departmentsData = departmentsRes.payload.success ? departmentsRes.payload.data ?? [] : [];
     const proposalsData = proposalsRes.payload.success ? proposalsRes.payload.data ?? [] : [];
     const auditData = auditEventsRes.payload.success ? auditEventsRes.payload.data ?? [] : [];
-    const proposalVolumeUsdc = proposalsData.reduce((sum, item) => sum + toUsdcFromLamports(item.amountLamports), 0);
+    const proposalVolumeUsdc = proposalsData.reduce((sum, item) => sum + toUsdcFromLamports(Number(item.amountLamports ?? 0)), 0);
     const pendingProposals = proposalsData.filter((p) => p.status.toLowerCase() === "pending");
     const activeDepartments = departmentsData.filter((department) => department.isActive);
     const inactiveDepartments = departmentsData.filter((department) => !department.isActive);
