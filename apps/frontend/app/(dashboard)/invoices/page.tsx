@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AnalysisPanel from "./ui/analysisPanel";
 import HistoryCard from "./ui/historyCard";
 import UploadCard from "./ui/uploadCard";
+import CustomSelect from "../../../components/ui/customSelect";
 import { invoicesMockData, type InvoicesApiPayload, type InvoiceHistoryItem } from "../../../lib/mockData";
 
 const INVOICES_API_URL = process.env.NEXT_PUBLIC_INVOICES_API_URL ?? "/api/invoices";
@@ -529,26 +530,22 @@ export default function InvoicesPage() {
 
             <label className="space-y-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Department</span>
-              <div className="relative">
-                <select
-                  value={selectedDeptPda}
-                  onChange={(event) => {
-                    const nextDeptPda = event.target.value;
-                    const nextDepartment = data.context.departments.find((department) => department.pubkey === nextDeptPda);
-                    setSelectedDeptPda(nextDeptPda);
-                    setSelectedDeptId(nextDepartment?.deptId ?? "");
-                  }}
-                  className="h-11 w-full appearance-none rounded-xl border border-zinc-300 bg-zinc-100 px-4 pr-10 text-sm font-medium text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
-                >
-                  <option value="">Select department</option>
-                  {data.context.departments.map((department) => (
-                    <option key={department.pubkey} value={department.pubkey}>
-                      {department.name} ({department.deptId})
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">▾</span>
-              </div>
+              <CustomSelect
+                value={selectedDeptPda}
+                onChange={(nextDeptPda) => {
+                  const nextDepartment = data.context.departments.find((department) => department.pubkey === nextDeptPda);
+                  setSelectedDeptPda(nextDeptPda);
+                  setSelectedDeptId(nextDepartment?.deptId ?? "");
+                }}
+                options={[
+                  { value: "", label: "Select department" },
+                  ...data.context.departments.map((department) => ({
+                    value: department.pubkey,
+                    label: `${department.name} (${department.deptId})`,
+                  })),
+                ]}
+                placeholder="Select department"
+              />
             </label>
 
             <label className="space-y-2">
