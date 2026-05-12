@@ -41,17 +41,16 @@ const DepartmentsResponseSchema = z.object({
 const ProposalsResponseSchema = z.object({
   success: z.boolean(),
   count: z.coerce.number().optional(),
-  data: z
-    .array(
-      z.object({
-        pubkey: z.string(),
-        deptAccount: z.string(),
-        amountLamports: z.coerce.number(),
-        status: z.string(),
-        createdAt: z.coerce.number(),
-      }),
-    )
-    .optional(),
+  data: z.array(
+    z.object({
+      pubkey: z.string(),
+      deptAccount: z.string().optional(),
+      status: z.string(),
+      amountLamports: z.union([z.coerce.number(), z.string()]).optional(),
+      approvalsCount: z.coerce.number().optional(),
+      createdAt: z.union([z.coerce.number(), z.string()]).optional(),
+    }),
+  ).optional(),
 });
 
 const AuditEventsResponseSchema = z.object({

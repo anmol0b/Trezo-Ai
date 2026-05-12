@@ -55,12 +55,12 @@ export const ProposalsResponseSchema = z.object({
         pubkey: z.string(),
         deptAccount: z.string().optional(),
         status: z.string(),
-        amountLamports: z.coerce.number().optional(),
+        amountLamports: z.union([z.coerce.number(), z.string()]).optional(),
         approvalsCount: z.coerce.number().optional(),
-        createdAt: z.coerce.number().optional(),
-        updatedAt: z.coerce.number().optional(),
+        createdAt: z.union([z.coerce.number(), z.string()]).optional(),
+        updatedAt: z.union([z.coerce.number(), z.string()]).optional(),
         metadataUri: z.string().optional(),
-      })
+      }),
     )
     .default([]),
 });
