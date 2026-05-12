@@ -54,7 +54,7 @@ export async function submitProposePayout(
         new BN(data.amountLamports),
         data.category,
         data.metadataUri,
-        data.expiryTimestamp
+        new BN(data.expiryTimestamp) 
       )
       .accounts({
         treasuryConfig: treasuryPda,
