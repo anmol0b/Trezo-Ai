@@ -20,7 +20,7 @@ const BackendProposalsResponseSchema = z.object({
         status: z.string(),
         approvalsCount: z.coerce.number().optional(),
         createdAt: z.union([z.coerce.number(), z.string()]),
-        updatedAt: z.coerce.number().optional(),
+        updatedAt: z.union([z.coerce.number(), z.string()]).optional(),
         metadataUri: z.string().optional(),
       }),
     )
