@@ -5,21 +5,7 @@ import Link from "next/link";
 import { SpecialText } from "../ui/test";
 import { SlideUpText } from "../ui/split";
 import { LandingButton } from "../ui/landingButton";
-
-
-
-// --------- DEAD CODE ---------- //
-
-
-
-// const fadeUp = {
-//   hidden: { opacity: 0, y: 32 },
-//   visible: (i: number) => ({
-//     opacity: 1,
-//     y: 0,
-//     transition: { duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
-//   }),
-// };
+import WalletAuthButton from "../walletAuthButton";
 
 export default function Hero() {
   return (
@@ -97,7 +83,6 @@ export default function Hero() {
           </LandingButton>
         </motion.div>
 
-        {/* App preview mockup */}
         <motion.div
           custom={4}
           // variants={fadeUp}
@@ -105,21 +90,7 @@ export default function Hero() {
           animate="visible"
           className="relative mx-auto mt-14 w-full max-w-4xl sm:mt-20"
         >
-          {/* <div className="rounded-2xl border border-[#1E1E2E] bg-[#13131F] overflow-hidden shadow-2xl shadow-black/60"> */}
-          {/* Window chrome */}
-          {/* <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1E1E2E]">
-              <span className="w-3 h-3 rounded-full bg-[#EF4444]/70" />
-              <span className="w-3 h-3 rounded-full bg-[#F59E0B]/70" />
-              <span className="w-3 h-3 rounded-full bg-[#22C55E]/70" />
-              <span className="flex-1 mx-4 text-center text-xs text-[#94A3B8] font-mono">
-                app.trezoai.com/dashboard
-              </span>
-            </div> */}
-          {/* Mock dashboard */}
-          {/* <DashboardPreview /> */}
           <CardPreivew />
-          {/* </div> */}
-          {/* Fade bottom */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--bg)] to-transparent" />
         </motion.div>
       </div>
@@ -142,88 +113,12 @@ function CardPreivew() {
         />
       </div>
       <div className="absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
-        <a
-          href="/demo"
+        {/* <a
           className="transform rounded-full bg-slate-900 px-6 py-3 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-slate-800 active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-        >
-          Try Demo Now
-        </a>
+        > */}
+          <WalletAuthButton showAuthActions={false} />
+        {/* </a> */}
       </div>
     </div>
   );
 }
-
-
-
-
-// --------- DEAD CODE ---------- //
-
-
-
-
-// function DashboardPreview() {
-//   return (
-//     <div className="flex h-[420px] bg-[#0D0D14]">
-//       {/* Sidebar */}
-//       <div className="w-52 border-r border-[#1E1E2E] p-4 flex flex-col gap-1 shrink-0">
-//         <div className="text-xs text-[#94A3B8] font-semibold mb-3 px-2">NAVIGATION</div>
-//         {["Dashboard", "Proposals", "Invoices", "Yield", "Audit", "Agents"].map(
-//           (item, i) => (
-//             <div
-//               key={item}
-//               className={`px-3 py-2 rounded-lg text-sm font-medium ${i === 0
-//                   ? "bg-[#7C3AED]/20 text-[#A78BFA]"
-//                   : "text-[#94A3B8] hover:text-[#F1F5F9]"
-//                 }`}
-//             >
-//               {item}
-//             </div>
-//           )
-//         )}
-//       </div>
-//       {/* Main */}
-//       <div className="flex-1 p-6 overflow-hidden">
-//         <div className="grid grid-cols-3 gap-3 mb-5">
-//           {[
-//             { label: "Total Treasury", value: "$2,847,500", color: "#A78BFA" },
-//             { label: "Allocated", value: "$1,230,000", color: "#22C55E" },
-//             { label: "In Yield", value: "$412,800", color: "#F59E0B" },
-//           ].map((card) => (
-//             <div key={card.label} className="bg-[#13131F] rounded-xl p-4 border border-[#1E1E2E]">
-//               <div className="text-xs text-[#94A3B8] mb-1">{card.label}</div>
-//               <div className="text-lg font-bold" style={{ color: card.color }}>
-//                 {card.value}
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//         <div className="grid grid-cols-2 gap-3">
-//           <div className="bg-[#13131F] rounded-xl p-4 border border-[#1E1E2E]">
-//             <div className="text-xs text-[#94A3B8] mb-3">AI Suggestions</div>
-//             {["Approve invoice #INV-042 — $8,400", "Fund Engineering dept", "Yield threshold reached"].map(
-//               (s) => (
-//                 <div key={s} className="flex items-center gap-2 py-1.5 text-xs text-[#F1F5F9]">
-//                   <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
-//                   {s}
-//                 </div>
-//               )
-//             )}
-//           </div>
-//           <div className="bg-[#13131F] rounded-xl p-4 border border-[#1E1E2E]">
-//             <div className="text-xs text-[#94A3B8] mb-3">Recent Activity</div>
-//             {[
-//               { action: "Payout executed", time: "2m ago", color: "#22C55E" },
-//               { action: "Invoice parsed", time: "14m ago", color: "#A78BFA" },
-//               { action: "Yield deposited", time: "1h ago", color: "#F59E0B" },
-//             ].map((a) => (
-//               <div key={a.action} className="flex justify-between py-1.5 text-xs">
-//                 <span style={{ color: a.color }}>{a.action}</span>
-//                 <span className="text-[#94A3B8]">{a.time}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
