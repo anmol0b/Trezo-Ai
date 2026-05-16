@@ -96,10 +96,25 @@ export default function WalletAuthButton({
       router.push(redirectTo);
       router.refresh();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Sign-in failed";
-      setError(msg);
-      console.error("[WalletAuthButton] sign-in failed", e);
-    } finally {
+  const msg = e instanceof Error ? e.message : "Sign-in failed";
+
+  // User deliberately rejected the wallet popup — disconnect silently
+  if (
+    msg.toLowerCase().includes("user rejected") ||
+    msg.toLowerCase().includes("user cancelled") ||
+    msg.toLowerCase().includes("user denied")
+  ) {
+    await wallet.disconnect().catch(() => {});
+    globalAutoAttemptedPubkey = null;
+    setError(null); // or setError("Sign-in cancelled.") if you want a soft message
+    return;
+  }
+
+  setError(msg);
+  console.error("[WalletAuthButton] sign-in failed", e);
+  await wallet.disconnect().catch(() => {});
+  globalAutoAttemptedPubkey = null;
+} finally {
       globalSignInInFlight = false;
       setIsSigningIn(false);
     }
